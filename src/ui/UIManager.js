@@ -34,6 +34,8 @@ import { getAllHeroSkills, getHeroSkills, getPartySkillBonuses } from "../entiti
 import { SpinWheelPrizes, SPIN_COST_GEMS, spinWheel, canFreeSpin } from "../entities/SpinWheelDatabase.js";
 import { PetDatabase, PetFoods, getPetMood, getPetBonuses } from "../entities/PetDatabase.js";
 import { MiniGameDatabase, isMiniGameReady, getMiniGameCooldown } from "../entities/MiniGameDatabase.js";
+import { getDailyQuests, getQuestProgress } from "../entities/QuestDatabase.js";
+import { getCraftableGroups, fuseItems, getDismantleValue, CRAFT_COST, getNextRarity } from "../entities/CraftingDatabase.js";
 
 export class UIManager {
   constructor() {
@@ -396,6 +398,15 @@ export class UIManager {
     // Item tooltip
     this._itemTooltip = null;
 
+    // Ascension event handler
+    document.addEventListener('heroAscended', (e) => {
+      const { template, ascLevel } = e.detail;
+      this.showNotification(`⭐ ¡Ascensión! ${template.name} → Ascensión ${ascLevel}`);
+      this.renderHeroStatsPanel();
+      this.renderRoster();
+      this.renderActiveParty();
+    });
+
     // Tower start button
     if (this.dom.towerStartBtn) {
       this.dom.towerStartBtn.onclick = () => EventBus.emit('startTower');
@@ -596,6 +607,7 @@ export class UIManager {
       { id: 'tab-roster', label: 'Roster' },
       { id: 'tab-tavern', label: 'Tavern' },
       { id: 'tab-inventory', label: 'Inventory' },
+      { id: 'tab-crafting', label: 'Crafting' },
       { id: 'tab-storage', label: 'Storage' },
     ],
     power: [
@@ -607,6 +619,7 @@ export class UIManager {
     ],
     world: [
       { id: 'tab-events', label: 'Events' },
+      { id: 'tab-quests', label: 'Quests' },
       { id: 'tab-collections', label: 'Collections' },
       { id: 'tab-lore', label: 'Codex' },
       { id: 'tab-bestiary', label: 'Bestiary' },
@@ -675,12 +688,14 @@ export class UIManager {
       case 'tab-tavern': this.renderTavernPool(); break;
       case 'tab-inventory': this.renderInventory(); break;
       case 'tab-storage': this.renderStorage(); break;
+      case 'tab-crafting': this.renderCrafting(); break;
       case 'tab-academy': this._lastUpgradeHash = null; this.renderUpgrades(); break;
       case 'tab-tower': this.renderTower(); break;
       case 'tab-shop': this.renderShop(); break;
       case 'tab-prestige': this.renderPrestige(); break;
       case 'tab-spin': this.renderSpinWheel(); break;
       case 'tab-events': this.renderEvents(); this.renderDailyLogin(); break;
+      case 'tab-quests': this.renderDailyQuests(); break;
       case 'tab-collections': this.renderCollections(); break;
       case 'tab-lore': this.renderLore(); break;
       case 'tab-bestiary': this.renderBestiary(); break;
@@ -739,11 +754,28 @@ export class UIManager {
       if (svgEl) {
         svgEl.classList.add('enemy-blob');
         if (enemyInfo.isBoss) svgEl.classList.add('boss-true');
+        if (enemyInfo.isElite) svgEl.classList.add('elite-true');
         svgEl.style.color = enemyInfo.color || '#fff';
         if (enemyInfo.isBoss) {
           svgEl.style.filter = `drop-shadow(0 0 12px ${enemyInfo.color || '#ff0'})`;
         }
+        if (enemyInfo.isElite) {
+          svgEl.style.filter = `drop-shadow(0 0 10px #ffca28) drop-shadow(0 0 20px #ff9100)`;
+        }
       }
+    }
+    // Element indicator
+    if (element) {
+      const ELEM_COLORS = { fire: '#ff5722', ice: '#00e5ff', shadow: '#9c27b0', light: '#ffca28', void: '#7c4dff' };
+      const ELEM_ICONS = { fire: '🔥', ice: '❄️', shadow: '🌑', light: '✨', void: '🌀' };
+      const elemIndicator = document.getElementById('enemy-element-indicator');
+      if (elemIndicator) {
+        elemIndicator.style.display = '';
+        elemIndicator.innerHTML = `<span style="color:${ELEM_COLORS[element] || '#fff'}">${ELEM_ICONS[element] || ''} ${element}</span>`;
+      }
+    } else {
+      const elemIndicator = document.getElementById('enemy-element-indicator');
+      if (elemIndicator) elemIndicator.style.display = 'none';
     }
     if (this.dom.currentStage) this.dom.currentStage.textContent = GameState.data.currentStage;
     this.updateHealthBar(GameState.data.currentEnemyHp, GameState.data.currentEnemyMaxHp);
@@ -830,6 +862,33 @@ export class UIManager {
     this.dom.shieldBar.style.display = '';
     if (this.dom.shieldBarFill) this.dom.shieldBarFill.style.width = '100%';
     if (this.dom.shieldBarText) this.dom.shieldBarText.textContent = `🛡 ${formatNumber(Math.ceil(shieldHp))}`;
+  }
+
+  // ============================================
+  // UPDATE ELEMENT INDICATOR — Shows advantage/disadvantage
+  // ============================================
+  updateElementIndicator(elMult, partyElements, enemyElement) {
+    const indicator = document.getElementById('enemy-element-indicator');
+    if (!indicator) return;
+    if (!enemyElement) { indicator.style.display = 'none'; return; }
+
+    const ELEM_ICONS = { fire: '🔥', ice: '❄️', shadow: '🌑', light: '✨', void: '🌀' };
+    const ELEM_COLORS = { fire: '#ff5722', ice: '#00e5ff', shadow: '#9c27b0', light: '#ffca28', void: '#7c4dff' };
+
+    let label = '';
+    let color = ELEM_COLORS[enemyElement] || '#fff';
+    if (elMult > 1.1) {
+      label = `⚡ Super Effective! ×${elMult.toFixed(1)}`;
+      color = 'var(--neon-green)';
+    } else if (elMult < 0.9) {
+      label = `🛡️ Resisted ×${elMult.toFixed(1)}`;
+      color = 'var(--hp-red)';
+    } else {
+      label = `${ELEM_ICONS[enemyElement] || ''} ${enemyElement}`;
+    }
+
+    indicator.style.display = '';
+    indicator.innerHTML = `<span style="color:${color}">${label}</span>`;
   }
 
   // ============================================
@@ -1079,6 +1138,10 @@ export class UIManager {
       card.className = `hero-card ${isEquipped ? "equipped" : ""}`;
       card.style.borderColor = template.rarity.color;
 
+      // Ascension badge
+      const ascLevel = hData.ascensionLevel || 0;
+      const ascBadge = ascLevel > 0 ? `<span class="hero-ascension-badge">⭐${ascLevel}</span>` : '';
+
       // Build Equip Slots HTML
       const renderSlot = (slotName, categoryStr) => {
         const equipped = hData.equip[slotName];
@@ -1116,10 +1179,8 @@ export class UIManager {
 
       card.innerHTML = `
         <div class="hero-header">
-           <span style="color:${template.rarity.color}; font-weight:bold;">${
-        template.name
-      }</span>
-           <span class="hero-lvl">Lv.${hData.level}</span>
+           <span style="color:${template.rarity.color}; font-weight:bold;">${template.name}</span>
+           <span class="hero-lvl">Lv.${hData.level} ${ascBadge}</span>
         </div>
         <div class="hero-visual">${template.svg}</div>
         <div class="hero-stats">
@@ -2223,17 +2284,25 @@ export class UIManager {
       const elemDisplay = heroElement ? ELEM_ICONS[heroElement] + ' ' + heroElement.charAt(0).toUpperCase() + heroElement.slice(1) : '—';
       let ascensionBtn = '';
       const maxLevel = template.rarity.id === 'legendary' ? 100 : 50;
+      const ascLevel = hData.ascensionLevel || 0;
       if (hData.level >= maxLevel) {
-        ascensionBtn = `<button class="ascend-btn" style="margin-left:1em;background:var(--neon-blue);color:#fff;border:none;border-radius:6px;padding:0.3em 1em;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(3,218,198,0.15);" onclick="window.ascendHero('${hData.uid}')">Ascender</button>`;
+        ascensionBtn = `<button class="ascend-btn glow-btn" data-ascend-uid="${hData.uid}">⭐ Ascender</button>`;
       }
+      const ascensionDisplay = ascLevel > 0 ? `<span class="ascension-star">⭐${ascLevel}</span>` : '';
       this.dom.hspStatsRow.innerHTML = `
         <div class="hsp-stat"><span class="hsp-stat-value">${stats.dps.toFixed(1)}</span><span style="font-size:0.65em;color:var(--text-muted)">DPS</span></div>
         <div class="hsp-stat"><span class="hsp-stat-value">${template.baseDps}</span><span style="font-size:0.65em;color:var(--text-muted)">Base</span></div>
         <div class="hsp-stat"><span class="hsp-stat-value">${elemDisplay}</span><span style="font-size:0.65em;color:var(--text-muted)">Element</span></div>
         <div class="hsp-stat"><span class="hsp-stat-value">${getHeroLevelCost(hData.id, hData.level)}</span><span style="font-size:0.65em;color:var(--text-muted)">Lvl Cost</span></div>
-        <div class="hsp-stat"><span class="hsp-stat-value">Ascensión ${stats.ascensionLevel || 0}</span><span style="font-size:0.65em;color:var(--text-muted)">Ascensión</span></div>
+        <div class="hsp-stat"><span class="hsp-stat-value">${ascensionDisplay || 'Ascensión 0'}</span><span style="font-size:0.65em;color:var(--text-muted)">Ascensión</span></div>
         ${ascensionBtn}
       `;
+
+      // Bind ascension button with confirmation dialog
+      const ascBtn = this.dom.hspStatsRow.querySelector('.ascend-btn');
+      if (ascBtn) {
+        ascBtn.onclick = () => this.showAscensionConfirm(hData.uid);
+      }
     }
 
     // Equip row
@@ -2252,6 +2321,45 @@ export class UIManager {
         renderEquipSlot('armor', 'Armor') +
         renderEquipSlot('acc', 'Accessory');
     }
+  }
+
+  // --- Ascension Confirmation Dialog ---
+  showAscensionConfirm(heroUid) {
+    const hero = GameState.data.roster.find(h => h.uid === heroUid);
+    if (!hero) return;
+    const template = HeroTemplate.find(t => t.id === hero.id);
+    if (!template) return;
+    const currentAsc = hero.ascensionLevel || 0;
+    const nextAsc = currentAsc + 1;
+    const bonusDps = `+${(nextAsc * 20)}%`;
+    const bonusCrit = `+${(nextAsc * 5)}%`;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'welcome-overlay ascension-overlay';
+    overlay.innerHTML = `
+      <div class="welcome-modal ascension-modal">
+        <div class="ascension-hero-visual" style="color:${template.rarity.color}">${template.svg}</div>
+        <h2 style="color:var(--neon-cyan);margin-bottom:4px;">⭐ Ascender Héroe</h2>
+        <h3 style="color:${template.rarity.color};margin-bottom:8px;">${template.name}</h3>
+        <p style="color:var(--text-muted);margin-bottom:12px;">El nivel se reiniciará a 1, pero obtendrás bonos permanentes.</p>
+        <div class="ascension-bonuses">
+          <div class="ascension-bonus-item"><span class="ascension-bonus-label">Ascensión</span><span class="ascension-bonus-value">${currentAsc} → ${nextAsc}</span></div>
+          <div class="ascension-bonus-item"><span class="ascension-bonus-label">DPS Bonus</span><span class="ascension-bonus-value">${bonusDps}</span></div>
+          <div class="ascension-bonus-item"><span class="ascension-bonus-label">Crit Chance</span><span class="ascension-bonus-value">${bonusCrit}</span></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;">
+          <button class="ascension-cancel-btn">Cancelar</button>
+          <button class="ascension-confirm-btn">⭐ ¡Ascender!</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    overlay.querySelector('.ascension-cancel-btn').onclick = () => overlay.remove();
+    overlay.querySelector('.ascension-confirm-btn').onclick = () => {
+      overlay.remove();
+      window.ascendHero(heroUid);
+    };
   }
 
   // --- Events Tab ---
@@ -2281,6 +2389,180 @@ export class UIManager {
 
       this.dom.eventsContainer.appendChild(card);
     });
+  }
+
+  // --- Crafting / Forge Tab ---
+  renderCrafting() {
+    const container = document.getElementById('crafting-container');
+    if (!container) return;
+
+    const inv = GameState.data.inventory;
+    // Exclude items currently equipped
+    const equippedUids = new Set();
+    GameState.data.roster.forEach(h => {
+      Object.values(h.equip || {}).forEach(e => { if (e) equippedUids.add(e.uid); });
+    });
+    const freeItems = inv.filter(i => !equippedUids.has(i.uid));
+    const groups = getCraftableGroups(freeItems);
+
+    if (groups.length === 0) {
+      container.innerHTML = '<p style="text-align:center;color:var(--text-muted);">No craftable items. Collect more loot!</p>';
+      return;
+    }
+
+    container.innerHTML = groups.map(g => {
+      const tpl = getItemStats({ templateId: g.templateId, rarity: g.rarity, uid: '_preview' });
+      const next = getNextRarity(g.rarity);
+      const canCraft = g.items.length >= CRAFT_COST;
+      const dismantleVal = getDismantleValue(g.items[0]);
+      return `
+        <div class="craft-row">
+          <div class="craft-item-icon" style="color:${g.rarity.color};border-color:${g.rarity.color}">
+            ${tpl.svg}
+          </div>
+          <div class="craft-info">
+            <span class="craft-name" style="color:${g.rarity.color}">${tpl.name} (${g.rarity.name})</span>
+            <span class="craft-count">${g.items.length} / ${CRAFT_COST} needed</span>
+          </div>
+          <div class="craft-actions">
+            ${next ? `<button class="craft-btn ${canCraft ? '' : 'disabled'}" data-tpl="${g.templateId}" data-rar="${g.rarity.id}">
+              Forge → <span style="color:${next.color}">${next.name}</span>
+            </button>` : ''}
+            <button class="dismantle-btn" data-tpl="${g.templateId}" data-rar="${g.rarity.id}">
+              Dismantle (+${dismantleVal} ess)
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+
+    // Bind forge buttons
+    container.querySelectorAll('.craft-btn:not(.disabled)').forEach(btn => {
+      btn.onclick = () => {
+        const newItem = fuseItems(GameState.data.inventory, btn.dataset.tpl, btn.dataset.rar);
+        if (newItem) {
+          GameState.data.inventory.push(newItem);
+          const st = getItemStats(newItem);
+          this.showNotification(`Forged ${st.name} (${st.rarity.name})!`);
+          GameState.save();
+          this.renderCrafting();
+        }
+      };
+    });
+
+    // Bind dismantle buttons
+    container.querySelectorAll('.dismantle-btn').forEach(btn => {
+      btn.onclick = () => {
+        const tpl = btn.dataset.tpl;
+        const rar = btn.dataset.rar;
+        const target = GameState.data.inventory.find(
+          i => i.templateId === tpl && i.rarity.id === rar && !equippedUids.has(i.uid)
+        );
+        if (target) {
+          const val = getDismantleValue(target);
+          const idx = GameState.data.inventory.indexOf(target);
+          if (idx !== -1) GameState.data.inventory.splice(idx, 1);
+          GameState.data.essence += val;
+          this.showNotification(`Dismantled for +${val} Essence`);
+          GameState.save();
+          this.renderCrafting();
+          this.updateStats();
+        }
+      };
+    });
+  }
+
+  // --- Daily Quests Tab ---
+  renderDailyQuests() {
+    const container = document.getElementById('quests-container');
+    if (!container) return;
+
+    const state = GameState.data;
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Initialize or reset daily quests
+    if (!state.dailyQuests) state.dailyQuests = { date: null, completed: [], snapshots: {} };
+    if (state.dailyQuests.date !== today) {
+      // New day — snapshot current stats and reset
+      state.dailyQuests.date = today;
+      state.dailyQuests.completed = [];
+      state.dailyQuests.snapshots = { ...state.playerDamageStats };
+      // Track stage-based quests
+      state.dailyQuests.snapshots._stagesAdvanced = state.currentStage;
+      state.dailyQuests.snapshots._heroLevels = this._countTotalHeroLevels();
+    }
+
+    const quests = getDailyQuests(today);
+    const completed = state.dailyQuests.completed || [];
+
+    container.innerHTML = quests.map(quest => {
+      const isDone = completed.includes(quest.id);
+      const currentStats = { ...state.playerDamageStats, _stagesAdvanced: state.currentStage, _heroLevels: this._countTotalHeroLevels() };
+      const startVal = state.dailyQuests.snapshots[quest.stat] || 0;
+      const currentVal = currentStats[quest.stat] || 0;
+      const progress = Math.max(0, currentVal - startVal);
+      const pct = Math.min(100, (progress / quest.target) * 100);
+      const isComplete = progress >= quest.target;
+
+      // Reward text
+      const rewardParts = [];
+      if (quest.reward.coins) rewardParts.push(`🪙${formatNumber(quest.reward.coins)}`);
+      if (quest.reward.stardust) rewardParts.push(`✨${quest.reward.stardust}`);
+      if (quest.reward.gems) rewardParts.push(`💎${quest.reward.gems}`);
+      if (quest.reward.essence) rewardParts.push(`🌀${quest.reward.essence}`);
+
+      return `<div class="quest-card ${isDone ? 'quest-done' : ''} ${isComplete && !isDone ? 'quest-claimable' : ''}">
+        <div class="quest-icon">${isDone ? '✅' : quest.icon}</div>
+        <div class="quest-info">
+          <div class="quest-name">${quest.name}</div>
+          <div class="quest-desc">${quest.desc}</div>
+          <div class="quest-progress-bar">
+            <div class="quest-progress-fill" style="width:${isDone ? 100 : pct}%"></div>
+          </div>
+          <div class="quest-progress-text">${isDone ? 'Completada' : `${formatNumber(Math.min(progress, quest.target))} / ${formatNumber(quest.target)}`}</div>
+        </div>
+        <div class="quest-reward">
+          <div class="quest-reward-label">${rewardParts.join(' ')}</div>
+          ${isDone ? '<span class="quest-claimed">Reclamada</span>' : isComplete ? `<button class="quest-claim-btn" data-quest-id="${quest.id}">Reclamar</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    // Bind claim buttons
+    container.querySelectorAll('.quest-claim-btn').forEach(btn => {
+      btn.onclick = () => this.claimQuest(btn.dataset.questId);
+    });
+  }
+
+  claimQuest(questId) {
+    const state = GameState.data;
+    if (!state.dailyQuests) return;
+    if (state.dailyQuests.completed.includes(questId)) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const quests = getDailyQuests(today);
+    const quest = quests.find(q => q.id === questId);
+    if (!quest) return;
+
+    // Verify completion
+    const currentStats = { ...state.playerDamageStats, _stagesAdvanced: state.currentStage, _heroLevels: this._countTotalHeroLevels() };
+    const startVal = state.dailyQuests.snapshots[quest.stat] || 0;
+    const progress = (currentStats[quest.stat] || 0) - startVal;
+    if (progress < quest.target) return;
+
+    // Grant rewards
+    if (quest.reward.coins) GameState.addCoins(quest.reward.coins);
+    if (quest.reward.stardust) GameState.addStardust(quest.reward.stardust);
+    if (quest.reward.gems) GameState.addGems(quest.reward.gems);
+    if (quest.reward.essence) GameState.addEssence(quest.reward.essence);
+
+    state.dailyQuests.completed.push(questId);
+    this.showNotification(`📋 ¡Misión completada! ${quest.icon} ${quest.name}`);
+    this.renderDailyQuests();
+    this.updateStats();
+  }
+
+  _countTotalHeroLevels() {
+    return GameState.data.roster.reduce((sum, h) => sum + (h.level || 1), 0);
   }
 
   // --- Collections Tab ---
@@ -3402,9 +3684,13 @@ export class UIManager {
 
 // Función global para ascender héroes desde el botón
 window.ascendHero = function(heroUid) {
-  const ok = GameState.ascendHero(heroUid);
-  if (ok) {
+  const template = GameState.ascendHero(heroUid);
+  if (template) {
+    const hero = GameState.data.roster.find(h => h.uid === heroUid);
+    const ascLevel = hero ? hero.ascensionLevel : 1;
     GameState.save();
-    if (window.uiManager && window.uiManager.renderHeroStatsPanel) window.uiManager.renderHeroStatsPanel();
+    // Find UIManager instance via DOM event
+    const evt = new CustomEvent('heroAscended', { detail: { heroUid, template, ascLevel } });
+    document.dispatchEvent(evt);
   }
 };

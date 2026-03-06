@@ -37,6 +37,7 @@ export class Engine {
     this.partyBuffs = [];              // temporary party-wide buffs from skills
     this.currentEnemyElement = null;   // cached element of current enemy
     this.currentEnemyAura = null;      // cached aura of current enemy
+    this.isEliteEnemy = false;         // whether current enemy is elite
   }
 
   start() {
@@ -197,6 +198,18 @@ export class Engine {
   spawnEnemy() {
     const state = GameState.data;
     const enemyInfo = getEnemyStats(state.currentStage);
+
+    // Elite enemy chance: 3% for normal, 0% for bosses
+    this.isEliteEnemy = !enemyInfo.isBoss && Math.random() < 0.03;
+    if (this.isEliteEnemy) {
+      // Elite enemies have 2× HP but give 3× rewards
+      enemyInfo.maxHp = Math.floor(enemyInfo.maxHp * 2);
+      enemyInfo.coinDrop = Math.floor(enemyInfo.coinDrop * 3);
+      if (enemyInfo.stardustDrop) enemyInfo.stardustDrop = Math.floor(enemyInfo.stardustDrop * 3);
+      enemyInfo.name = `⚡ ${enemyInfo.name}`;
+      enemyInfo.isElite = true;
+    }
+
     state.currentEnemyHp = enemyInfo.maxHp;
     state.currentEnemyMaxHp = enemyInfo.maxHp;
 
@@ -271,6 +284,8 @@ export class Engine {
       }).filter(Boolean);
       const elMult = getPartyElementMultiplier(partyElements, this.currentEnemyElement);
       damageAmount *= elMult;
+      // Update element indicator in UI
+      this.ui.updateElementIndicator(elMult, partyElements, this.currentEnemyElement);
     }
 
     // ── Party Buffs (from hero active skills) ──
@@ -536,16 +551,17 @@ export class Engine {
     let dropMsg = "";
     // Boss Loot Check (Every 10 stages, or 1% chance otherwise + loot luck upgrade + shop + event + collection bonus)
     const lootLuckBonus = getUpgradeEffect("upg_loot_luck", state.upgrades["upg_loot_luck"] || 0) / 100 + (shopBon.lootChanceBonus || 0) + (evtBon.lootChanceBonus || 0) + (colBon.lootChanceBonus || 0) + (skillBon.lootChanceBonus || 0) + (petBon.lootBonus || 0);
-    if (state.currentStage % 10 === 0 || Math.random() < (0.01 + lootLuckBonus)) {
+    const eliteLootBonus = this.isEliteEnemy ? 0.25 : 0; // Elites have 25% extra loot chance
+    if (state.currentStage % 10 === 0 || Math.random() < (0.01 + lootLuckBonus + eliteLootBonus)) {
       const item = generateRandomLootDrop(state.currentStage);
       GameState.addItem(item);
       dropMsg = ` | Found Loot: [${item.rarity.name}]!`;
     }
 
     // Only show notification for boss kills or loot drops (avoid spam on fast kills)
-    if (enemyInfo.isBoss || dropMsg) {
+    if (enemyInfo.isBoss || dropMsg || this.isEliteEnemy) {
       this.ui.showNotification(
-        `Defeated ${enemyInfo.name}! +${formatNumber(finalCoins)} Coins${dropMsg}`
+        `Defeated ${this.isEliteEnemy ? '⚡ Elite ' : ''}${enemyInfo.name}! +${formatNumber(finalCoins)} Coins${dropMsg}`
       );
     }
 

@@ -1,4 +1,5 @@
 import { Config } from "./Config.js";
+import { HeroTemplate } from "../entities/HeroDatabase.js";
 
 class StateManager {
   constructor() {
@@ -80,6 +81,11 @@ class StateManager {
       },
       sessionStartTime: Date.now(),
         heroAscensions: {}, // { heroUid: ascensionLevel }
+        dailyQuests: {              // Daily quest tracking
+          date: null,               // Date string 'YYYY-MM-DD'
+          completed: [],            // Array of quest IDs completed today
+          snapshots: {},            // Stat snapshots at quest reset
+        },
     };
   }
   /**
@@ -89,17 +95,15 @@ class StateManager {
   ascendHero(heroUid) {
     const hero = this.data.roster.find(h => h.uid === heroUid);
     if (!hero) return false;
-    // Ascension requirements
-    const template = require('../entities/HeroDatabase.js').HeroTemplate.find(t => t.id === hero.id);
+    const template = HeroTemplate.find(t => t.id === hero.id);
+    if (!template) return false;
     const maxLevel = template.rarity.id === 'legendary' ? 100 : 50;
     if (hero.level < maxLevel) return false;
     // Reset level, increment ascension
     hero.level = 1;
     hero.ascensionLevel = (hero.ascensionLevel || 0) + 1;
     this.data.heroAscensions[heroUid] = hero.ascensionLevel;
-    // Show notification
-    require('../ui/UIManager.js').default.showNotification(`Ascensión realizada: ${template.name} ahora tiene Ascensión ${hero.ascensionLevel}`);
-    return true;
+    return template; // Return template so caller can show notification
   }
 
   load() {

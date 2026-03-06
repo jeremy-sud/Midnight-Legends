@@ -66,6 +66,7 @@
                   <div class="particle"></div><div class="particle"></div>
                 </div>
                 <h2 id="enemy-name">Lunar Slime</h2>
+                <div id="enemy-element-indicator" style="display:none"></div>
                 <div class="enemy-status-row" id="enemy-status-row">
                   <!-- Status effects rendered by JS -->
                 </div>
@@ -370,6 +371,17 @@
            </div>
         </section>
 
+        <!-- DAILY QUESTS SCREEN -->
+        <section id="tab-quests" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2 style="color: var(--neon-cyan, var(--neon-blue));">📋 Misiones Diarias</h2>
+              <p>Completa misiones cada día para obtener recompensas. ¡Se renuevan a diario!</p>
+           </div>
+           <div id="quests-container" class="quests-container">
+              <!-- Quests render here -->
+           </div>
+        </section>
+
         <!-- COLLECTIONS SCREEN -->
         <section id="tab-collections" class="tab-content glass-panel">
            <div class="screen-header">
@@ -408,6 +420,16 @@
         </section>
 
         <!-- CODEX (LORE) SCREEN -->
+
+        <!-- CRAFTING SCREEN -->
+        <section id="tab-crafting" class="tab-content glass-panel">
+          <div class="screen-header">
+            <h2>Forge</h2>
+            <p>Combine <strong>3</strong> identical items to upgrade their rarity, or dismantle items for <span style="color:var(--neon-blue)">Essence</span>.</p>
+          </div>
+          <div id="crafting-container" class="crafting-container"></div>
+        </section>
+
         <section id="tab-lore" class="tab-content glass-panel">
            <div class="screen-header">
               <h2>Midnight Codex</h2>
