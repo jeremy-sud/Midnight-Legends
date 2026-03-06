@@ -193,6 +193,16 @@
               <div class="roster-actions-bar">
                 <button class="quick-equip-btn" id="btn-quick-equip" title="Auto-equip best items to all heroes in your party">⚡ Quick Equip</button>
                 <button class="quick-equip-btn" id="btn-level-all" title="Level up all heroes in your party as much as possible">⬆ Level All</button>
+                <button class="quick-equip-btn" id="btn-auto-fuse-heroes" title="Auto-fuse all duplicate heroes (3 same → next rarity)">🔄 Auto Fuse</button>
+              </div>
+              <div class="roster-sort-bar">
+                <span class="sort-label">Sort:</span>
+                <button class="sort-btn active" data-sort="rarity">⭐ Rarity</button>
+                <button class="sort-btn" data-sort="level">📈 Level</button>
+                <button class="sort-btn" data-sort="dps">⚔️ DPS</button>
+                <button class="sort-btn" data-sort="element">🔥 Element</button>
+                <button class="sort-btn" data-sort="recent">🕐 Recent</button>
+                <button class="sort-btn" data-sort="equipped">🛡️ Equipped</button>
               </div>
            </div>
            <div id="roster-grid" class="roster-grid">
@@ -435,6 +445,9 @@
           <div class="screen-header">
             <h2>Forge</h2>
             <p>Combine <strong>3</strong> identical items to upgrade their rarity, or dismantle items for <span style="color:var(--neon-blue)">Essence</span>.</p>
+            <div class="roster-actions-bar">
+              <button class="quick-equip-btn" id="btn-auto-fuse-items" title="Auto-fuse all groups of 3+ identical items into higher rarity">🔄 Auto Fuse All</button>
+            </div>
           </div>
           <div id="crafting-container" class="crafting-container"></div>
         </section>

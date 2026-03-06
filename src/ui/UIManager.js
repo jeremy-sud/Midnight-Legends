@@ -48,6 +48,7 @@ export class UIManager {
     this.buyAmount = 1; // Academy buy mode: 1, 5, 10, or 'max'
     this.killStreak = 0; // Current kill streak counter
     this.lastKillTime = 0; // Timestamp of last kill
+    this.rosterSort = 'rarity'; // Current roster sort mode
 
     // DOM Cache
     this.dom = {
@@ -158,6 +159,8 @@ export class UIManager {
       // Quick equip & level all
       btnQuickEquip: document.getElementById("btn-quick-equip"),
       btnLevelAll: document.getElementById("btn-level-all"),
+      btnAutoFuseHeroes: document.getElementById("btn-auto-fuse-heroes"),
+      btnAutoFuseItems: document.getElementById("btn-auto-fuse-items"),
 
       // Sell
       btnSellCommons: document.getElementById("btn-sell-commons"),
@@ -351,6 +354,24 @@ export class UIManager {
     // Bulk level-up
     if (this.dom.btnLevelAll)
       this.dom.btnLevelAll.onclick = () => this.levelAllPartyHeroes();
+
+    // Auto-fuse heroes
+    if (this.dom.btnAutoFuseHeroes)
+      this.dom.btnAutoFuseHeroes.onclick = () => this.autoFuseHeroes();
+
+    // Auto-fuse items
+    if (this.dom.btnAutoFuseItems)
+      this.dom.btnAutoFuseItems.onclick = () => this.autoFuseItems();
+
+    // Roster sort buttons
+    document.querySelectorAll('.sort-btn[data-sort]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.rosterSort = btn.dataset.sort;
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.renderRoster();
+      });
+    });
 
     // Item sell buttons
     if (this.dom.btnSellCommons)
@@ -1131,7 +1152,38 @@ export class UIManager {
 
   renderRoster() {
     this.dom.rosterGrid.innerHTML = "";
-    GameState.data.roster.forEach((hData) => {
+
+    // Sort roster based on current sort mode
+    const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 };
+    const elemOrder = { fire: 0, ice: 1, shadow: 2, light: 3, void: 4 };
+    const sorted = [...GameState.data.roster].sort((a, b) => {
+      const tA = HeroTemplate.find(t => t.id === a.id);
+      const tB = HeroTemplate.find(t => t.id === b.id);
+      if (!tA || !tB) return 0;
+      switch (this.rosterSort) {
+        case 'rarity': {
+          const d = (rarityOrder[tA.rarity.id] || 99) - (rarityOrder[tB.rarity.id] || 99);
+          return d !== 0 ? d : b.level - a.level;
+        }
+        case 'level': return b.level - a.level;
+        case 'dps': return getHeroStats(b).dps - getHeroStats(a).dps;
+        case 'element': {
+          const eA = getHeroElement(a.id) || 'zzz';
+          const eB = getHeroElement(b.id) || 'zzz';
+          const d = (elemOrder[eA] ?? 99) - (elemOrder[eB] ?? 99);
+          return d !== 0 ? d : (rarityOrder[tA.rarity.id] || 99) - (rarityOrder[tB.rarity.id] || 99);
+        }
+        case 'recent': return b.uid.localeCompare(a.uid); // UIDs contain timestamps
+        case 'equipped': {
+          const aEq = GameState.data.activeParty.includes(a.uid) ? 0 : 1;
+          const bEq = GameState.data.activeParty.includes(b.uid) ? 0 : 1;
+          return aEq !== bEq ? aEq - bEq : (rarityOrder[tA.rarity.id] || 99) - (rarityOrder[tB.rarity.id] || 99);
+        }
+        default: return 0;
+      }
+    });
+
+    sorted.forEach((hData) => {
       const template = HeroTemplate.find((t) => t.id === hData.id);
       if (!template) return;
 
@@ -3540,6 +3592,100 @@ export class UIManager {
       this.updateStats();
     } else {
       this.showNotification('Not enough coins to level any hero.');
+    }
+  }
+
+  // ── Auto-Fuse Items ──────────────────────────────────────────────
+  autoFuseItems() {
+    const state = GameState.data;
+    let totalFused = 0;
+    let keepGoing = true;
+    while (keepGoing) {
+      keepGoing = false;
+      const groups = getCraftableGroups(state.inventory);
+      for (const group of groups) {
+        if (group.items.length >= CRAFT_COST) {
+          const newItem = fuseItems(state.inventory, group.templateId, group.rarity.id);
+          if (newItem) {
+            state.inventory.push(newItem);
+            totalFused++;
+            keepGoing = true;
+            break; // restart scan after mutation
+          }
+        }
+      }
+    }
+    if (totalFused > 0) {
+      this.showNotification(`🔄 Auto-fused ${totalFused} item${totalFused > 1 ? 's' : ''} into higher rarity!`);
+      this.renderCrafting();
+      this.renderInventory();
+    } else {
+      this.showNotification('No items available to fuse (need 3 identical).');
+    }
+  }
+
+  // ── Auto-Fuse Heroes ─────────────────────────────────────────────
+  autoFuseHeroes() {
+    const state = GameState.data;
+    let totalFused = 0;
+    const rarityChain = ['common', 'rare', 'epic']; // can't fuse legendary
+
+    let keepGoing = true;
+    while (keepGoing) {
+      keepGoing = false;
+      // Group heroes by template id + rarity
+      const groups = {};
+      for (const h of state.roster) {
+        const t = HeroTemplate.find(tp => tp.id === h.id);
+        if (!t) continue;
+        // Skip heroes in active party
+        if (state.activeParty.includes(h.uid)) continue;
+        const key = `${h.id}__${t.rarity.id}`;
+        if (!groups[key]) groups[key] = { id: h.id, rarity: t.rarity, heroes: [] };
+        groups[key].heroes.push(h);
+      }
+      for (const g of Object.values(groups)) {
+        if (g.heroes.length < 3) continue;
+        if (!rarityChain.includes(g.rarity.id)) continue;
+        const nextRarity = g.rarity.id === 'common' ? Rarities.RARE
+                         : g.rarity.id === 'rare' ? Rarities.EPIC
+                         : Rarities.LEGENDARY;
+        // Remove 3 heroes (unequip their items first)
+        const toRemove = g.heroes.slice(0, 3);
+        for (const h of toRemove) {
+          // Return equipped items to inventory
+          if (h.equip) {
+            for (const slot of ['weapon', 'armor', 'acc']) {
+              if (h.equip[slot]) {
+                state.inventory.push(h.equip[slot]);
+                h.equip[slot] = null;
+              }
+            }
+          }
+          const idx = state.roster.indexOf(h);
+          if (idx !== -1) state.roster.splice(idx, 1);
+        }
+        // Find the upgraded hero template (same id but we store with higher level)
+        const uid = 'h_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        state.roster.push({
+          id: g.id,
+          uid,
+          level: 1,
+          ascensionLevel: 0,
+          equip: { weapon: null, armor: null, acc: null },
+          _fusedRarity: nextRarity.id, // mark as upgraded
+        });
+        totalFused++;
+        keepGoing = true;
+        break; // restart scan
+      }
+    }
+    if (totalFused > 0) {
+      this.showNotification(`🔄 Auto-fused ${totalFused} hero group${totalFused > 1 ? 's' : ''}!`);
+      this.renderRoster();
+      this.renderActiveParty();
+    } else {
+      this.showNotification('No duplicate heroes to fuse (need 3 identical, not in party).');
     }
   }
 

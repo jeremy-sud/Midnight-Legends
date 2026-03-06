@@ -286,6 +286,97 @@ export const HeroTemplate = [
     svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="pk1" cx="32" cy="28" r="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.18"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="28" r="24" fill="url(#pk1)"/><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="15" r="1.2" fill="currentColor"/><circle cx="34" cy="15" r="1.2" fill="currentColor"/><path d="M24 24h16l2 20H22Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><line x1="28" y1="44" x2="26" y2="58" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="44" x2="38" y2="58" stroke="currentColor" stroke-width="2.5"/><path d="M20 30 L10 22 Q8 32 14 36" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.1"/><path d="M44 30 L54 22 Q56 32 50 36" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.1"/><path d="M28 8 Q32 2 36 8" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.15"/></svg>',
     desc: "Rises from ashes with each fall, growing stronger every time.",
   },
+
+  // ── NEW HEROES (Phase 3) ──────────────────────────────────────────
+
+  // --- COMMON ---
+  {
+    id: "h_mushroom_guard",
+    name: "Mushroom Guard",
+    rarity: Rarities.COMMON,
+    baseDps: 4.5,
+    baseCost: 300,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 28 Q32 4 44 28Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.12"/><circle cx="26" cy="18" r="2" fill="currentColor" fill-opacity="0.3"/><circle cx="38" cy="20" r="1.5" fill="currentColor" fill-opacity="0.2"/><circle cx="32" cy="12" r="1.8" fill="currentColor" fill-opacity="0.25"/><rect x="28" y="28" width="8" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><circle cx="31" cy="32" r="1" fill="currentColor"/><circle cx="35" cy="32" r="1" fill="currentColor"/><line x1="30" y1="42" x2="28" y2="54" stroke="currentColor" stroke-width="2"/><line x1="34" y1="42" x2="36" y2="54" stroke="currentColor" stroke-width="2"/><path d="M24 34 L18 38" stroke="currentColor" stroke-width="1.5"/><path d="M40 34 L46 30" stroke="currentColor" stroke-width="1.5"/><path d="M44 28 L48 26" stroke="currentColor" stroke-width="1" opacity="0.4"/></svg>',
+    desc: "A sentient fungal warrior from the deep garden groves.",
+  },
+  {
+    id: "h_lantern_bearer",
+    name: "Lantern Bearer",
+    rarity: Rarities.COMMON,
+    baseDps: 3.8,
+    baseCost: 260,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><circle cx="30" cy="15" r="1" fill="currentColor"/><circle cx="34" cy="15" r="1" fill="currentColor"/><line x1="32" y1="22" x2="32" y2="42" stroke="currentColor" stroke-width="2.5"/><line x1="28" y1="42" x2="24" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="42" x2="40" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="28" x2="20" y2="34" stroke="currentColor" stroke-width="2"/><line x1="32" y1="30" x2="46" y2="26" stroke="currentColor" stroke-width="2"/><rect x="42" y="20" width="8" height="12" rx="2" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/><circle cx="46" cy="26" r="2" fill="currentColor" fill-opacity="0.4"/><path d="M44 20 L46 16 L48 20" stroke="currentColor" stroke-width="1"/></svg>',
+    desc: "Guides lost souls through the darkest paths with an enchanted lantern.",
+  },
+
+  // --- RARE ---
+  {
+    id: "h_rune_smith",
+    name: "Rune Smith",
+    rarity: Rarities.RARE,
+    baseDps: 24,
+    baseCost: 2000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="14" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><circle cx="30" cy="13" r="1" fill="currentColor"/><circle cx="34" cy="13" r="1" fill="currentColor"/><path d="M26 22h12l1 20H25Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.06"/><line x1="29" y1="42" x2="27" y2="56" stroke="currentColor" stroke-width="2"/><line x1="35" y1="42" x2="37" y2="56" stroke="currentColor" stroke-width="2"/><path d="M24 28 L14 26" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="22" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.08"/><path d="M9 24 L9 28 M11 24 L13 28 M13 24 L11 28" stroke="currentColor" stroke-width="0.8" opacity="0.6"/><path d="M40 28 L50 26" stroke="currentColor" stroke-width="1.5"/></svg>',
+    desc: "Inscribes ancient runes onto weapons to enhance their power.",
+  },
+  {
+    id: "h_tide_caller",
+    name: "Tide Caller",
+    rarity: Rarities.RARE,
+    baseDps: 20,
+    baseCost: 1700,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="14" r="5.5" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="13" r="1" fill="currentColor"/><circle cx="34" cy="13" r="1" fill="currentColor"/><path d="M27 20h10l1 22H26Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.06"/><line x1="29" y1="42" x2="27" y2="56" stroke="currentColor" stroke-width="2"/><line x1="35" y1="42" x2="37" y2="56" stroke="currentColor" stroke-width="2"/><path d="M8 44 Q14 38 20 44 Q26 50 32 44 Q38 38 44 44 Q50 50 56 44" stroke="currentColor" stroke-width="1.5" opacity="0.4"/><path d="M8 48 Q14 42 20 48 Q26 54 32 48 Q38 42 44 48 Q50 54 56 48" stroke="currentColor" stroke-width="1" opacity="0.25"/></svg>',
+    desc: "Commands the tides of cosmic energy to drown enemies.",
+  },
+  {
+    id: "h_plague_doctor",
+    name: "Plague Doctor",
+    rarity: Rarities.RARE,
+    baseDps: 23,
+    baseCost: 1900,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 8 Q32 4 36 8 L36 16 Q34 20 30 20 L28 16Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><path d="M36 12 L44 10" stroke="currentColor" stroke-width="1.5"/><circle cx="31" cy="12" r="1.2" fill="currentColor"/><path d="M26 20h12l1 22H25Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.06"/><line x1="29" y1="42" x2="27" y2="56" stroke="currentColor" stroke-width="2"/><line x1="35" y1="42" x2="37" y2="56" stroke="currentColor" stroke-width="2"/><path d="M24 28 L16 26" stroke="currentColor" stroke-width="1.5"/><path d="M40 28 L48 26" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="34" r="2" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="1.5 1.5"/><circle cx="50" cy="32" r="2.5" stroke="currentColor" stroke-width="0.8" opacity="0.3" stroke-dasharray="1.5 1.5"/></svg>',
+    desc: "Spreads toxic miasma that weakens all enemies in range.",
+  },
+
+  // --- EPIC ---
+  {
+    id: "h_void_weaver",
+    name: "Void Weaver",
+    rarity: Rarities.EPIC,
+    baseDps: 210,
+    baseCost: 26000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="vw1" cx="32" cy="28" r="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.15"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="28" r="24" fill="url(#vw1)"/><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="15" r="1.2" fill="currentColor"/><circle cx="34" cy="15" r="1.2" fill="currentColor"/><path d="M24 24h16l2 20H22Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><line x1="28" y1="44" x2="26" y2="58" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="44" x2="38" y2="58" stroke="currentColor" stroke-width="2.5"/><circle cx="32" cy="32" r="12" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.3"/><circle cx="32" cy="32" r="6" stroke="currentColor" stroke-width="0.6" stroke-dasharray="2 2" opacity="0.2"/><path d="M22 30 L12 26" stroke="currentColor" stroke-width="1.5"/><path d="M42 30 L52 26" stroke="currentColor" stroke-width="1.5"/></svg>',
+    desc: "Weaves threads of void energy into devastating patterns.",
+  },
+  {
+    id: "h_crystal_sentinel",
+    name: "Crystal Sentinel",
+    rarity: Rarities.EPIC,
+    baseDps: 240,
+    baseCost: 32000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="cs1" cx="32" cy="28" r="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.18"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="28" r="24" fill="url(#cs1)"/><path d="M26 6 L32 2 L38 6 L38 16 L32 20 L26 16Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.12"/><circle cx="31" cy="11" r="1" fill="currentColor"/><circle cx="34" cy="11" r="1" fill="currentColor"/><path d="M22 22h20l3 22H19Z" stroke="currentColor" stroke-width="2.5" fill="currentColor" fill-opacity="0.08"/><line x1="28" y1="44" x2="26" y2="58" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="44" x2="38" y2="58" stroke="currentColor" stroke-width="2.5"/><path d="M18 30 L8 26" stroke="currentColor" stroke-width="2"/><path d="M46 30 L56 26" stroke="currentColor" stroke-width="2"/><path d="M6 24 L10 20 L12 26" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/><path d="M58 24 L54 20 L52 26" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/></svg>',
+    desc: "A guardian made of living crystal, nearly indestructible.",
+  },
+
+  // --- LEGENDARY ---
+  {
+    id: "h_astral_dragon",
+    name: "Astral Dragon",
+    rarity: Rarities.LEGENDARY,
+    baseDps: 2200,
+    baseCost: 900000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ad1" cx="32" cy="24" r="30" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.25"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="24" r="28" fill="url(#ad1)"/><path d="M18 24 Q14 14 22 10 L28 18 L32 8 L36 18 L42 10 Q50 14 46 24Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.15"/><circle cx="28" cy="20" r="2.5" fill="currentColor" fill-opacity="0.5"/><circle cx="36" cy="20" r="2.5" fill="currentColor" fill-opacity="0.5"/><path d="M30 26 L32 30 L34 26" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.2"/><ellipse cx="32" cy="42" rx="16" ry="10" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><path d="M16 36 L4 28 Q2 38 10 42" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><path d="M48 36 L60 28 Q62 38 54 42" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><path d="M26 52 L24 60" stroke="currentColor" stroke-width="2.5"/><path d="M38 52 L40 60" stroke="currentColor" stroke-width="2.5"/><path d="M32 32 L32 38" stroke="currentColor" stroke-width="1" opacity="0.3"/></svg>',
+    desc: "An ancient dragon from the astral plane. Its breath dissolves reality.",
+  },
+  {
+    id: "h_garden_oracle",
+    name: "Garden Oracle",
+    rarity: Rarities.LEGENDARY,
+    baseDps: 1600,
+    baseCost: 600000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="go1" cx="32" cy="24" r="30" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.22"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="24" r="28" fill="url(#go1)"/><circle cx="32" cy="18" r="7" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.12"/><circle cx="30" cy="17" r="1.2" fill="currentColor"/><circle cx="34" cy="17" r="1.2" fill="currentColor"/><path d="M32 8 L32 4" stroke="currentColor" stroke-width="1.5"/><circle cx="32" cy="3" r="2" fill="currentColor" fill-opacity="0.4"/><path d="M22 26h20l3 22H19Z" stroke="currentColor" stroke-width="2.5" fill="currentColor" fill-opacity="0.08"/><line x1="28" y1="48" x2="26" y2="60" stroke="currentColor" stroke-width="3"/><line x1="36" y1="48" x2="38" y2="60" stroke="currentColor" stroke-width="3"/><path d="M20 34 L8 28" stroke="currentColor" stroke-width="2"/><path d="M44 34 L56 28" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="28" r="5" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.08"/><circle cx="56" cy="28" r="5" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.08"/><path d="M6 26 L10 30 M56 26 L52 30" stroke="currentColor" stroke-width="0.8" opacity="0.5"/></svg>',
+    desc: "The first being to awaken in the Garden. Sees all timelines at once.",
+  },
 ];
 
 export function getHeroLevelCost(heroId, level) {
@@ -302,13 +393,19 @@ const HERO_ELEMENTS = {
   h_paladin: 'light',     h_assassin: 'shadow',
   h_necromancer: 'void',  h_dragon_knight: 'fire',
   h_moon_king: 'light',   h_void_empress: 'void',
-  // New heroes
+  // New heroes (Phase 2)
   h_torchbearer: 'fire',  h_frost_acolyte: 'ice',
   h_void_scout: 'void',   h_wind_dancer: 'ice',
   h_blood_mage: 'shadow', h_shadow_priest: 'shadow',
   h_storm_warden: 'fire', h_frost_queen: 'ice',
   h_phoenix_knight: 'fire', h_celestial_arbiter: 'light',
   h_eclipse_saint: 'shadow',
+  // New heroes (Phase 3)
+  h_mushroom_guard: 'light', h_lantern_bearer: 'fire',
+  h_rune_smith: 'fire',     h_tide_caller: 'ice',
+  h_plague_doctor: 'void',  h_void_weaver: 'void',
+  h_crystal_sentinel: 'light', h_astral_dragon: 'fire',
+  h_garden_oracle: 'light',
 };
 
 export function getHeroElement(heroId) {

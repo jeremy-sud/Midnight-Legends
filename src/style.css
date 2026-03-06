@@ -1286,6 +1286,22 @@ body.compact .enemy-blob.boss-true { width: 220px; height: 220px; }
   display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;
 }
 
+/* ==================== ROSTER SORT BAR ==================== */
+.roster-sort-bar {
+  display: flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; flex-wrap: wrap;
+}
+.roster-sort-bar .sort-label {
+  font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-right: 0.2rem;
+}
+.sort-btn {
+  padding: 0.25rem 0.6rem; font-size: 0.75rem; border-radius: 6px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+  font-family: inherit;
+}
+.sort-btn:hover { background: rgba(0,229,255,0.1); border-color: rgba(0,229,255,0.3); color: var(--text-main); }
+.sort-btn.active { background: rgba(0,229,255,0.15); border-color: var(--neon-cyan, var(--neon-blue)); color: var(--neon-cyan, var(--neon-blue)); font-weight: 700; }
+
 /* ==================== HERO SKILLS ==================== */
 .hero-skills {
   display: flex; flex-direction: column; gap: 0.3rem; margin: 0.3rem 0;

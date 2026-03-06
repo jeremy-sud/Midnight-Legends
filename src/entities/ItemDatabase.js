@@ -263,6 +263,104 @@ export const ItemTemplate = [
     svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/><circle cx="12" cy="12" r="3" stroke-dasharray="2 2"/></svg>',
     effect: { type: 'dmg_amp', value: 0.12, desc: '+12% All DMG amp' },
   },
+
+  // ── NEW ITEMS (Phase 3) ───────────────────────────────────────────
+
+  // --- WEAPONS ---
+  {
+    id: "i_soul_reaper",
+    name: "Soul Reaper",
+    category: ItemCategories.WEAPON,
+    baseValue: 130,
+    desc: "Harvests souls to fuel devastating strikes.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="M4 10c0-2 4-4 8-4s8 2 8 4"/><path d="M4 10c0 4 3 8 8 10 5-2 8-6 8-10"/><path d="M12 22v-4"/></svg>',
+    effect: { type: 'lifesteal', value: 0.04, desc: '+4% Lifesteal' },
+  },
+  {
+    id: "i_thunder_spear",
+    name: "Thunder Spear",
+    category: ItemCategories.WEAPON,
+    baseValue: 140,
+    desc: "Crackles with raw lightning, paralyzing enemies.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+    effect: { type: 'dot', value: 0.08, desc: '+8% Lightning DoT' },
+  },
+  {
+    id: "i_abyssal_scythe",
+    name: "Abyssal Scythe",
+    category: ItemCategories.WEAPON,
+    baseValue: 160,
+    desc: "A curved blade that cuts through the veil between worlds.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L18 4"/><path d="M18 4c2 2 3 6-1 10"/><path d="M14 8c-4 4-8 3-10 1"/></svg>',
+    effect: { type: 'execute', value: 0.25, desc: '+25% DMG below 30% HP' },
+  },
+  {
+    id: "i_celestial_bow",
+    name: "Celestial Bow",
+    category: ItemCategories.WEAPON,
+    baseValue: 120,
+    desc: "Shoots arrows made of condensed starlight.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4-8 8-4-4 8-8z"/><path d="M10 10L3 17v4h4l7-7"/><path d="M14 6l4 4"/></svg>',
+    effect: { type: 'speed', value: 0.08, desc: '+8% Attack speed' },
+  },
+
+  // --- ARMOR ---
+  {
+    id: "i_dragon_scale",
+    name: "Dragon Scale Armor",
+    category: ItemCategories.ARMOR,
+    baseValue: 1.5,
+    desc: "Crafted from the scales of an ancient void dragon.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.5-3.8 10-8 12-4.2-2-8-6.5-8-12V6l8-4z"/><path d="M8 8l4 2 4-2"/><path d="M8 12l4 2 4-2"/><path d="M8 16l4 2 4-2"/></svg>',
+    effect: { type: 'reflect', value: 0.08, desc: '+8% Damage reflect' },
+  },
+  {
+    id: "i_shadow_mantle",
+    name: "Shadow Mantle",
+    category: ItemCategories.ARMOR,
+    baseValue: 1.0,
+    desc: "Woven from shadows themselves. Nearly invisible.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 4 6 4 12c0 4 2 7 4 9l4 1 4-1c2-2 4-5 4-9 0-6-4-10-8-10z"/><path d="M8 8c2 1 6 1 8 0" opacity="0.5"/></svg>',
+    effect: { type: 'dodge', value: 0.12, desc: '+12% Dodge chance' },
+  },
+  {
+    id: "i_frost_aegis",
+    name: "Frost Aegis",
+    category: ItemCategories.ARMOR,
+    baseValue: 0.9,
+    desc: "An icy shield that freezes attackers on contact.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.5-3.8 10-8 12-4.2-2-8-6.5-8-12V6l8-4z"/><path d="M12 6v12M8 9l4 3-4 3M16 9l-4 3 4 3"/></svg>',
+    effect: { type: 'slow', value: 0.15, desc: '+15% enemy slow' },
+  },
+
+  // --- ACCESSORIES ---
+  {
+    id: "i_moonstone_ring",
+    name: "Moonstone Ring",
+    category: ItemCategories.ACCESSORY,
+    baseValue: 40,
+    desc: "Pulses with the rhythm of the moon, amplifying power at night.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="8" r="1.5" fill="currentColor"/></svg>',
+    effect: { type: 'dps_aura', value: 0.08, desc: '+8% Party DPS aura' },
+  },
+  {
+    id: "i_thieves_charm",
+    name: "Thief\'s Charm",
+    category: ItemCategories.ACCESSORY,
+    baseValue: 30,
+    desc: "Increases coin drops from defeated enemies.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.5 1-2.5 3-2.5s3 1 3 2.5-1 2-3 2.5-3 1-3 2.5 1 2.5 3 2.5 3-1 3-2.5"/></svg>',
+    effect: { type: 'loot_bonus', value: 0.08, desc: '+8% Loot chance' },
+  },
+  {
+    id: "i_eclipse_pendant",
+    name: "Eclipse Pendant",
+    category: ItemCategories.ACCESSORY,
+    baseValue: 55,
+    desc: "Contains the power of a total solar eclipse. Devastating crits.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5" fill="currentColor" opacity="0.15"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>',
+    effect: { type: 'dmg_amp', value: 0.15, desc: '+15% All DMG amp' },
+  },
 ];
 
 // Factory to generate an instanced item

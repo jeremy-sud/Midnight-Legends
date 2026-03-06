@@ -722,7 +722,7 @@ export class Engine {
     GameState.addEssence(gain);
     state.prestigeCount = (state.prestigeCount || 0) + 1;
 
-    // Preserve these across prestige
+    // Preserve these across prestige (heroes, items, and permanent progress persist)
     const preserved = {
       essence: state.essence,
       gems: state.gems,
@@ -739,18 +739,21 @@ export class Engine {
       spinWheel: state.spinWheel || { lastFreeSpinDate: null, history: [] },
       pets: state.pets || { owned: [], activePetId: null },
       miniGames: state.miniGames || {},
+      // Heroes and items persist across prestige
+      roster: state.roster || [],
+      inventory: state.inventory || [],
+      activeParty: state.activeParty || [],
+      heroAscensions: state.heroAscensions || {},
+      storage: state.storage || [],
     };
 
     // Get start stage bonus from prestige
     const presBon = getPrestigeBonuses(preserved.prestigeUpgrades);
     const startStage = 1 + (presBon.startStageBonus || 0);
 
-    // Reset run-specific state
+    // Reset run-specific state (currencies and stage progress only)
     state.coins = 0;
     state.stardust = 0;
-    state.inventory = [];
-    state.roster = [];
-    state.activeParty = [];
     state.currentStage = startStage;
     state.currentEnemyHp = 100;
     state.currentEnemyMaxHp = 100;
@@ -774,6 +777,11 @@ export class Engine {
     state.spinWheel = preserved.spinWheel;
     state.pets = preserved.pets;
     state.miniGames = preserved.miniGames;
+    state.roster = preserved.roster;
+    state.inventory = preserved.inventory;
+    state.activeParty = preserved.activeParty;
+    state.heroAscensions = preserved.heroAscensions;
+    state.storage = preserved.storage;
 
     GameState.save();
     this.ui.showNotification(`🌀 Void Rebirth! +${gain} Essence. A new journey begins...`);
