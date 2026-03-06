@@ -1,4 +1,5 @@
 // Collection Database - Complete sets for permanent bonuses
+import { getHeroElement } from './HeroDatabase.js';
 
 export const CollectionDatabase = [
   {
@@ -61,6 +62,50 @@ export const CollectionDatabase = [
     reward: { type: 'stardustMultiplier', value: 1.10, text: '+10% Stardust' },
     icon: '🎒',
   },
+  // ── EXPANDED COLLECTIONS ──
+  {
+    id: 'col_fire_warriors',
+    name: 'Fire Warriors',
+    desc: 'Recruit 3 Fire element heroes.',
+    color: '#ff6d00',
+    type: 'element',
+    elementName: 'Fire',
+    requiredCount: 3,
+    reward: { type: 'dpsMultiplier', value: 1.15, text: '+15% DPS' },
+    icon: '🔥',
+  },
+  {
+    id: 'col_shadow_guild',
+    name: 'Shadow Guild',
+    desc: 'Recruit 3 Shadow element heroes.',
+    color: '#9575cd',
+    type: 'element',
+    elementName: 'Shadow',
+    requiredCount: 3,
+    reward: { type: 'coinMultiplier', value: 1.20, text: '+20% Coins' },
+    icon: '🌑',
+  },
+  {
+    id: 'col_void_council',
+    name: 'Void Council',
+    desc: 'Recruit 3 Void element heroes.',
+    color: '#ce93d8',
+    type: 'element',
+    elementName: 'Void',
+    requiredCount: 3,
+    reward: { type: 'stardustMultiplier', value: 1.25, text: '+25% Stardust' },
+    icon: '🌀',
+  },
+  {
+    id: 'col_prestige_master',
+    name: 'Prestige Master',
+    desc: 'Prestige 10 times.',
+    color: '#b388ff',
+    type: 'prestige',
+    requiredCount: 10,
+    reward: { type: 'dpsMultiplier', value: 1.30, text: '+30% DPS' },
+    icon: '♾️',
+  },
 ];
 
 export function getCollectionStatus(collection, gameData) {
@@ -90,6 +135,17 @@ export function getCollectionStatus(collection, gameData) {
     });
     const owned = collection.requiredCategories.filter(c => cats.has(c));
     return { owned: owned.length, total: collection.requiredCategories.length, completed: owned.length >= collection.requiredCategories.length, ownedIds: owned };
+  } else if (collection.type === 'element') {
+    // Count heroes of the required element
+    let count = 0;
+    (gameData.roster || []).forEach(hero => {
+      const el = getHeroElement(hero.id);
+      if (el === collection.elementName) count++;
+    });
+    return { owned: count, total: collection.requiredCount, completed: count >= collection.requiredCount, ownedIds: [] };
+  } else if (collection.type === 'prestige') {
+    const count = gameData.prestigeCount || 0;
+    return { owned: count, total: collection.requiredCount, completed: count >= collection.requiredCount, ownedIds: [] };
   }
   return { owned: 0, total: 1, completed: false, ownedIds: [] };
 }

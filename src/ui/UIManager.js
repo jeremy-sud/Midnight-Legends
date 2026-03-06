@@ -42,6 +42,10 @@ import { BOSS_RUSH_CONFIG, BOSS_RUSH_NAMES, getBossRushHp, getBossRushReward, BO
 import { RuneTemplate, RuneTypes, RuneTiers, getRuneInfo, getRuneBonus, getRuneSlots } from "../entities/RuneDatabase.js";
 import { RelicDatabase, isRelicUnlocked, getRelicBonusValue } from "../entities/RelicDatabase.js";
 import { DUNGEON_REWARDS, getDungeonFloorHp, getDungeonFloorTimer, getDungeonModifier, getDungeonWeekKey, isDungeonReady, getDungeonReward, getWeekSeed, getDungeonFloorName, DUNGEON_CONFIG } from "../entities/DungeonDatabase.js";
+import { getHeroMasteryTree, getHeroMasteryBonuses, getMasteryPointsAvailable, getMasteryNodeCost, canUnlockMasteryNode, getTotalMasteryPointsSpent } from "../entities/PrestigeMasteryDatabase.js";
+import { TalentDatabase, TalentBranches, getTalentCost, canUnlockTalent, getTalentBonuses } from "../entities/TalentDatabase.js";
+import { generateDailyChallenges, ChallengeRewards, getUnclaimedChallengeRewards, getChallengeReward } from "../entities/ChallengeDatabase.js";
+import { BannerDatabase, getActiveBanner, isHeroFeatured, getPityProgress } from "../entities/BannerDatabase.js";
 
 export class UIManager {
   constructor() {
@@ -662,6 +666,7 @@ export class UIManager {
       { id: 'tab-shop', label: 'Shop' },
       { id: 'tab-prestige', label: 'Prestige' },
       { id: 'tab-spin', label: 'Wheel' },
+      { id: 'tab-talents', label: 'Talents' },
     ],
     world: [
       { id: 'tab-events', label: 'Events' },
@@ -674,11 +679,14 @@ export class UIManager {
       { id: 'tab-bossrush', label: 'Boss Rush' },
       { id: 'tab-dungeon', label: 'Dungeon' },
       { id: 'tab-minigames', label: 'Arcade' },
+      { id: 'tab-challenges', label: 'Challenges' },
+      { id: 'tab-banners', label: 'Banners' },
     ],
     more: [
       { id: 'tab-profile', label: 'Profile' },
       { id: 'tab-stats', label: 'Stats' },
       { id: 'tab-achievements', label: 'Achievements' },
+      { id: 'tab-mastery', label: 'Mastery' },
       { id: 'tab-settings', label: 'Settings' },
     ],
   };
@@ -758,6 +766,10 @@ export class UIManager {
       case 'tab-stats': this.renderStats(); break;
       case 'tab-achievements': this.renderAchievements(); break;
       case 'tab-settings': this.initSettings(); break;
+      case 'tab-talents': this.renderTalents(); break;
+      case 'tab-mastery': this.renderMastery(); break;
+      case 'tab-challenges': this.renderChallenges(); break;
+      case 'tab-banners': this.renderBanners(); break;
     }
   }
 
@@ -4638,6 +4650,367 @@ export class UIManager {
 
     this.dom.minigamePlayArea.style.display = 'block';
     runRound();
+  }
+
+  // ============================================
+  // TALENTS TAB
+  // ============================================
+  renderTalents() {
+    const container = this.dom.mainContent;
+    const state = GameState.data;
+    const talentState = state.talents || {};
+    const bonuses = getTalentBonuses(talentState);
+    const profileLevel = (state.profile || {}).level || 1;
+    const unlocked = profileLevel >= 10;
+
+    let html = '<div class="tab-content-inner"><h2 class="section-title">🌟 Global Talents</h2>';
+
+    if (!unlocked) {
+      html += `<div class="card" style="text-align:center;padding:2rem;opacity:0.7">
+        <p style="font-size:1.2rem">🔒 Talents unlock at Profile Level 10</p>
+        <p>Current Level: ${profileLevel}/10</p>
+      </div></div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `<p class="section-desc">Spend Stardust on permanent global bonuses. Current Stardust: <span style="color:var(--neon-orange)">✨ ${formatNumber(state.stardust)}</span></p>`;
+
+    const branches = [
+      { key: TalentBranches.OFFENSE, name: '⚔️ Offense', color: '#ff1744' },
+      { key: TalentBranches.ECONOMY, name: '💰 Economy', color: '#ffd54f' },
+      { key: TalentBranches.UTILITY, name: '🛠️ Utility', color: '#81c784' },
+    ];
+
+    branches.forEach(branch => {
+      const bTalents = TalentDatabase.filter(t => t.branch === branch.key);
+      html += `<div class="card" style="border-color:${branch.color}40">
+        <h3 style="color:${branch.color}">${branch.name}</h3>
+        <div class="talent-grid" style="display:grid;gap:0.5rem">`;
+
+      bTalents.forEach(talent => {
+        const lvl = talentState[talent.id] || 0;
+        const maxed = lvl >= talent.maxLevel;
+        const cost = maxed ? 0 : getTalentCost(talent.id, lvl);
+        const canAfford = state.stardust >= cost;
+        const canBuy = !maxed && canAfford && canUnlockTalent(talent.id, talentState);
+
+        html += `<div class="upgrade-row ${maxed ? 'maxed' : ''}" style="display:flex;align-items:center;gap:0.75rem;padding:0.5rem;border-radius:8px;background:${maxed ? '#1a1a2e' : 'rgba(255,255,255,0.03)'}">
+          <span style="font-size:1.5rem">${talent.icon}</span>
+          <div style="flex:1">
+            <div style="font-weight:600;color:${talent.color}">${talent.name} <span style="opacity:0.6">[${lvl}/${talent.maxLevel}]</span></div>
+            <div style="font-size:0.75rem;opacity:0.7">${talent.desc}</div>
+          </div>
+          ${maxed
+            ? '<span style="color:var(--neon-green);font-size:0.8rem">MAXED</span>'
+            : `<button class="btn btn-sm ${canBuy ? 'btn-primary' : 'btn-disabled'}" data-talent-id="${talent.id}" ${canBuy ? '' : 'disabled'}>
+                ✨ ${formatNumber(cost)}
+              </button>`
+          }
+        </div>`;
+      });
+
+      html += '</div></div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Button handlers
+    container.querySelectorAll('[data-talent-id]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tid = btn.dataset.talentId;
+        const lvl = (state.talents || {})[tid] || 0;
+        const cost = getTalentCost(tid, lvl);
+        if (GameState.spendStardust(cost)) {
+          if (!state.talents) state.talents = {};
+          state.talents[tid] = lvl + 1;
+          AudioManager.playClick();
+          GameState.save();
+          this.renderTalents();
+          this.updateStats();
+        }
+      });
+    });
+  }
+
+  // ============================================
+  // MASTERY TAB
+  // ============================================
+  renderMastery() {
+    const container = this.dom.mainContent;
+    const state = GameState.data;
+    const prestigeCount = state.prestigeCount || 0;
+    const masteryState = state.mastery || {};
+    const totalSpent = getTotalMasteryPointsSpent(masteryState);
+    const totalEarned = Math.max(0, prestigeCount - 2);
+    const available = totalEarned - totalSpent;
+    const unlocked = prestigeCount >= 3;
+
+    let html = '<div class="tab-content-inner"><h2 class="section-title">🌀 Prestige Mastery</h2>';
+
+    if (!unlocked) {
+      html += `<div class="card" style="text-align:center;padding:2rem;opacity:0.7">
+        <p style="font-size:1.2rem">🔒 Mastery unlocks at Prestige 3</p>
+        <p>Current Prestige Count: ${prestigeCount}/3</p>
+      </div></div>`;
+      container.innerHTML = html;
+      return;
+    }
+
+    html += `<div class="card" style="text-align:center">
+      <p>Mastery Points: <span style="color:var(--neon-purple);font-weight:bold">${available}</span> available / ${totalEarned} earned</p>
+      <p style="font-size:0.75rem;opacity:0.6">Earn 1 point per prestige (starting at prestige 3)</p>
+    </div>`;
+
+    // Show heroes with mastery trees
+    const heroesInRoster = state.roster.map(h => h.id).filter((v, i, a) => a.indexOf(v) === i);
+
+    heroesInRoster.forEach(heroId => {
+      const template = HeroTemplate.find(t => t.id === heroId);
+      if (!template) return;
+      const tree = getHeroMasteryTree(heroId);
+      const branches = ['power', 'fortune', 'guardian'];
+      const branchNames = { power: '⚔️ Power', fortune: '💰 Fortune', guardian: '🛡️ Guardian' };
+      const branchColors = { power: '#ff1744', fortune: '#ffd54f', guardian: '#81c784' };
+
+      html += `<div class="card" style="border-color:${template.rarity.color}40">
+        <h3 style="color:${template.rarity.color}">${template.name}</h3>`;
+
+      branches.forEach(branch => {
+        const nodes = tree.filter(n => n.branch === branch);
+        html += `<div style="margin:0.5rem 0"><span style="color:${branchColors[branch]};font-weight:600">${branchNames[branch]}</span>
+          <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.25rem">`;
+
+        nodes.forEach(node => {
+          const lvl = (masteryState[heroId] || {})[node.id] || 0;
+          const maxed = lvl >= node.maxLevel;
+          const cost = node.tier;
+          const canBuy = !maxed && available >= cost && canUnlockMasteryNode(heroId, node.id, masteryState);
+
+          html += `<button class="btn btn-sm ${maxed ? 'btn-maxed' : canBuy ? 'btn-primary' : 'btn-disabled'}"
+            title="${node.name}: ${node.desc} (Cost: ${cost} pts)"
+            data-mastery-hero="${heroId}" data-mastery-node="${node.id}"
+            ${canBuy ? '' : 'disabled'}
+            style="min-width:2.5rem;font-size:0.75rem;${maxed ? 'background:#1a1a2e;color:var(--neon-green)' : ''}">
+            ${node.icon} ${lvl}/${node.maxLevel}
+          </button>`;
+        });
+
+        html += '</div></div>';
+      });
+
+      html += '</div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Button handlers
+    container.querySelectorAll('[data-mastery-node]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const heroId = btn.dataset.masteryHero;
+        const nodeId = btn.dataset.masteryNode;
+        const tree = getHeroMasteryTree(heroId);
+        const node = tree.find(n => n.id === nodeId);
+        if (!node) return;
+
+        const recalcSpent = getTotalMasteryPointsSpent(state.mastery || {});
+        const recalcAvailable = Math.max(0, (state.prestigeCount || 0) - 2) - recalcSpent;
+
+        if (recalcAvailable >= node.tier) {
+          if (!state.mastery) state.mastery = {};
+          if (!state.mastery[heroId]) state.mastery[heroId] = {};
+          state.mastery[heroId][nodeId] = (state.mastery[heroId][nodeId] || 0) + 1;
+          AudioManager.playClick();
+          GameState.save();
+          this.renderMastery();
+        }
+      });
+    });
+  }
+
+  // ============================================
+  // CHALLENGES TAB
+  // ============================================
+  renderChallenges() {
+    const container = this.dom.mainContent;
+    const state = GameState.data;
+    const challengeState = state.challenges || {};
+    const today = new Date().toISOString().split('T')[0];
+    const dailyChallenges = generateDailyChallenges(today);
+    const completedToday = challengeState.date === today ? (challengeState.completed || []) : [];
+    const totalPoints = challengeState.totalPoints || 0;
+
+    let html = '<div class="tab-content-inner"><h2 class="section-title">🏋️ Daily Challenges</h2>';
+    html += `<div class="card" style="text-align:center">
+      <p>Challenge Points: <span style="color:var(--neon-orange);font-weight:bold">${totalPoints}</span></p>
+      <p style="font-size:0.75rem;opacity:0.6">Complete challenges for bonus rewards!</p>
+    </div>`;
+
+    // Daily challenges
+    html += '<h3 class="section-subtitle">Today\'s Challenges</h3>';
+    dailyChallenges.forEach((ch, idx) => {
+      const completed = completedToday.includes(ch.modifier.id);
+      const reward = getChallengeReward(ch, state.currentStage);
+
+      html += `<div class="card ${completed ? 'completed-card' : ''}" style="border-left:3px solid ${ch.difficulty.color}">
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <span style="font-size:1.5rem">${ch.modifier.icon}</span>
+          <div style="flex:1">
+            <div style="font-weight:600;color:${ch.difficulty.color}">${ch.modifier.name} <span style="opacity:0.6">[${ch.difficulty.name}]</span></div>
+            <div style="font-size:0.75rem;opacity:0.7">${ch.modifier.desc}</div>
+            <div style="font-size:0.7rem;color:var(--neon-green);margin-top:0.25rem">
+              Reward: ${formatNumber(reward.coins)} coins, ${formatNumber(reward.stardust)} stardust, ${reward.gems} gems, +${reward.challengePoints} pts
+            </div>
+          </div>
+          ${completed
+            ? '<span style="color:var(--neon-green)">✅ Done</span>'
+            : `<button class="btn btn-sm btn-primary" data-challenge-idx="${idx}">Start</button>`
+          }
+        </div>
+      </div>`;
+    });
+
+    // Reward milestones
+    html += '<h3 class="section-subtitle">Point Rewards</h3>';
+    const claimedRewards = challengeState.claimedRewards || [];
+    ChallengeRewards.forEach(cr => {
+      const claimed = claimedRewards.includes(cr.points);
+      const canClaim = totalPoints >= cr.points && !claimed;
+      html += `<div class="card" style="display:flex;align-items:center;gap:0.75rem;opacity:${totalPoints >= cr.points ? 1 : 0.5}">
+        <span style="font-size:1.5rem">${cr.icon}</span>
+        <div style="flex:1">
+          <div style="font-weight:600">${cr.name} <span style="opacity:0.5">(${cr.points} pts)</span></div>
+        </div>
+        ${claimed ? '<span style="color:var(--neon-green)">✅</span>'
+          : canClaim ? `<button class="btn btn-sm btn-primary" data-claim-challenge-pts="${cr.points}">Claim</button>`
+          : `<span style="opacity:0.5">${totalPoints}/${cr.points}</span>`}
+      </div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Challenge start handlers
+    container.querySelectorAll('[data-challenge-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.challengeIdx);
+        const ch = dailyChallenges[idx];
+        const reward = getChallengeReward(ch, state.currentStage);
+
+        // Auto-complete for now (instant reward)
+        if (!state.challenges) state.challenges = { date: today, completed: [], totalCompleted: 0, nightmaresCompleted: 0, totalPoints: 0, claimedRewards: [] };
+        if (state.challenges.date !== today) {
+          state.challenges.date = today;
+          state.challenges.completed = [];
+        }
+        state.challenges.completed.push(ch.modifier.id);
+        state.challenges.totalCompleted = (state.challenges.totalCompleted || 0) + 1;
+        if (ch.difficulty.id === 'nightmare') state.challenges.nightmaresCompleted = (state.challenges.nightmaresCompleted || 0) + 1;
+        state.challenges.totalPoints = (state.challenges.totalPoints || 0) + reward.challengePoints;
+
+        GameState.addCoins(reward.coins);
+        GameState.addStardust(reward.stardust);
+        GameState.addGems(reward.gems);
+
+        this.showNotification(`Challenge complete! +${formatNumber(reward.coins)} coins, +${reward.challengePoints} pts`);
+        AudioManager.playAchievement();
+        GameState.save();
+        this.renderChallenges();
+        this.updateStats();
+      });
+    });
+
+    // Claim reward handlers
+    container.querySelectorAll('[data-claim-challenge-pts]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pts = parseInt(btn.dataset.claimChallengePts);
+        const cr = ChallengeRewards.find(r => r.points === pts);
+        if (!cr) return;
+
+        if (!state.challenges) state.challenges = {};
+        if (!state.challenges.claimedRewards) state.challenges.claimedRewards = [];
+        state.challenges.claimedRewards.push(pts);
+
+        if (cr.reward.coins) GameState.addCoins(cr.reward.coins);
+        if (cr.reward.stardust) GameState.addStardust(cr.reward.stardust);
+        if (cr.reward.gems) GameState.addGems(cr.reward.gems);
+        if (cr.reward.essence) GameState.addEssence(cr.reward.essence);
+
+        this.showNotification(`Claimed ${cr.name}!`);
+        AudioManager.playMilestone();
+        GameState.save();
+        this.renderChallenges();
+        this.updateStats();
+      });
+    });
+  }
+
+  // ============================================
+  // BANNERS TAB
+  // ============================================
+  renderBanners() {
+    const container = this.dom.mainContent;
+    const state = GameState.data;
+    const banner = getActiveBanner();
+    const bannerHistory = state.bannerHistory || {};
+    const bannerData = bannerHistory[banner.id] || { summonCount: 0, pityCounter: 0 };
+    const pityProg = getPityProgress(bannerData.pityCounter || 0, banner);
+
+    let html = '<div class="tab-content-inner"><h2 class="section-title">🎪 Summon Banners</h2>';
+
+    // Active banner
+    html += `<div class="card" style="border:2px solid ${banner.color};background:linear-gradient(135deg, ${banner.color}10, transparent)">
+      <div style="display:flex;align-items:center;gap:1rem">
+        <span style="font-size:2.5rem">${banner.icon}</span>
+        <div style="flex:1">
+          <h3 style="color:${banner.color};margin:0">${banner.name}</h3>
+          <p style="font-size:0.8rem;opacity:0.8;margin:0.25rem 0">${banner.desc}</p>
+          <p style="font-size:0.75rem;color:var(--neon-orange)">⏰ ${banner.daysRemaining}d ${banner.hoursRemaining}h remaining</p>
+        </div>
+      </div>`;
+
+    // Featured heroes
+    html += '<div style="margin-top:0.75rem"><span style="font-size:0.8rem;opacity:0.7">Featured Heroes (${banner.rateUpMultiplier}× rate):</span><div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.25rem">';
+    banner.featuredHeroes.forEach(hId => {
+      const template = HeroTemplate.find(t => t.id === hId);
+      if (template) {
+        html += `<span class="badge" style="background:${template.rarity.color}20;color:${template.rarity.color};border:1px solid ${template.rarity.color}40;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.75rem">${template.name}</span>`;
+      } else {
+        html += `<span class="badge" style="opacity:0.5;padding:0.2rem 0.5rem;font-size:0.75rem">???</span>`;
+      }
+    });
+    html += '</div></div>';
+
+    // Pity progress
+    html += `<div style="margin-top:0.75rem">
+      <div style="display:flex;justify-content:space-between;font-size:0.75rem">
+        <span>Pity: ${bannerData.pityCounter || 0}/${banner.pityThreshold}</span>
+        <span style="color:var(--neon-purple)">${Math.floor(pityProg * 100)}%</span>
+      </div>
+      <div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:0.25rem">
+        <div style="height:100%;width:${pityProg * 100}%;background:var(--neon-purple);border-radius:2px;transition:width 0.3s"></div>
+      </div>
+    </div>`;
+
+    html += '</div>';
+
+    // All banners rotation schedule
+    html += '<h3 class="section-subtitle">Banner Rotation</h3>';
+    BannerDatabase.forEach(b => {
+      const isActive = b.id === banner.id;
+      html += `<div class="card" style="display:flex;align-items:center;gap:0.75rem;${isActive ? `border:1px solid ${b.color}` : 'opacity:0.6'}">
+        <span style="font-size:1.3rem">${b.icon}</span>
+        <div style="flex:1">
+          <div style="font-weight:600;color:${b.color}">${b.name} ${isActive ? '<span style="color:var(--neon-green)">(ACTIVE)</span>' : ''}</div>
+          <div style="font-size:0.7rem;opacity:0.7">${b.desc}</div>
+        </div>
+      </div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
   }
 }
 

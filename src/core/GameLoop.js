@@ -21,6 +21,8 @@ import { getHeroElement } from "../entities/HeroDatabase.js";
 import { generateRuneDrop, getRuneInfo } from "../entities/RuneDatabase.js";
 import { getRelicBonuses } from "../entities/RelicDatabase.js";
 import { AudioManager } from "./AudioManager.js";
+import { getHeroMasteryBonuses, getTotalMasteryPointsSpent, getMasteryPointsAvailable } from "../entities/PrestigeMasteryDatabase.js";
+import { getTalentBonuses } from "../entities/TalentDatabase.js";
 
 export class Engine {
   constructor(uiManager) {
@@ -138,7 +140,7 @@ export class Engine {
       // Coins
       const coinMult = 1 + getUpgradeEffect("upg_coin_mult", state.upgrades["upg_coin_mult"] || 0);
       const soulSiphonBonus = 1 + getUpgradeEffect("upg_hp_drain", state.upgrades["upg_hp_drain"] || 0);
-      coinsEarned += Math.floor(enemyInfo.coinDrop * coinMult * soulSiphonBonus * shopBonuses.coinMultiplier * prestigeBonuses.coinMultiplier * collectionBonuses.coinMultiplier);
+      coinsEarned += Math.floor(enemyInfo.coinDrop * coinMult * soulSiphonBonus * shopBonuses.coinMultiplier * prestigeBonuses.coinMultiplier * collectionBonuses.coinMultiplier * talentBonuses.coinMultiplier * (1 + masteryCoinBonus));
 
       // Stardust
       if (enemyInfo.stardustDrop > 0) {
@@ -262,7 +264,23 @@ export class Engine {
     const skillBonuses = getPartySkillBonuses(state.activeParty, state.roster);
     const petBonuses = getPetBonuses(state.pets || {});
     const relicBonuses = getRelicBonuses(state);
-    partyDps *= dpsMult * (1 + synergyBonuses.dpsBonus) * (1 + (skillBonuses.dpsBonus || 0)) * (1 + (petBonuses.dpsBonus || 0)) * shopBonuses.dpsMultiplier * prestigeBonuses.dpsMultiplier * eventBonuses.dpsMultiplier * collectionBonuses.dpsMultiplier * relicBonuses.dpsMultiplier;
+    const talentBonuses = getTalentBonuses(state.talents || {});
+
+    // Aggregate mastery bonuses from active party heroes
+    let masteryDpsBonus = 0;
+    let masteryCoinBonus = 0;
+    let masteryFamiliarBonus = 0;
+    state.activeParty.forEach(uid => {
+      const heroData = state.roster.find(h => h.uid === uid);
+      if (heroData) {
+        const mb = getHeroMasteryBonuses(heroData.id, state.mastery || {});
+        masteryDpsBonus += mb.dps;
+        masteryCoinBonus += mb.coins;
+        masteryFamiliarBonus += mb.familiar;
+      }
+    });
+
+    partyDps *= dpsMult * (1 + synergyBonuses.dpsBonus) * (1 + (skillBonuses.dpsBonus || 0)) * (1 + (petBonuses.dpsBonus || 0)) * shopBonuses.dpsMultiplier * prestigeBonuses.dpsMultiplier * eventBonuses.dpsMultiplier * collectionBonuses.dpsMultiplier * relicBonuses.dpsMultiplier * talentBonuses.dpsMultiplier * (1 + masteryDpsBonus);
 
     // Autoclicker Damage
     let autoclickDamage = 0;
@@ -274,7 +292,7 @@ export class Engine {
       const baseDmg = 1 + (profile.level - 1) * 2 + Math.floor(state.currentStage / 3) + basePowerUpg;
       const clickDmg = baseDmg + partyDps * 0.15;
       const familiarMult = 1 + getUpgradeEffect("upg_familiar_speed", state.upgrades["upg_familiar_speed"] || 0);
-      autoclickDamage = clicksPerSec * clickDmg * familiarMult * shopBonuses.familiarMultiplier * prestigeBonuses.familiarMultiplier;
+      autoclickDamage = clicksPerSec * clickDmg * familiarMult * shopBonuses.familiarMultiplier * prestigeBonuses.familiarMultiplier * talentBonuses.familiarMultiplier * (1 + masteryFamiliarBonus);
     }
 
     // Apply passive damage and Tower Timer logic
@@ -529,6 +547,19 @@ export class Engine {
     const colBon = getCollectionBonuses(state);
     const petBon = getPetBonuses(state.pets || {});
     const relBon = getRelicBonuses(state);
+    const talBon = getTalentBonuses(state.talents || {});
+
+    // Aggregate mastery bonuses from active party heroes
+    let mstDpsB = 0, mstCoinB = 0, mstStarB = 0;
+    state.activeParty.forEach(uid => {
+      const hd = state.roster.find(h => h.uid === uid);
+      if (hd) {
+        const mb = getHeroMasteryBonuses(hd.id, state.mastery || {});
+        mstDpsB += mb.dps;
+        mstCoinB += mb.coins;
+        mstStarB += mb.stardust || 0;
+      }
+    });
 
     // Rewards
     let finalCoins = enemyInfo.coinDrop;
@@ -539,7 +570,7 @@ export class Engine {
       const soulSiphonBonus = 1 + getUpgradeEffect("upg_hp_drain", state.upgrades["upg_hp_drain"] || 0);
       const bossSkillMult = enemyInfo.isBoss ? (1 + (skillBon.bossCoinsBonus || 0)) : 1;
       const skillCoinBuff = this.getPartyCoinBuff();
-      finalCoins = Math.floor(finalCoins * coinMult * soulSiphonBonus * (1 + synBonus.coinBonus) * (1 + (skillBon.coinBonus || 0)) * (1 + (petBon.coinBonus || 0)) * bossSkillMult * skillCoinBuff * shopBon.coinMultiplier * presBon.coinMultiplier * evtBon.coinMultiplier * colBon.coinMultiplier * relBon.coinMultiplier * streakMult);
+      finalCoins = Math.floor(finalCoins * coinMult * soulSiphonBonus * (1 + synBonus.coinBonus) * (1 + (skillBon.coinBonus || 0)) * (1 + (petBon.coinBonus || 0)) * bossSkillMult * skillCoinBuff * shopBon.coinMultiplier * presBon.coinMultiplier * evtBon.coinMultiplier * colBon.coinMultiplier * relBon.coinMultiplier * talBon.coinMultiplier * (1 + mstCoinB) * streakMult);
       GameState.addCoins(finalCoins);
     }
     // Stardust base reward + bonus chance from upgrade + shop/prestige multiplier + event bonus
@@ -553,7 +584,7 @@ export class Engine {
       stardustReward = 1; // Bonus stardust proc from upgrade or event
     }
     if (stardustReward > 0) {
-      stardustReward = Math.max(1, Math.floor(stardustReward * (1 + (skillBon.stardustBonus || 0)) * (1 + (petBon.stardustBonus || 0)) * shopBon.stardustMultiplier * presBon.stardustMultiplier * evtBon.stardustMultiplier * colBon.stardustMultiplier * relBon.stardustMultiplier));
+      stardustReward = Math.max(1, Math.floor(stardustReward * (1 + (skillBon.stardustBonus || 0)) * (1 + (petBon.stardustBonus || 0)) * shopBon.stardustMultiplier * presBon.stardustMultiplier * evtBon.stardustMultiplier * colBon.stardustMultiplier * relBon.stardustMultiplier * talBon.stardustMultiplier * (1 + mstStarB)));
       GameState.addStardust(stardustReward);
     }
 
@@ -568,7 +599,7 @@ export class Engine {
 
     let dropMsg = "";
     // Boss Loot Check (Every 10 stages, or 1% chance otherwise + loot luck upgrade + shop + event + collection bonus)
-    const lootLuckBonus = getUpgradeEffect("upg_loot_luck", state.upgrades["upg_loot_luck"] || 0) / 100 + (shopBon.lootChanceBonus || 0) + (evtBon.lootChanceBonus || 0) + (colBon.lootChanceBonus || 0) + (skillBon.lootChanceBonus || 0) + (petBon.lootBonus || 0) + (relBon.lootChanceBonus || 0);
+    const lootLuckBonus = getUpgradeEffect("upg_loot_luck", state.upgrades["upg_loot_luck"] || 0) / 100 + (shopBon.lootChanceBonus || 0) + (evtBon.lootChanceBonus || 0) + (colBon.lootChanceBonus || 0) + (skillBon.lootChanceBonus || 0) + (petBon.lootBonus || 0) + (relBon.lootChanceBonus || 0) + talBon.lootChanceBonus;
     const eliteLootBonus = this.isEliteEnemy ? 0.25 : 0; // Elites have 25% extra loot chance
     if (state.currentStage % 10 === 0 || Math.random() < (0.01 + lootLuckBonus + eliteLootBonus)) {
       const item = generateRandomLootDrop(state.currentStage);
@@ -587,7 +618,7 @@ export class Engine {
     // XP gain (with shop/prestige/event/collection/upgrade/pet multipliers)
     const xpUpgBonus = 1 + getUpgradeEffect("upg_xp_boost", state.upgrades["upg_xp_boost"] || 0);
     const baseXp = enemyInfo.isBoss ? state.currentStage * 8 : Math.max(1, Math.floor(state.currentStage * 1.5));
-    const xpGain = Math.floor(baseXp * (1 + (petBon.xpBonus || 0)) * shopBon.xpMultiplier * presBon.xpMultiplier * evtBon.xpMultiplier * colBon.xpMultiplier * relBon.xpMultiplier * xpUpgBonus * streakMult);
+    const xpGain = Math.floor(baseXp * (1 + (petBon.xpBonus || 0)) * shopBon.xpMultiplier * presBon.xpMultiplier * evtBon.xpMultiplier * colBon.xpMultiplier * relBon.xpMultiplier * xpUpgBonus * talBon.xpMultiplier * streakMult);
     this.addXp(xpGain);
 
     // Bestiary tracking

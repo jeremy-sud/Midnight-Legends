@@ -56,6 +56,35 @@ export const MilestoneDatabase = [
     rewards: { coins: 5000000, stardust: 15000, gems: 250, essence: 50 },
     desc: "Beyond mortal comprehension.",
   },
+  // ── EXPANDED MILESTONES ──
+  {
+    stage: 750,
+    icon: "⚡",
+    title: "Void Walker",
+    rewards: { coins: 15000000, stardust: 50000, gems: 500, essence: 150 },
+    desc: "The void itself bends to your will.",
+  },
+  {
+    stage: 1000,
+    icon: "🌌",
+    title: "Cosmic Arbiter",
+    rewards: { coins: 50000000, stardust: 150000, gems: 1000, essence: 500 },
+    desc: "You have transcended the stars.",
+  },
+  {
+    stage: 1500,
+    icon: "🔮",
+    title: "Astral Sovereign",
+    rewards: { coins: 200000000, stardust: 500000, gems: 2500, essence: 1500 },
+    desc: "The cosmos whispers your name.",
+  },
+  {
+    stage: 2000,
+    icon: "💫",
+    title: "The Infinite",
+    rewards: { coins: 1000000000, stardust: 2000000, gems: 5000, essence: 5000 },
+    desc: "Beyond the end, a new beginning.",
+  },
 ];
 
 export function getUnclaimedMilestones(currentStage, claimedMilestones = []) {

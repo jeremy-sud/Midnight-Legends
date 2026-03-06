@@ -108,6 +108,18 @@ class StateManager {
           lastWeek: null,
           bestFloor: 0,
         },
+        // ── NEW SYSTEMS ──
+        mastery: {},                  // Prestige Mastery: { heroId: { nodeId: level } }
+        talents: {},                  // Global Talents: { talentId: level }
+        challenges: {                 // Daily Challenge system
+          date: null,                 // Current date string
+          completed: [],              // Completed challenge modifier IDs today
+          totalCompleted: 0,          // Lifetime challenges completed
+          nightmaresCompleted: 0,     // Lifetime nightmare challenges completed
+          totalPoints: 0,             // Challenge points accumulated
+          claimedRewards: [],         // Claimed challenge point milestone thresholds
+        },
+        bannerHistory: {},            // Banner summon tracking: { bannerId: { summonCount, pityCounter, pityTriggered } }
     };
   }
   /**

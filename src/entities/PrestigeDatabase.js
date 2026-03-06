@@ -83,6 +83,47 @@ export const PrestigeUpgrades = [
     effect: (lvl) => 1 + lvl * 0.25,
     label: 'Familiar ×',
   },
+  // ── EXPANDED PRESTIGE UPGRADES ──
+  {
+    id: 'pup_loot',
+    name: 'Void Harvest',
+    icon: '🧲',
+    desc: 'Loot drop chance increased by 3% per level.',
+    maxLevel: 10,
+    essenceCost: (lvl) => Math.floor(8 * Math.pow(1.7, lvl)),
+    effect: (lvl) => lvl * 0.03,
+    label: 'Loot +',
+  },
+  {
+    id: 'pup_tower',
+    name: 'Void Ascent',
+    icon: '🏰',
+    desc: 'Tower timer extended by 3 seconds per level.',
+    maxLevel: 10,
+    essenceCost: (lvl) => Math.floor(12 * Math.pow(1.9, lvl)),
+    effect: (lvl) => lvl * 3,
+    label: 'Tower Time +',
+  },
+  {
+    id: 'pup_crit',
+    name: 'Void Precision',
+    icon: '🎯',
+    desc: 'Critical hit chance increased by 3% per level.',
+    maxLevel: 10,
+    essenceCost: (lvl) => Math.floor(10 * Math.pow(1.8, lvl)),
+    effect: (lvl) => lvl * 0.03,
+    label: 'Crit +',
+  },
+  {
+    id: 'pup_mastery_pts',
+    name: 'Void Mastery',
+    icon: '🌀',
+    desc: 'Earn +1 extra Mastery Point per prestige per level.',
+    maxLevel: 5,
+    essenceCost: (lvl) => Math.floor(25 * Math.pow(2.5, lvl)),
+    effect: (lvl) => lvl,
+    label: 'Mastery Pts +',
+  },
 ];
 
 /**
@@ -98,6 +139,10 @@ export function getPrestigeBonuses(prestigeUpgrades) {
     clickMultiplier: 1,
     startStageBonus: 0,
     familiarMultiplier: 1,
+    lootChanceBonus: 0,
+    towerTimeBonus: 0,
+    critChanceBonus: 0,
+    masteryPointsBonus: 0,
   };
 
   const mapping = {
@@ -109,17 +154,18 @@ export function getPrestigeBonuses(prestigeUpgrades) {
     pup_click: 'clickMultiplier',
     pup_start_stage: 'startStageBonus',
     pup_familiar: 'familiarMultiplier',
+    pup_loot: 'lootChanceBonus',
+    pup_tower: 'towerTimeBonus',
+    pup_crit: 'critChanceBonus',
+    pup_mastery_pts: 'masteryPointsBonus',
   };
 
   PrestigeUpgrades.forEach(upg => {
     const lvl = prestigeUpgrades[upg.id] || 0;
     if (lvl > 0) {
       const key = mapping[upg.id];
-      const val = upg.effect(lvl);
-      if (key.includes('Multiplier')) {
-        bonuses[key] = val;
-      } else {
-        bonuses[key] = val;
+      if (key) {
+        bonuses[key] = upg.effect(lvl);
       }
     }
   });

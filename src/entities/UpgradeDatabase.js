@@ -176,6 +176,79 @@ export const UpgradeDatabase = [
     color: "#ffd740",
     svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M12 22v-6"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M2 12h6"/><path d="M16 12h6"/><path d="M4.93 19.07l4.24-4.24"/><path d="M14.83 9.17l4.24-4.24"/></svg>',
   },
+  // ── EXPANDED UPGRADES ──
+  {
+    id: "upg_elemental_aff",
+    name: "Elemental Affinity",
+    type: "ELEMENTAL_AFFINITY",
+    baseCost: 1500,
+    costMultiplier: 2.5,
+    effectPerLevel: 0.05, // +5% element advantage dmg
+    maxLevel: 20,
+    desc: "Increases elemental advantage damage by 5% per level.",
+    color: "#e040fb",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  },
+  {
+    id: "upg_overkill",
+    name: "Overkill Cascade",
+    type: "OVERKILL",
+    baseCost: 2000,
+    costMultiplier: 2.8,
+    effectPerLevel: 0.10, // +10% excess damage carries to next enemy
+    maxLevel: 10,
+    desc: "10% of overkill damage carries over to the next enemy per level.",
+    color: "#ff3d00",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="m21 3-18 18"/><circle cx="12" cy="12" r="4"/></svg>',
+  },
+  {
+    id: "upg_pet_synergy",
+    name: "Pet Resonance",
+    type: "PET_SYNERGY",
+    baseCost: 800,
+    costMultiplier: 2.0,
+    effectPerLevel: 0.08, // +8% pet bonus effectiveness
+    maxLevel: 15,
+    desc: "Increases pet bonus effectiveness by 8% per level.",
+    color: "#81c784",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .137 1.217 3.245 2.97 4.5 3.5a8.68 8.68 0 0 0 3 1c2.094.363 3.5-.506 3.5-.506"/><path d="M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.137 1.217-3.245 2.97-4.5 3.5a8.68 8.68 0 0 1-3 1"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75z"/></svg>',
+  },
+  {
+    id: "upg_skill_haste",
+    name: "Temporal Rush",
+    type: "SKILL_HASTE",
+    baseCost: 1200,
+    costMultiplier: 2.3,
+    effectPerLevel: 0.05, // -5% active skill cooldowns
+    maxLevel: 10,
+    desc: "Reduces hero active skill cooldowns by 5% per level.",
+    color: "#00bcd4",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  },
+  {
+    id: "upg_essence_harvest",
+    name: "Void Convergence",
+    type: "ESSENCE_HARVEST",
+    baseCost: 3000,
+    costMultiplier: 3.0,
+    effectPerLevel: 0.08, // +8% essence from prestige
+    maxLevel: 10,
+    desc: "Increases Essence gained from Prestige by 8% per level.",
+    color: "#b388ff",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5.636 5.636l12.728 12.728"/><path d="M18.364 5.636L5.636 18.364"/><path d="M3 12h18"/></svg>',
+  },
+  {
+    id: "upg_tower_might",
+    name: "Tower's Blessing",
+    type: "TOWER_MIGHT",
+    baseCost: 2500,
+    costMultiplier: 2.5,
+    effectPerLevel: 0.12, // +12% tower damage
+    maxLevel: 10,
+    desc: "Increases damage dealt in Tower by 12% per level.",
+    color: "#ffab40",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><rect x="9" y="12" width="6" height="8"/></svg>',
+  },
 ];
 
 export function getUpgradeCost(templateId, currentLevel) {

@@ -1010,4 +1010,256 @@ export const AchievementDatabase = [
       return Object.values(asc).some(level => level >= 5);
     },
   },
+
+  // ── MASTERY ACHIEVEMENTS ──
+  {
+    id: "ach_mastery_first",
+    name: "The Student",
+    desc: "Unlock your first Mastery node.",
+    icon: "📖",
+    category: "mastery",
+    reward: { stardust: 500, gems: 5 },
+    condition: (stats, state) => {
+      const m = state.mastery || {};
+      return Object.keys(m).some(heroId => Object.values(m[heroId] || {}).some(v => v > 0));
+    },
+  },
+  {
+    id: "ach_mastery_branch",
+    name: "Branch Master",
+    desc: "Complete an entire mastery branch for any hero.",
+    icon: "🌳",
+    category: "mastery",
+    reward: { stardust: 2000, gems: 15, essence: 10 },
+    condition: (stats, state) => {
+      const m = state.mastery || {};
+      for (const heroMastery of Object.values(m)) {
+        const branchCounts = {};
+        for (const [nodeId, lvl] of Object.entries(heroMastery || {})) {
+          if (lvl > 0) {
+            const branch = nodeId.includes('_pow_') ? 'power' : nodeId.includes('_for_') ? 'fortune' : 'guardian';
+            branchCounts[branch] = (branchCounts[branch] || 0) + 1;
+          }
+        }
+        if (Object.values(branchCounts).some(c => c >= 5)) return true;
+      }
+      return false;
+    },
+  },
+  {
+    id: "ach_mastery_capstone",
+    name: "Capstone Unlocked",
+    desc: "Unlock a tier 5 capstone mastery node.",
+    icon: "💫",
+    category: "mastery",
+    reward: { gems: 25, essence: 20 },
+    condition: (stats, state) => {
+      const m = state.mastery || {};
+      for (const heroMastery of Object.values(m)) {
+        for (const [nodeId, lvl] of Object.entries(heroMastery || {})) {
+          if (nodeId.includes('_5') && lvl > 0) return true;
+        }
+      }
+      return false;
+    },
+  },
+
+  // ── TALENT ACHIEVEMENTS ──
+  {
+    id: "ach_talent_first",
+    name: "Talented",
+    desc: "Purchase your first talent.",
+    icon: "⭐",
+    category: "talent",
+    reward: { stardust: 300, gems: 3 },
+    condition: (stats, state) => {
+      const t = state.talents || {};
+      return Object.values(t).some(v => v > 0);
+    },
+  },
+  {
+    id: "ach_talent_10",
+    name: "Rising Star",
+    desc: "Purchase 10 talent levels total.",
+    icon: "🌟",
+    category: "talent",
+    reward: { stardust: 1000, gems: 10 },
+    condition: (stats, state) => {
+      const t = state.talents || {};
+      return Object.values(t).reduce((sum, v) => sum + v, 0) >= 10;
+    },
+  },
+  {
+    id: "ach_talent_50",
+    name: "Talent Prodigy",
+    desc: "Purchase 50 talent levels total.",
+    icon: "🏅",
+    category: "talent",
+    reward: { stardust: 5000, gems: 30, essence: 15 },
+    condition: (stats, state) => {
+      const t = state.talents || {};
+      return Object.values(t).reduce((sum, v) => sum + v, 0) >= 50;
+    },
+  },
+  {
+    id: "ach_talent_max_branch",
+    name: "Branch Specialist",
+    desc: "Max out all talents in one branch.",
+    icon: "🎓",
+    category: "talent",
+    reward: { stardust: 10000, gems: 50, essence: 30 },
+    condition: (stats, state) => {
+      const t = state.talents || {};
+      const branchTalents = { offense: [], economy: [], utility: [] };
+      const branchMap = {
+        tal_raw_power: 'offense', tal_precision: 'offense', tal_devastation: 'offense', tal_combo_master: 'offense',
+        tal_click_fury: 'offense', tal_element_mastery: 'offense', tal_double_strike: 'offense', tal_warlord: 'offense',
+        tal_gold_rush: 'economy', tal_star_collector: 'economy', tal_gem_hunter: 'economy', tal_essence_siphon: 'economy',
+        tal_loot_magnet: 'economy', tal_xp_scholar: 'economy', tal_salvage_expert: 'economy', tal_fortune: 'economy',
+        tal_familiar_bond: 'utility', tal_pet_harmony: 'utility', tal_expeditionary: 'utility', tal_offline_mastery: 'utility',
+        tal_tower_climber: 'utility', tal_quick_spin: 'utility', tal_quest_tracker: 'utility', tal_transcendence: 'utility',
+      };
+      for (const [id, branch] of Object.entries(branchMap)) {
+        branchTalents[branch].push(t[id] || 0);
+      }
+      return Object.values(branchTalents).some(levels => levels.every(l => l >= 10));
+    },
+  },
+
+  // ── CHALLENGE ACHIEVEMENTS ──
+  {
+    id: "ach_challenge_first",
+    name: "Challenger",
+    desc: "Complete your first daily challenge.",
+    icon: "🏋️",
+    category: "challenge",
+    reward: { coins: 5000, stardust: 100 },
+    condition: (stats, state) => (state.challenges?.totalCompleted || 0) >= 1,
+  },
+  {
+    id: "ach_challenge_10",
+    name: "Challenge Seeker",
+    desc: "Complete 10 daily challenges.",
+    icon: "💪",
+    category: "challenge",
+    reward: { coins: 25000, stardust: 500, gems: 10 },
+    condition: (stats, state) => (state.challenges?.totalCompleted || 0) >= 10,
+  },
+  {
+    id: "ach_challenge_nightmare",
+    name: "Nightmare Survivor",
+    desc: "Complete a Nightmare difficulty challenge.",
+    icon: "☠️",
+    category: "challenge",
+    reward: { gems: 20, essence: 15 },
+    condition: (stats, state) => (state.challenges?.nightmaresCompleted || 0) >= 1,
+  },
+  {
+    id: "ach_challenge_points_100",
+    name: "Diamond Challenger",
+    desc: "Accumulate 100 Challenge Points.",
+    icon: "🏆",
+    category: "challenge",
+    reward: { gems: 50, essence: 50 },
+    condition: (stats, state) => (state.challenges?.totalPoints || 0) >= 100,
+  },
+
+  // ── BANNER ACHIEVEMENTS ──
+  {
+    id: "ach_banner_summon",
+    name: "Banner Hunter",
+    desc: "Summon on 3 different banners.",
+    icon: "🎪",
+    category: "banner",
+    reward: { stardust: 1000, gems: 10 },
+    condition: (stats, state) => Object.keys(state.bannerHistory || {}).length >= 3,
+  },
+  {
+    id: "ach_pity_trigger",
+    name: "Persistence Pays",
+    desc: "Trigger the pity system on a banner.",
+    icon: "🎰",
+    category: "banner",
+    reward: { gems: 25 },
+    condition: (stats, state) => (state.bannerHistory?.pityTriggered || 0) >= 1,
+  },
+
+  // ── MILESTONE ACHIEVEMENTS ──
+  {
+    id: "ach_stage_750",
+    name: "Void Walker",
+    desc: "Reach stage 750.",
+    icon: "⚡",
+    category: "progress",
+    reward: { coins: 5000000, stardust: 20000, gems: 100 },
+    condition: (stats) => stats.highestStage >= 750,
+  },
+  {
+    id: "ach_stage_1000",
+    name: "Cosmic Arbiter",
+    desc: "Reach stage 1000.",
+    icon: "🌌",
+    category: "progress",
+    reward: { coins: 20000000, stardust: 100000, gems: 250, essence: 100 },
+    condition: (stats) => stats.highestStage >= 1000,
+  },
+  {
+    id: "ach_stage_2000",
+    name: "The Infinite",
+    desc: "Reach stage 2000.",
+    icon: "💫",
+    category: "progress",
+    secret: true,
+    reward: { coins: 100000000, stardust: 500000, gems: 1000, essence: 500 },
+    condition: (stats) => stats.highestStage >= 2000,
+  },
+
+  // ── ELEMENT COLLECTION ACHIEVEMENTS ──
+  {
+    id: "ach_all_elements",
+    name: "Rainbow Warrior",
+    desc: "Own at least one hero of every element.",
+    icon: "🌈",
+    category: "collection",
+    reward: { stardust: 3000, gems: 20 },
+    condition: (stats, state) => {
+      const elements = new Set();
+      (state.roster || []).forEach(hero => {
+        // Simple check via hero ID patterns
+        const id = hero.id;
+        if (id) elements.add(id);
+      });
+      return elements.size >= 5; // At least heroes covering 5 elements
+    },
+  },
+
+  // ── PRESTIGE DEPTH ACHIEVEMENTS ──
+  {
+    id: "ach_prestige_5",
+    name: "Void Veteran",
+    desc: "Prestige 5 times.",
+    icon: "🔄",
+    category: "prestige",
+    reward: { essence: 20, gems: 15 },
+    condition: (stats, state) => (state.prestigeCount || 0) >= 5,
+  },
+  {
+    id: "ach_prestige_10",
+    name: "Void Master",
+    desc: "Prestige 10 times.",
+    icon: "♾️",
+    category: "prestige",
+    reward: { essence: 50, gems: 50 },
+    condition: (stats, state) => (state.prestigeCount || 0) >= 10,
+  },
+  {
+    id: "ach_prestige_25",
+    name: "Eternal Rebirth",
+    desc: "Prestige 25 times.",
+    icon: "🌀",
+    category: "prestige",
+    secret: true,
+    reward: { essence: 200, gems: 150 },
+    condition: (stats, state) => (state.prestigeCount || 0) >= 25,
+  },
 ];

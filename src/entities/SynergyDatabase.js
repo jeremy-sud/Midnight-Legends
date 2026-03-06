@@ -1,4 +1,4 @@
-import { HeroTemplate } from './HeroDatabase.js';
+import { HeroTemplate, getHeroElement } from './HeroDatabase.js';
 
 export const SynergyDatabase = [
   {
@@ -85,10 +85,72 @@ export const SynergyDatabase = [
     coinBonus: 0.10,
     color: '#ff8a65',
   },
+  // ── ELEMENT SYNERGIES ──
+  {
+    id: 'syn_fire_blaze',
+    name: 'Infernal Blaze',
+    desc: '2+ Fire heroes in party',
+    effect: '+30% DPS, +5% Burn chance',
+    icon: '🔥',
+    elementName: 'Fire',
+    minCount: 2,
+    dpsBonus: 0.30,
+    coinBonus: 0,
+    color: '#ff6d00',
+  },
+  {
+    id: 'syn_ice_storm',
+    name: 'Frozen Storm',
+    desc: '2+ Ice heroes in party',
+    effect: '+25% DPS, +8% Slow chance',
+    icon: '❄️',
+    elementName: 'Ice',
+    minCount: 2,
+    dpsBonus: 0.25,
+    coinBonus: 0,
+    color: '#4fc3f7',
+  },
+  {
+    id: 'syn_shadow_veil',
+    name: 'Shadow Veil',
+    desc: '2+ Shadow heroes in party',
+    effect: '+30% DPS, +3% Crit',
+    icon: '🌑',
+    elementName: 'Shadow',
+    minCount: 2,
+    dpsBonus: 0.30,
+    coinBonus: 0,
+    color: '#9575cd',
+  },
+  {
+    id: 'syn_void_rift',
+    name: 'Void Rift',
+    desc: '2+ Void heroes in party',
+    effect: '+35% DPS, +5% Essence',
+    icon: '🌀',
+    elementName: 'Void',
+    minCount: 2,
+    dpsBonus: 0.35,
+    coinBonus: 0,
+    color: '#ce93d8',
+  },
+  {
+    id: 'syn_light_beacon',
+    name: 'Light Beacon',
+    desc: '2+ Light heroes in party',
+    effect: '+20% DPS, +15% Coins',
+    icon: '✨',
+    elementName: 'Light',
+    minCount: 2,
+    dpsBonus: 0.20,
+    coinBonus: 0.15,
+    color: '#ffd54f',
+  },
 ];
 
 export function getActiveSynergies(party, roster) {
   const rarityCounts = {};
+  const elementCounts = {};
   let partySize = 0;
 
   party.forEach(uid => {
@@ -97,10 +159,17 @@ export function getActiveSynergies(party, roster) {
     const template = HeroTemplate.find(t => t.id === heroData.id);
     if (!template) return;
     rarityCounts[template.rarity.name] = (rarityCounts[template.rarity.name] || 0) + 1;
+    const element = getHeroElement(heroData.id);
+    if (element) {
+      elementCounts[element] = (elementCounts[element] || 0) + 1;
+    }
     partySize++;
   });
 
   return SynergyDatabase.filter(syn => {
+    // Element synergies
+    if (syn.elementName) return (elementCounts[syn.elementName] || 0) >= syn.minCount;
+    // Rarity synergies
     if (syn.rarityName === null) return partySize >= syn.minCount;
     if (syn.rarityName === 'mixed') return Object.keys(rarityCounts).length >= syn.minCount;
     return (rarityCounts[syn.rarityName] || 0) >= syn.minCount;

@@ -1,11 +1,11 @@
 # 🗺️ ROADMAP — Midnight Gardens
 
 > Documento vivo de planificación del desarrollo de Midnight Gardens.  
-> Última actualización: Marzo 2026 | Versión actual: 0.9.2
+> Última actualización: Julio 2025 | Versión actual: 0.9.3
 
 ---
 
-## 📌 FASE 1 — Pulir lo existente (v1.0)
+## 📌 FASE 1 — Pulir lo existente (v1.0) ✅
 
 ### 1.1 Completar sistemas a medio implementar
 - [x] **Ascensión de héroes** — UI completa con pantalla de confirmación, animación, y display de bonus permanentes.
@@ -26,7 +26,7 @@
 
 ---
 
-## 🚀 FASE 2 — Contenido mid-game (v1.1)
+## 🚀 FASE 2 — Contenido mid-game (v1.1) ✅
 
 ### 2.1 Sistema de Crafting
 - [x] Combinar ítems duplicados para mejorar rareza (3 Common → 1 Rare).
@@ -55,7 +55,7 @@
 
 ---
 
-## ⭐ FASE 3 — Endgame y profundidad (v1.2)
+## ⭐ FASE 3 — Endgame y profundidad (v1.2) ✅
 
 ### 3.1 Sistema de Runas / Encantamientos
 - [x] Obtener runas como drops raros del Tower.
@@ -69,9 +69,10 @@
 - [x] Recompensas exclusivas: skins de héroes, ítems únicos.
 
 ### 3.3 Prestige 2.0 — Sistema de Maestría
-- [ ] Tras X prestiges, desbloquear "Maestrías" por héroe.
-- [ ] Cada héroe: skill tree simple (3 ramas, 5 nodos).
-- [ ] Las maestrías persisten entre prestiges.
+- [x] Tras 3 prestiges, desbloquear "Maestrías" por héroe.
+- [x] Cada héroe: skill tree simple (3 ramas: Power/Fortune/Guardian, 5 nodos cada una).
+- [x] Las maestrías persisten entre prestiges.
+- [x] Puntos de maestría: 1 por prestige a partir del prestige 3.
 
 ### 3.4 Boss Raids
 - [ ] Boss especial mensual con HP pool masivo.
@@ -82,6 +83,25 @@
 - [x] Obtener reliquias al completar colecciones.
 - [x] Bonus globales permanentes que escalan con prestige count.
 - [x] 10 reliquias con efectos únicos.
+
+### 3.6 Árbol de Talentos Global (NUEVO ✅)
+- [x] 3 ramas: Offense (DPS/crit), Economy (coins/stardust/loot), Utility (familiar/pet/torre).
+- [x] 24 talentos (8 por rama), cada uno con 10 niveles.
+- [x] Comprar con Stardust. Desbloqueables a partir de perfil nivel 10.
+- [x] Bonuses integrados en todos los cálculos de GameLoop (tick, killEnemy, offline).
+
+### 3.7 Desafíos Diarios Rotativos (NUEVO ✅)
+- [x] 12 modificadores de combate únicos (Glass Cannon, Speed Demon, Lone Wolf, etc.).
+- [x] 3 dificultades: Normal, Hard, Nightmare.
+- [x] Generación diaria determinista con seed por fecha.
+- [x] Sistema de puntos de desafío con 6 tiers de recompensas.
+- [x] Tab de UI completo con estado de completado y milestones.
+
+### 3.8 Banners de Invocación (NUEVO ✅)
+- [x] 6 banners rotando semanalmente (Fire Festival, Shadow Convergence, Ice Storm, etc.).
+- [x] Rate-up 3× para héroes destacados.
+- [x] Sistema de pity (20-30 invocaciones para garantía).
+- [x] Tab de UI con progreso de pity, héroes destacados y rotación completa.
 
 ---
 
@@ -128,17 +148,79 @@
 - [x] SFX para clicks, kills, level ups, summons.
 - [x] Volumen configurable en settings.
 
-### 5.5 Pantalla de Carga
+### 5.4 Pantalla de Carga
 - [x] Loading screen animado con logo, nombre del juego, versión y desarrollador.
 - [x] Animaciones de SVGs de héroes y enemigos flotando/orbitando.
 - [x] Starfield de fondo con partículas de colores ascendentes.
 - [x] Barra de progreso con texto de estado y tips rotativos.
 - [x] Transición suave al juego al completar la carga.
 
-### 5.4 Analytics y balanceo
+### 5.5 Analytics y balanceo
 - [ ] Telemetría anónima: puntos de atasco, compras.
 - [ ] A/B testing de curvas de dificultad.
 - [ ] Dashboard de retención.
+
+---
+
+## 🌌 FASE 6 — Deep Endgame (v2.5) 🆕
+
+### 6.1 Ascensión Infinita
+- [ ] Tras stage 2000, entrar en "Modo Infinito" con escalado procedural.
+- [ ] Enemigos con combinaciones de elementos aleatorias.
+- [ ] Modificadores de dificultad acumulativos cada 100 stages.
+- [ ] Recompensas exclusivas (skins, títulos, reliquias legendarias).
+
+### 6.2 Boss Raids Mensuales
+- [ ] Boss especial mensual con HP pool masivo (requiere progreso acumulado).
+- [ ] 3 fases con mecánicas especiales (curación, enrage, shields, spawns).
+- [ ] Recompensas por umbrales de daño (bronce/plata/oro/diamante).
+- [ ] Historial de participación y mejores marcas.
+
+### 6.3 Laboratorio de Fusión
+- [ ] Combinar 2 héroes del mismo elemento para crear variantes únicas.
+- [ ] Héroes fusionados heredan habilidades de ambos padres.
+- [ ] Sistema de traits aleatorios (+/- stats, habilidades especiales).
+- [ ] Límite de fusiones por héroe (máx 3 niveles de fusión).
+
+### 6.4 Dimensiones Alternativas
+- [ ] Portales a dimensiones con reglas modificadas (sin monedas, solo crit, etc.).
+- [ ] Cada dimensión: 50 stages con boss final.
+- [ ] Fragmentos dimensionales como recompensa → desbloquean reliquias exclusivas.
+- [ ] Rotación mensual de dimensiones disponibles.
+
+### 6.5 Sistema de Legado
+- [ ] Al alcanzar prestige 25, opción de "Legado" que resetea TODO pero otorga multiplicador permanente global.
+- [ ] Cada legado incrementa multiplicador base (+25% por legado).
+- [ ] Contador de legados visible en perfil.
+- [ ] Desbloquea héroes y reliquias de legado exclusivas.
+
+---
+
+## 🧩 FASE 7 — QoL Avanzado y Pulido (v3.0) 🆕
+
+### 7.1 Auto-Battle Inteligente
+- [ ] Configurar prioridades de targeting (más HP, más DPS, más débil, boss first).
+- [ ] Auto-usar habilidades activas según cooldown y condiciones.
+- [ ] Presets de party guardables (3-5 slots).
+- [ ] Auto-equip que respete preferencias de build (DPS, tank, utility).
+
+### 7.2 Estadísticas Avanzadas
+- [ ] Dashboard de DPS en tiempo real con gráfico.
+- [ ] Historial de kills/hora, coins/hora, stardust/hora.
+- [ ] Comparador de builds de party (A vs B, side by side).
+- [ ] Log exportable de sesión (CSV/JSON).
+
+### 7.3 Notificaciones In-Game
+- [ ] Centro de notificaciones con timeline.
+- [ ] Alertas configurables (expedición completa, quest lista, evento activo).
+- [ ] Badge/counter en los tabs con pendientes.
+- [ ] Resumen diario al login (qué pasó offline).
+
+### 7.4 Accesibilidad
+- [ ] Modo daltonismo (esquemas de color alternativos).
+- [ ] Tamaño de fuente configurable.
+- [ ] Atajos de teclado para tabs y acciones principales.
+- [ ] Reducir animaciones (opción para motion-reduce).
 
 ---
 
@@ -146,38 +228,53 @@
 
 | # | Idea | Impacto | Esfuerzo | Estado |
 |---|------|---------|----------|--------|
-| B1 | Fusión de héroes (2 iguales → ascensión) | Alto | Medio | Pendiente |
-| B2 | Modo AFK mejorado (ganancias offline) | Alto | Bajo | Ya existe offline |
+| B1 | Fusión de héroes (2 iguales → ascensión) | Alto | Medio | → Fase 6.3 |
+| B2 | Modo AFK mejorado (ganancias offline) | Alto | Bajo | ✅ Ya existe |
 | B3 | Enemigos de élite aleatorios (1% chance, ×3 recompensa) | Medio | Bajo | ✅ Hecho |
 | B4 | Logbook/diario de aventura narrativo | Medio | Medio | Pendiente |
 | B5 | Puzzle minigame nuevo (match-3 temático) | Medio | Alto | Pendiente |
-| B6 | Time-limited banners de summon (tasa UP) | Alto | Medio | Pendiente |
+| B6 | Time-limited banners de summon (tasa UP) | Alto | Medio | ✅ Hecho |
 | B7 | Achievements secretos / Easter eggs | Bajo | Bajo | ✅ Hecho |
 | B8 | Modo nocturno automático (hora real) | Bajo | Bajo | Pendiente |
 | B9 | Sistema de trading entre saves | Alto | Alto | Pendiente |
 | B10 | Boss rush mode (10 bosses seguidos, timer) | Alto | Medio | ✅ Hecho |
+| B11 | Prestigio visual (aura/efecto por prestige count) | Medio | Medio | Pendiente |
+| B12 | Modo speedrun (timer global, ranking) | Medio | Medio | Pendiente |
+| B13 | Componente de decaimiento (ítems se degradan, necesitan reparación) | Medio | Alto | Pendiente |
+| B14 | Sistema de aliados NPC (compañeros temporales de stage) | Medio | Medio | Pendiente |
+| B15 | Arena PvP simulada (IA basada en saves de otros jugadores) | Alto | Alto | Pendiente |
+| B16 | Enciclopedia bestiario completable | Bajo | Bajo | Pendiente |
+| B17 | Sistema de estaciones (mecánicas cambian por estación real) | Medio | Medio | Pendiente |
+| B18 | Subastas de ítems entre saves | Alto | Alto | Pendiente |
+| B19 | Pactos demoníacos (tradeoffs permanentes: +DPS/-coins) | Alto | Medio | Pendiente |
+| B20 | Modo cooperativo asíncrono (dejar héroe como apoyo) | Alto | Alto | Pendiente |
 
 ---
 
 ## 📊 Estado del contenido actual
 
-| Tipo | Cantidad actual | Objetivo v1.0 | Objetivo v2.0 |
+| Tipo | Cantidad actual | Objetivo v1.0 | Objetivo v3.0 |
 |------|----------------|---------------|---------------|
-| Héroes | 34 | 12 | 24+ |
-| Enemigos | 25+ | 25+ | 40+ |
-| Ítems | 38 | 20 | 40+ |
-| Upgrades (Academia) | 15 | 15 | 20 |
-| Prestige Lines | 8 | 8 | 12 |
-| Tower Floors | 22 | 12 | 22 |
-| Colecciones | 6 | 6 | 10 |
+| Héroes | 34 | 12 | 50+ |
+| Enemigos | 25+ | 25+ | 50+ |
+| Ítems | 38 | 20 | 60+ |
+| Upgrades (Academia) | 20 | 15 | 30 |
+| Prestige Lines | 12 | 8 | 20 |
+| Tower Floors | 22 | 12 | 40 |
+| Colecciones | 10 | 6 | 20 |
 | Eventos | 7 | 7 | 14 |
-| Logros | 102 | 70+ | 100+ |
-| Mascotas | 10 | 4 | 8 |
-| Mini-Juegos | 3 | 3 | 5 |
-| Misiones diarias | 3+2 semanales | 3 | 5 |
-| Runas | 15 (5×3) | — | 15 |
-| Runas | 0 | 0 | 15 |
-| Reliquias | 0 | 0 | 10 |
+| Logros | 120+ | 70+ | 200+ |
+| Mascotas | 10 | 4 | 15 |
+| Mini-Juegos | 3 | 3 | 6 |
+| Misiones diarias | 3+2 semanales | 3 | 5+3 |
+| Runas | 15 (5×3) | — | 25 (5×5) |
+| Reliquias | 10 | — | 20 |
+| Sinergias | 12 | 7 | 20 |
+| Milestones | 12 | 8 | 20 |
+| Talentos globales | 24 | — | 40 |
+| Maestrías (por héroe) | 15 nodos | — | 20 nodos |
+| Desafíos diarios | 12 modificadores | — | 20 |
+| Banners de summon | 6 | — | 12 |
 
 ---
 
