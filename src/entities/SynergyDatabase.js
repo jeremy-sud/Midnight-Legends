@@ -52,7 +52,7 @@ export const SynergyDatabase = [
   {
     id: 'syn_full_squad',
     name: 'Full Squad',
-    desc: '4 heroes in party',
+    desc: '4+ heroes in party',
     effect: '+15% DPS',
     icon: '👥',
     rarityName: null,
@@ -60,6 +60,18 @@ export const SynergyDatabase = [
     dpsBonus: 0.15,
     coinBonus: 0,
     color: '#81c784',
+  },
+  {
+    id: 'syn_legendary_five',
+    name: 'Legendary Five',
+    desc: '5 heroes in party',
+    effect: '+25% DPS, +15% Coins',
+    icon: '🌟',
+    rarityName: null,
+    minCount: 5,
+    dpsBonus: 0.25,
+    coinBonus: 0.15,
+    color: '#ffd700',
   },
   {
     id: 'syn_diversity',

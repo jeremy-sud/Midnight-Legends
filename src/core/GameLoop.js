@@ -18,6 +18,7 @@ import { getPartyElementMultiplier, processStatusEffects, createStatusEffect, En
 import { getHeroActiveSkill, getSkillDamage } from "../entities/HeroActiveSkills.js";
 import { tickExpeditions } from "../entities/ExpeditionDatabase.js";
 import { getHeroElement } from "../entities/HeroDatabase.js";
+import { generateRuneDrop, getRuneInfo } from "../entities/RuneDatabase.js";
 
 export class Engine {
   constructor(uiManager) {
@@ -670,8 +671,19 @@ export class Engine {
     GameState.addStardust(towerData.stardustReward);
     const towerGems = Math.max(1, Math.floor(towerData.stardustReward / 5));
     GameState.addGems(towerGems);
+
+    // Rune drop: 40% chance base, +5% per floor above 5
+    const runeChance = 0.40 + Math.max(0, (state.towerFloor - 5)) * 0.05;
+    let runeMsg = '';
+    if (Math.random() < runeChance) {
+      const rune = generateRuneDrop(state.towerFloor);
+      GameState.addRune(rune);
+      const info = getRuneInfo(rune);
+      runeMsg = ` | 🔮 ${info.displayName}!`;
+    }
+
     this.ui.showNotification(
-      `Floor ${state.towerFloor} Cleared! +${towerData.stardustReward} Stardust +${towerGems} Gems`
+      `Floor ${state.towerFloor} Cleared! +${towerData.stardustReward} Stardust +${towerGems} Gems${runeMsg}`
     );
 
     state.towerFloor++;

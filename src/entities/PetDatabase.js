@@ -169,6 +169,121 @@ export const PetDatabase = [
       desc: `+${(1 * level * mood).toFixed(0)}% Coins & DPS`
     }),
   },
+
+  // ── NEW PETS (Phase 2.4) ──────────────────────────────────────────
+
+  {
+    id: 'pet_frost',
+    name: 'Frost',
+    species: 'Ice Wisp',
+    icon: '❄️',
+    desc: 'A tiny fragment of eternal winter. Chills enemies and boosts critical strikes.',
+    unlockCost: { gems: 80 },
+    maxLevel: 20,
+    svg: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="34" r="14" fill="#4fc3f7"/>
+      <circle cx="32" cy="34" r="11" fill="#b3e5fc"/>
+      <circle cx="28" cy="32" r="2" fill="#1a1a2e"/>
+      <circle cx="36" cy="32" r="2" fill="#1a1a2e"/>
+      <circle cx="29" cy="31" r="0.8" fill="white"/>
+      <circle cx="37" cy="31" r="0.8" fill="white"/>
+      <path d="M30 37 Q32 39 34 37" stroke="#0288d1" stroke-width="0.8" fill="none"/>
+      <path d="M32 18v6M32 48v-6" stroke="#4fc3f7" stroke-width="1.5"/>
+      <path d="M22 24l4 4M42 24l-4 4" stroke="#4fc3f7" stroke-width="1.5"/>
+      <path d="M22 44l4-4M42 44l-4-4" stroke="#4fc3f7" stroke-width="1.5"/>
+      <circle cx="32" cy="18" r="2" fill="#e1f5fe"/>
+      <circle cx="22" cy="24" r="1.5" fill="#e1f5fe"/>
+      <circle cx="42" cy="24" r="1.5" fill="#e1f5fe"/>
+    </svg>`,
+    bonus: (level, mood) => ({
+      dpsBonus: 0.008 * level * mood,
+      lootBonus: 0.006 * level * mood,
+      desc: `+${(0.8 * level * mood).toFixed(0)}% DPS, +${(0.6 * level * mood).toFixed(1)}% Loot`
+    }),
+  },
+  {
+    id: 'pet_flicker',
+    name: 'Flicker',
+    species: 'Star Firefly',
+    icon: '✨',
+    desc: 'A luminous insect born from starlight. Its glow attracts stardust.',
+    unlockCost: { stardust: 800 },
+    maxLevel: 20,
+    svg: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="32" cy="38" rx="10" ry="12" fill="#ffd54f"/>
+      <ellipse cx="32" cy="38" rx="8" ry="10" fill="#fff9c4"/>
+      <circle cx="29" cy="36" r="1.5" fill="#1a1a2e"/>
+      <circle cx="35" cy="36" r="1.5" fill="#1a1a2e"/>
+      <path d="M30 41 Q32 43 34 41" stroke="#f9a825" stroke-width="0.8" fill="none"/>
+      <path d="M24 28 Q28 22 32 28 Q36 22 40 28" stroke="#ffd54f" stroke-width="1" fill="none" opacity="0.6"/>
+      <circle cx="32" cy="20" r="3" fill="#fff176" opacity="0.5"/>
+      <circle cx="24" cy="26" r="2" fill="#fff176" opacity="0.3"/>
+      <circle cx="40" cy="26" r="2" fill="#fff176" opacity="0.3"/>
+      <circle cx="32" cy="52" r="4" fill="#ffeb3b" opacity="0.3"/>
+    </svg>`,
+    bonus: (level, mood) => ({
+      stardustBonus: 0.025 * level * mood,
+      xpBonus: 0.01 * level * mood,
+      desc: `+${(2.5 * level * mood).toFixed(0)}% Stardust, +${(1 * level * mood).toFixed(0)}% XP`
+    }),
+  },
+  {
+    id: 'pet_rumble',
+    name: 'Rumble',
+    species: 'Rock Golem',
+    icon: '🪨',
+    desc: 'A miniature golem made of ancient moonstone. Slow but absurdly strong.',
+    unlockCost: { coins: 50000 },
+    maxLevel: 20,
+    svg: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="26" width="24" height="22" rx="4" fill="#8d6e63"/>
+      <rect x="22" y="28" width="20" height="18" rx="3" fill="#a1887f"/>
+      <circle cx="28" cy="35" r="2.5" fill="#1a1a2e"/>
+      <circle cx="36" cy="35" r="2.5" fill="#1a1a2e"/>
+      <circle cx="29" cy="34" r="1" fill="white"/>
+      <circle cx="37" cy="34" r="1" fill="white"/>
+      <path d="M30 41 L34 41" stroke="#5d4037" stroke-width="1.5"/>
+      <rect x="16" y="32" width="6" height="10" rx="3" fill="#8d6e63"/>
+      <rect x="42" y="32" width="6" height="10" rx="3" fill="#8d6e63"/>
+      <rect x="24" y="48" width="6" height="6" rx="2" fill="#8d6e63"/>
+      <rect x="34" y="48" width="6" height="6" rx="2" fill="#8d6e63"/>
+      <path d="M26 26 L30 22 L34 22 L38 26" fill="#795548"/>
+    </svg>`,
+    bonus: (level, mood) => ({
+      dpsBonus: 0.02 * level * mood,
+      desc: `+${(2 * level * mood).toFixed(0)}% DPS`
+    }),
+  },
+  {
+    id: 'pet_whisper',
+    name: 'Whisper',
+    species: 'Phantom Cat',
+    icon: '👻',
+    desc: 'A ghostly feline that phases between dimensions. Brings rare treasures from the other side.',
+    unlockCost: { essence: 25 },
+    maxLevel: 20,
+    svg: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="32" cy="40" rx="14" ry="12" fill="#b0bec5" opacity="0.7"/>
+      <ellipse cx="32" cy="40" rx="12" ry="10" fill="#eceff1" opacity="0.6"/>
+      <path d="M20 34 L22 24 L28 30" fill="#b0bec5" opacity="0.7"/>
+      <path d="M44 34 L42 24 L36 30" fill="#b0bec5" opacity="0.7"/>
+      <circle cx="28" cy="38" r="2.5" fill="#7c4dff"/>
+      <circle cx="36" cy="38" r="2.5" fill="#7c4dff"/>
+      <circle cx="29" cy="37" r="1" fill="white"/>
+      <circle cx="37" cy="37" r="1" fill="white"/>
+      <path d="M30 43 Q32 45 34 43" stroke="#78909c" stroke-width="0.8" fill="none"/>
+      <path d="M22 42 L18 44" stroke="#b0bec5" stroke-width="0.8" opacity="0.5"/>
+      <path d="M22 44 L18 46" stroke="#b0bec5" stroke-width="0.8" opacity="0.5"/>
+      <path d="M42 42 L46 44" stroke="#b0bec5" stroke-width="0.8" opacity="0.5"/>
+      <path d="M42 44 L46 46" stroke="#b0bec5" stroke-width="0.8" opacity="0.5"/>
+      <path d="M38 50 Q40 54 42 52 Q44 56 40 56" stroke="#b0bec5" stroke-width="1" fill="none" opacity="0.5"/>
+    </svg>`,
+    bonus: (level, mood) => ({
+      essenceBonus: 0.02 * level * mood,
+      lootBonus: 0.008 * level * mood,
+      desc: `+${(2 * level * mood).toFixed(0)}% Essence, +${(0.8 * level * mood).toFixed(1)}% Loot`
+    }),
+  },
 ];
 
 export const PetFoods = [

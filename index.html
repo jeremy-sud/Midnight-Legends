@@ -237,6 +237,26 @@
            </div>
         </section>
 
+        <!-- RUNES SCREEN -->
+        <section id="tab-runes" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>🔮 Runes</h2>
+              <p>Socket runes into equipment to gain powerful bonuses. Earn runes by defeating Tower floors.</p>
+           </div>
+           <div class="runes-container">
+             <div class="runes-inventory-section">
+               <h3>Rune Inventory</h3>
+               <div id="rune-inv-grid" class="rune-grid"></div>
+               <p id="rune-inv-empty" class="empty-msg" style="display:none">No runes yet. Defeat Tower floors to earn runes!</p>
+             </div>
+             <div class="runes-socketed-section">
+               <h3>Socketed Runes</h3>
+               <p class="rune-hint">Select an equipped item from the hero roster to manage its rune slots.</p>
+               <div id="rune-socket-panel"></div>
+             </div>
+           </div>
+        </section>
+
         <!-- TAVERN SCREEN -->
         <section id="tab-tavern" class="tab-content glass-panel">
            <div class="screen-header">
@@ -591,6 +611,28 @@
                     <span>Compact Mode</span>
                     <input type="checkbox" id="setting-compact">
                     <span class="toggle-slider"></span>
+                 </label>
+              </div>
+
+              <div class="settings-group">
+                 <h3>🔊 Sound</h3>
+                 <label class="setting-toggle">
+                    <span>Background Music</span>
+                    <input type="checkbox" id="setting-music" checked>
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-range">
+                    <span>Music Volume</span>
+                    <input type="range" id="setting-music-vol" min="0" max="100" value="30" class="volume-slider">
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Sound Effects</span>
+                    <input type="checkbox" id="setting-sfx" checked>
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-range">
+                    <span>SFX Volume</span>
+                    <input type="range" id="setting-sfx-vol" min="0" max="100" value="40" class="volume-slider">
                  </label>
               </div>
 

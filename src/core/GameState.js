@@ -14,7 +14,7 @@ class StateManager {
       essence: 0,
       inventory: [], // Array of item instances: { uid: '...', templateId: '...', rarity: { ... } }
       roster: [], // Array of hero instances: { id: 'hero1', uid: 'uuid', level: 1, equip: {weapon:null, armor:null, acc:null} }
-      activeParty: [], // Array of hero UIDs currently in the party (max 4)
+      activeParty: [], // Array of hero UIDs currently in the party (max 5)
       currentStage: 1,
       currentEnemyHp: 100,
       currentEnemyMaxHp: 100,
@@ -62,6 +62,10 @@ class StateManager {
         noGlow: false,
         reduceRenders: false,
         noFloatText: false,
+        musicEnabled: true,
+        sfxEnabled: true,
+        musicVolume: 0.3,
+        sfxVolume: 0.4,
       },
       playerDamageStats: {
         totalDamageDealt: 0,
@@ -98,6 +102,7 @@ class StateManager {
           lastPlayed: null,
           bestWave: 0,
         },
+        runes: [],                  // Array of rune instances: { uid, templateId }
     };
   }
   /**
@@ -223,6 +228,64 @@ class StateManager {
       this.data.inventory.push(hero.equip[slot]);
       hero.equip[slot] = null;
     }
+  }
+
+  addRune(runeInstance) {
+    if (!this.data.runes) this.data.runes = [];
+    this.data.runes.push(runeInstance);
+  }
+
+  // Socket a rune into an equipped item's rune slot
+  socketRune(itemUid, runeUid, slotIndex) {
+    if (!this.data.runes) this.data.runes = [];
+    // Find the item (can be in inventory or equipped on a hero)
+    let item = this.data.inventory.find(i => i.uid === itemUid);
+    if (!item) {
+      for (const hero of this.data.roster) {
+        if (hero.equip) {
+          for (const s of ['weapon', 'armor', 'acc']) {
+            if (hero.equip[s] && hero.equip[s].uid === itemUid) {
+              item = hero.equip[s];
+              break;
+            }
+          }
+        }
+        if (item) break;
+      }
+    }
+    if (!item) return false;
+    const runeIdx = this.data.runes.findIndex(r => r.uid === runeUid);
+    if (runeIdx === -1) return false;
+    if (!item.runes) item.runes = [];
+    // Return existing rune in that slot to inventory
+    if (item.runes[slotIndex]) {
+      this.data.runes.push(item.runes[slotIndex]);
+    }
+    item.runes[slotIndex] = this.data.runes.splice(runeIdx, 1)[0];
+    return true;
+  }
+
+  // Remove a rune from an item slot back to rune inventory
+  unsocketRune(itemUid, slotIndex) {
+    if (!this.data.runes) this.data.runes = [];
+    let item = this.data.inventory.find(i => i.uid === itemUid);
+    if (!item) {
+      for (const hero of this.data.roster) {
+        if (hero.equip) {
+          for (const s of ['weapon', 'armor', 'acc']) {
+            if (hero.equip[s] && hero.equip[s].uid === itemUid) {
+              item = hero.equip[s];
+              break;
+            }
+          }
+        }
+        if (item) break;
+      }
+    }
+    if (!item || !item.runes || !item.runes[slotIndex]) return false;
+    this.data.runes.push(item.runes[slotIndex]);
+    item.runes[slotIndex] = null;
+    return true;
   }
 }
 

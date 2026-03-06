@@ -739,4 +739,275 @@ export const AchievementDatabase = [
       return (state.currentStage || 1) >= 20 && totalLevels === 0;
     },
   },
+
+  // ── NEW ACHIEVEMENTS (Phase 2.4) ─────────────────────────────────
+
+  // --- Combat ---
+  {
+    id: "ach_combat_10k_kills",
+    name: "Warmonger",
+    desc: "Defeat 10,000 enemies.",
+    icon: "💀",
+    category: "combat",
+    reward: { coins: 15000, gems: 5 },
+    condition: (stats) => stats.enemiesDefeated >= 10000,
+  },
+  {
+    id: "ach_combat_50k_kills",
+    name: "Extinction Event",
+    desc: "Defeat 50,000 enemies.",
+    icon: "☠️",
+    category: "combat",
+    reward: { coins: 50000, gems: 15 },
+    condition: (stats) => stats.enemiesDefeated >= 50000,
+  },
+  {
+    id: "ach_combat_500_bosses",
+    name: "Boss Hunter",
+    desc: "Defeat 500 bosses.",
+    icon: "👑",
+    category: "combat",
+    reward: { coins: 30000, gems: 10 },
+    condition: (stats) => stats.bossesDefeated >= 500,
+  },
+  {
+    id: "ach_combat_1000_crits",
+    name: "Precision Master",
+    desc: "Land 1,000 critical hits.",
+    icon: "🎯",
+    category: "combat",
+    reward: { coins: 10000, stardust: 20 },
+    condition: (stats) => stats.criticalHits >= 1000,
+  },
+
+  // --- Progression ---
+  {
+    id: "ach_prog_stage_200",
+    name: "Into the Abyss",
+    desc: "Reach stage 200.",
+    icon: "🌀",
+    category: "progression",
+    reward: { gems: 10, stardust: 30 },
+    condition: (stats) => stats.highestStage >= 200,
+  },
+  {
+    id: "ach_prog_stage_500",
+    name: "Beyond the Veil",
+    desc: "Reach stage 500.",
+    icon: "🌌",
+    category: "progression",
+    reward: { gems: 25, stardust: 50 },
+    condition: (stats) => stats.highestStage >= 500,
+  },
+  {
+    id: "ach_prog_tower_15",
+    name: "Tower Veteran",
+    desc: "Clear Tower Floor 15.",
+    icon: "🏰",
+    category: "progression",
+    reward: { stardust: 40, gems: 8 },
+    condition: (stats) => stats.highestTowerFloor >= 15,
+  },
+  {
+    id: "ach_prog_tower_22",
+    name: "Tower Conqueror",
+    desc: "Clear Tower Floor 22.",
+    icon: "🗼",
+    category: "progression",
+    reward: { stardust: 80, gems: 20 },
+    condition: (stats) => stats.highestTowerFloor >= 22,
+  },
+
+  // --- Economy ---
+  {
+    id: "ach_eco_1m_coins",
+    name: "Millionaire",
+    desc: "Earn 1,000,000 total coins.",
+    icon: "💎",
+    category: "economy",
+    reward: { gems: 10, stardust: 15 },
+    condition: (stats) => stats.totalCoinsEarned >= 1000000,
+  },
+  {
+    id: "ach_eco_100_gems",
+    name: "Gem Hoarder",
+    desc: "Earn 100 total gems.",
+    icon: "💠",
+    category: "economy",
+    reward: { coins: 20000, stardust: 10 },
+    condition: (stats) => stats.totalGemsEarned >= 100,
+  },
+  {
+    id: "ach_eco_500_essence",
+    name: "Essence Collector",
+    desc: "Earn 500 total essence.",
+    icon: "🧪",
+    category: "economy",
+    reward: { gems: 8, coins: 15000 },
+    condition: (stats) => stats.totalEssenceEarned >= 500,
+  },
+
+  // --- Collection ---
+  {
+    id: "ach_col_20_heroes",
+    name: "Army Builder",
+    desc: "Recruit 20 heroes.",
+    icon: "🛡️",
+    category: "collection",
+    reward: { gems: 8, coins: 10000 },
+    condition: (stats) => stats.heroesRecruited >= 20,
+  },
+  {
+    id: "ach_col_30_items",
+    name: "Treasure Trove",
+    desc: "Find 30 items.",
+    icon: "🗃️",
+    category: "collection",
+    reward: { gems: 5, stardust: 15 },
+    condition: (stats) => stats.itemsFound >= 30,
+  },
+  {
+    id: "ach_col_50_items",
+    name: "Artifact Museum",
+    desc: "Find 50 items.",
+    icon: "🏛️",
+    category: "collection",
+    reward: { gems: 12, stardust: 25 },
+    condition: (stats) => stats.itemsFound >= 50,
+  },
+  {
+    id: "ach_col_full_party",
+    name: "Legendary Five",
+    desc: "Fill all 5 party slots.",
+    icon: "🌟",
+    category: "collection",
+    reward: { coins: 8000, gems: 5 },
+    condition: (stats, state) => (state.activeParty || []).length >= 5,
+  },
+
+  // --- Prestige ---
+  {
+    id: "ach_pres_5",
+    name: "Eternal Cycle",
+    desc: "Prestige 5 times.",
+    icon: "🔄",
+    category: "prestige",
+    reward: { essence: 25, gems: 10 },
+    condition: (stats, state) => (state.prestigeCount || 0) >= 5,
+  },
+  {
+    id: "ach_pres_10",
+    name: "Endless Rebirth",
+    desc: "Prestige 10 times.",
+    icon: "♾️",
+    category: "prestige",
+    reward: { essence: 50, gems: 25 },
+    condition: (stats, state) => (state.prestigeCount || 0) >= 10,
+  },
+
+  // --- Level ---
+  {
+    id: "ach_lvl_30",
+    name: "Seasoned Adventurer",
+    desc: "Reach player level 30.",
+    icon: "⭐",
+    category: "level",
+    reward: { coins: 20000, gems: 8 },
+    condition: (stats, state) => (state.profile?.level || 1) >= 30,
+  },
+  {
+    id: "ach_lvl_50",
+    name: "Legendary Explorer",
+    desc: "Reach player level 50.",
+    icon: "🌠",
+    category: "level",
+    reward: { coins: 50000, gems: 20 },
+    condition: (stats, state) => (state.profile?.level || 1) >= 50,
+  },
+
+  // --- Runes ---
+  {
+    id: "ach_rune_first",
+    name: "Runekeeper",
+    desc: "Obtain your first rune.",
+    icon: "🔮",
+    category: "collection",
+    reward: { coins: 5000, stardust: 10 },
+    condition: (stats, state) => {
+      const runes = state.runes || [];
+      // Count runes in inventory + socketed in items
+      let total = runes.length;
+      for (const hero of state.roster || []) {
+        if (hero.equip) {
+          for (const slot of ['weapon', 'armor', 'acc']) {
+            if (hero.equip[slot]?.runes) {
+              total += hero.equip[slot].runes.filter(Boolean).length;
+            }
+          }
+        }
+      }
+      return total >= 1;
+    },
+  },
+  {
+    id: "ach_rune_5",
+    name: "Rune Scholar",
+    desc: "Collect 5 runes.",
+    icon: "📿",
+    category: "collection",
+    reward: { gems: 10, stardust: 20 },
+    condition: (stats, state) => {
+      const runes = state.runes || [];
+      let total = runes.length;
+      for (const hero of state.roster || []) {
+        if (hero.equip) {
+          for (const slot of ['weapon', 'armor', 'acc']) {
+            if (hero.equip[slot]?.runes) {
+              total += hero.equip[slot].runes.filter(Boolean).length;
+            }
+          }
+        }
+      }
+      return total >= 5;
+    },
+  },
+
+  // --- Secret ---
+  {
+    id: "ach_secret_grand_rune",
+    name: "Grand Discovery",
+    desc: "Obtain a Grand tier rune.",
+    icon: "✨",
+    category: "secret",
+    secret: true,
+    reward: { gems: 15, essence: 15 },
+    condition: (stats, state) => {
+      const runes = state.runes || [];
+      const hasGrand = runes.some(r => r.templateId && r.templateId.includes('grand'));
+      if (hasGrand) return true;
+      for (const hero of state.roster || []) {
+        if (hero.equip) {
+          for (const slot of ['weapon', 'armor', 'acc']) {
+            if (hero.equip[slot]?.runes) {
+              if (hero.equip[slot].runes.some(r => r && r.templateId && r.templateId.includes('grand'))) return true;
+            }
+          }
+        }
+      }
+      return false;
+    },
+  },
+  {
+    id: "ach_secret_max_ascend",
+    name: "Ascension Pinnacle",
+    desc: "Ascend a hero 5 times.",
+    icon: "🏆",
+    category: "secret",
+    secret: true,
+    reward: { gems: 20, essence: 30 },
+    condition: (stats, state) => {
+      const asc = state.heroAscensions || {};
+      return Object.values(asc).some(level => level >= 5);
+    },
+  },
 ];

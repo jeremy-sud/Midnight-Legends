@@ -5,4 +5,5 @@ export const Config = {
   baseCritDamage: 2.0, // Crits deal 2x damage by default
   gachaCost: 100, // Cost in Stardust to summon a hero
   coinSummonCost: 1000, // Cost in Coins for a common/rare summon
+  maxPartySize: 5, // Maximum heroes in active party
 };

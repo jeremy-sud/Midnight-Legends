@@ -1,4 +1,5 @@
 import { GameState } from "../core/GameState.js";
+import { AudioManager } from "../core/AudioManager.js";
 import {
   HeroTemplate,
   getHeroLevelCost,
@@ -38,6 +39,7 @@ import { getDailyQuests, getQuestProgress, getWeeklyQuests, getWeekKey, getStrea
 import { getCraftableGroups, fuseItems, getDismantleValue, CRAFT_COST, getNextRarity, getUnlockedRecipes, canCraftRecipe, craftRecipe } from "../entities/CraftingDatabase.js";
 import { getUnlockedRegions, ExpeditionRegions, startExpedition, calculateExpeditionRewards, getExpeditionTimeLeft } from "../entities/ExpeditionDatabase.js";
 import { BOSS_RUSH_CONFIG, BOSS_RUSH_NAMES, getBossRushHp, getBossRushReward, BOSS_RUSH_REWARDS, isBossRushReady, getBossRushCooldown } from "../entities/BossRushDatabase.js";
+import { RuneTemplate, RuneTypes, RuneTiers, getRuneInfo, getRuneBonus, getRuneSlots } from "../entities/RuneDatabase.js";
 
 export class UIManager {
   constructor() {
@@ -273,6 +275,10 @@ export class UIManager {
       settingNoGlow: document.getElementById('setting-no-glow'),
       settingReduceRenders: document.getElementById('setting-reduce-renders'),
       settingNoFloatText: document.getElementById('setting-no-float-text'),
+      settingMusic: document.getElementById('setting-music'),
+      settingMusicVol: document.getElementById('setting-music-vol'),
+      settingSfx: document.getElementById('setting-sfx'),
+      settingSfxVol: document.getElementById('setting-sfx-vol'),
     };
 
     // Sell mode state
@@ -630,6 +636,7 @@ export class UIManager {
       { id: 'tab-roster', label: 'Roster' },
       { id: 'tab-tavern', label: 'Tavern' },
       { id: 'tab-inventory', label: 'Inventory' },
+      { id: 'tab-runes', label: 'Runes' },
       { id: 'tab-crafting', label: 'Crafting' },
       { id: 'tab-storage', label: 'Storage' },
     ],
@@ -712,6 +719,7 @@ export class UIManager {
       case 'tab-roster': this.renderRoster(); break;
       case 'tab-tavern': this.renderTavernPool(); break;
       case 'tab-inventory': this.renderInventory(); break;
+      case 'tab-runes': this.renderRunes(); break;
       case 'tab-storage': this.renderStorage(); break;
       case 'tab-crafting': this.renderCrafting(); break;
       case 'tab-academy': this._lastUpgradeHash = null; this.renderUpgrades(); break;
@@ -1205,10 +1213,16 @@ export class UIManager {
         const equipped = hData.equip[slotName];
         if (equipped) {
           const iStats = getItemStats(equipped);
+          const runeCount = getRuneSlots(equipped.rarity);
+          const socketedCount = equipped.runes ? equipped.runes.filter(Boolean).length : 0;
+          const runeDots = runeCount > 0 ? `<div class="equip-rune-dots">${Array.from({length: runeCount}, (_, i) =>
+            `<span class="rune-dot ${equipped.runes && equipped.runes[i] ? 'filled' : ''}">${equipped.runes && equipped.runes[i] ? '◆' : '◇'}</span>`
+          ).join('')}</div>` : '';
           return `
                <div class="equip-slot filled" style="border-color:${iStats.rarity.color}; color:${iStats.rarity.color}" data-slot="${slotName}" data-cat="${categoryStr}">
                   ${iStats.svg}
                   <div class="equip-tooltip">${iStats.displayName || iStats.name}</div>
+                  ${runeDots}
                </div>
              `;
         } else {
@@ -1272,10 +1286,10 @@ export class UIManager {
             (u) => u !== hData.uid
           );
         } else {
-          if (GameState.data.activeParty.length < 4) {
+          if (GameState.data.activeParty.length < 5) {
             GameState.data.activeParty.push(hData.uid);
           } else {
-            this.showNotification("Party is full! (Max 4)");
+            this.showNotification("Party is full! (Max 5)");
             return;
           }
         }
@@ -1419,6 +1433,143 @@ export class UIManager {
     }
   }
 
+  // ============================================
+  // RUNES TAB
+  // ============================================
+  renderRunes() {
+    const state = GameState.data;
+    const runes = state.runes || [];
+    const grid = document.getElementById('rune-inv-grid');
+    const emptyMsg = document.getElementById('rune-inv-empty');
+    const socketPanel = document.getElementById('rune-socket-panel');
+    if (!grid) return;
+
+    // Render rune inventory
+    if (runes.length === 0) {
+      grid.innerHTML = '';
+      if (emptyMsg) emptyMsg.style.display = '';
+    } else {
+      if (emptyMsg) emptyMsg.style.display = 'none';
+      grid.innerHTML = runes.map(rune => {
+        const info = getRuneInfo(rune);
+        if (!info) return '';
+        return `<div class="rune-item" data-rune-uid="${rune.uid}" style="border-color:${info.tierData.color}; color:${info.typeData.color}" title="${info.displayName}\n${info.desc}">
+          <div class="rune-icon">${info.typeData.icon}</div>
+          <div class="rune-svg" style="color:${info.tierData.color}">${info.svg}</div>
+          <div class="rune-name">${info.tierData.name}</div>
+          <div class="rune-stat">${info.desc}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // Render socket panel: show all equipped items across all heroes
+    if (!socketPanel) return;
+    const equippedItems = [];
+    for (const hero of state.roster) {
+      if (!hero.equip) continue;
+      const template = HeroTemplate.find(h => h.id === hero.id);
+      for (const slot of ['weapon', 'armor', 'acc']) {
+        if (hero.equip[slot]) {
+          const item = hero.equip[slot];
+          const stats = getItemStats(item);
+          const slots = getRuneSlots(item.rarity);
+          equippedItems.push({ hero, heroName: template?.name || hero.id, item, stats, slots, slot });
+        }
+      }
+    }
+
+    if (equippedItems.length === 0) {
+      socketPanel.innerHTML = '<p class="empty-msg">No equipped items found. Equip items on heroes first.</p>';
+      return;
+    }
+
+    socketPanel.innerHTML = equippedItems.map(({ hero, heroName, item, stats, slots, slot }) => {
+      if (slots === 0) return `<div class="rune-socket-card no-slots">
+        <div class="rune-socket-header">${heroName} — <span style="color:${stats.rarity.color}">${stats.displayName}</span></div>
+        <div class="rune-no-slots">No rune slots (requires Rare+)</div>
+      </div>`;
+
+      const runeSlots = [];
+      for (let i = 0; i < slots; i++) {
+        const socketed = item.runes && item.runes[i];
+        if (socketed) {
+          const ri = getRuneInfo(socketed);
+          runeSlots.push(`<div class="rune-slot filled" data-item-uid="${item.uid}" data-slot-idx="${i}" title="Click to unsocket">
+            <span class="rune-slot-icon" style="color:${ri.typeData.color}">${ri.typeData.icon}</span>
+            <span class="rune-slot-name">${ri.tierData.name} ${ri.typeData.name}</span>
+            <span class="rune-slot-bonus">${ri.desc}</span>
+          </div>`);
+        } else {
+          runeSlots.push(`<div class="rune-slot empty" data-item-uid="${item.uid}" data-slot-idx="${i}" title="Click to socket a rune">
+            <span class="rune-slot-icon">◇</span>
+            <span class="rune-slot-name">Empty Slot</span>
+          </div>`);
+        }
+      }
+
+      return `<div class="rune-socket-card">
+        <div class="rune-socket-header">${heroName} — <span style="color:${stats.rarity.color}">${stats.displayName}</span></div>
+        <div class="rune-slots-row">${runeSlots.join('')}</div>
+      </div>`;
+    }).join('');
+
+    // Bind events: click empty slot → pick rune from inventory
+    socketPanel.querySelectorAll('.rune-slot.empty').forEach(el => {
+      el.onclick = () => {
+        const itemUid = el.dataset.itemUid;
+        const slotIdx = parseInt(el.dataset.slotIdx);
+        this.openRuneSelector(itemUid, slotIdx);
+      };
+    });
+
+    // Bind events: click filled slot → unsocket
+    socketPanel.querySelectorAll('.rune-slot.filled').forEach(el => {
+      el.onclick = () => {
+        const itemUid = el.dataset.itemUid;
+        const slotIdx = parseInt(el.dataset.slotIdx);
+        GameState.unsocketRune(itemUid, slotIdx);
+        this.renderRunes();
+        this.showNotification('Rune unsocketed!');
+      };
+    });
+  }
+
+  openRuneSelector(itemUid, slotIndex) {
+    const runes = GameState.data.runes || [];
+    if (runes.length === 0) {
+      this.showNotification('No runes available to socket!');
+      return;
+    }
+    const overlay = document.getElementById('select-overlay');
+    const grid = document.getElementById('select-modal-grid');
+    const closeBtn = document.getElementById('select-modal-close');
+    if (!overlay || !grid) return;
+
+    grid.innerHTML = runes.map(rune => {
+      const info = getRuneInfo(rune);
+      if (!info) return '';
+      return `<div class="inv-item rune-select-item" data-rune-uid="${rune.uid}" style="background:rgba(0,0,0,0.4);border:2px solid ${info.tierData.color};cursor:pointer" title="${info.displayName}\n${info.desc}">
+        <div style="font-size:1.4rem">${info.typeData.icon}</div>
+        <div style="font-size:0.7rem;color:${info.tierData.color}">${info.tierData.name}</div>
+        <div style="font-size:0.65rem;color:${info.typeData.color}">${info.desc}</div>
+      </div>`;
+    }).join('');
+
+    overlay.classList.add('active');
+
+    grid.querySelectorAll('.rune-select-item').forEach(el => {
+      el.onclick = () => {
+        const runeUid = el.dataset.runeUid;
+        GameState.socketRune(itemUid, runeUid, slotIndex);
+        overlay.classList.remove('active');
+        this.renderRunes();
+        this.showNotification('Rune socketed!');
+      };
+    });
+
+    closeBtn.onclick = () => overlay.classList.remove('active');
+  }
+
   summonHero(type) {
     if (type === "coin") {
       if (!GameState.spendCoins(Config.coinSummonCost)) return;
@@ -1519,7 +1670,7 @@ export class UIManager {
 
       let partyHtml = `
         <div class="stat-card"><span class="stat-value">${formatNumber(totalDps)}</span><span class="stat-label">Total DPS</span></div>
-        <div class="stat-card"><span class="stat-value">${partyCount} / 4</span><span class="stat-label">Active Party</span></div>
+        <div class="stat-card"><span class="stat-value">${partyCount} / 5</span><span class="stat-label">Active Party</span></div>
         <div class="stat-card"><span class="stat-value">${rosterCount}</span><span class="stat-label">Heroes Owned</span></div>
         <div class="stat-card"><span class="stat-value">${invCount}</span><span class="stat-label">Items Owned</span></div>
         <div class="stat-card"><span class="stat-value">Lv.${GameState.data.autoclickerLevel}</span><span class="stat-label">Familiar Level</span></div>
@@ -1803,6 +1954,38 @@ export class UIManager {
     bindGfx(this.dom.settingNoGlow, "noGlow", "no-glow");
     bindGfx(this.dom.settingReduceRenders, "reduceRenders", "reduce-renders");
     bindGfx(this.dom.settingNoFloatText, "noFloatText", "no-float-text");
+
+    // Sound settings
+    if (this.dom.settingMusic) {
+      this.dom.settingMusic.checked = s.musicEnabled !== false;
+      this.dom.settingMusic.onchange = () => {
+        GameState.data.settings.musicEnabled = this.dom.settingMusic.checked;
+        AudioManager.toggleMusic(this.dom.settingMusic.checked);
+      };
+    }
+    if (this.dom.settingMusicVol) {
+      this.dom.settingMusicVol.value = Math.round((s.musicVolume ?? 0.3) * 100);
+      this.dom.settingMusicVol.oninput = () => {
+        const v = parseInt(this.dom.settingMusicVol.value) / 100;
+        GameState.data.settings.musicVolume = v;
+        AudioManager.setMusicVolume(v);
+      };
+    }
+    if (this.dom.settingSfx) {
+      this.dom.settingSfx.checked = s.sfxEnabled !== false;
+      this.dom.settingSfx.onchange = () => {
+        GameState.data.settings.sfxEnabled = this.dom.settingSfx.checked;
+        AudioManager.toggleSfx(this.dom.settingSfx.checked);
+      };
+    }
+    if (this.dom.settingSfxVol) {
+      this.dom.settingSfxVol.value = Math.round((s.sfxVolume ?? 0.4) * 100);
+      this.dom.settingSfxVol.oninput = () => {
+        const v = parseInt(this.dom.settingSfxVol.value) / 100;
+        GameState.data.settings.sfxVolume = v;
+        AudioManager.setSfxVolume(v);
+      };
+    }
 
     // Apply compact mode if was saved
     if (s.compactMode) document.body.classList.add("compact");

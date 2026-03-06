@@ -1,4 +1,5 @@
 import { ItemCategories, getItemStats } from "./ItemDatabase.js";
+import { getRuneBonus, getRuneSlots } from "./RuneDatabase.js";
 
 export const Rarities = {
   COMMON: {
@@ -418,6 +419,8 @@ export function getHeroStats(heroInstance) {
   let baseDps = template.baseDps * Math.pow(1.2, heroInstance.level - 1);
   let dpsMult = 1;
   let critChance = 0;
+  let coinBonus = 0;
+  let lifestealBonus = 0;
 
   if (heroInstance.equip) {
     const slots = ['weapon', 'armor', 'acc'];
@@ -442,6 +445,22 @@ export function getHeroStats(heroInstance) {
           if (st.prefix.bonus.type === 'dps') dpsMult += st.prefix.bonus.value;
           if (st.prefix.bonus.type === 'crit') critChance += st.prefix.bonus.value / 100;
         }
+        // Apply rune bonuses
+        if (item.runes) {
+          const maxSlots = getRuneSlots(item.rarity);
+          for (let i = 0; i < maxSlots; i++) {
+            if (item.runes[i]) {
+              const rb = getRuneBonus(item.runes[i]);
+              if (rb) {
+                if (rb.stat === 'dps') dpsMult += rb.value;
+                if (rb.stat === 'crit') critChance += rb.value / 100;
+                if (rb.stat === 'coins') coinBonus += rb.value;
+                if (rb.stat === 'lifesteal') lifestealBonus += rb.value;
+                if (rb.stat === 'dmg_amp') dpsMult += rb.value;
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -454,6 +473,8 @@ export function getHeroStats(heroInstance) {
   return {
     dps: baseDps * dpsMult,
     critChance: critChance,
+    coinBonus: coinBonus,
+    lifestealBonus: lifestealBonus,
     element: HERO_ELEMENTS[heroInstance.id] || null,
     ascensionLevel: ascension,
   };

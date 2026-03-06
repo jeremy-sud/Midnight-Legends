@@ -50,18 +50,18 @@
 - [x] 8-12 héroes nuevos (completar 24 totales, 6 por rareza).
 - [x] 10+ ítems nuevos con efectos especiales (lifesteal, DoT, splash).
 - [x] 10 nuevos pisos de torre (floor 13-22).
-- [ ] 20+ logros adicionales.
-- [ ] 4 mascotas nuevas con mecánicas únicas.
+- [x] 20+ logros adicionales.
+- [x] 4 mascotas nuevas con mecánicas únicas.
 
 ---
 
 ## ⭐ FASE 3 — Endgame y profundidad (v1.2)
 
 ### 3.1 Sistema de Runas / Encantamientos
-- [ ] Obtener runas como drops raros del Tower.
-- [ ] Insertar runas en ítems para bonus pasivos (crit%, DPS%, coin bonus).
-- [ ] 5 tipos de runas con 3 tiers cada una.
-- [ ] Límite de runas por ítem según rareza.
+- [x] Obtener runas como drops raros del Tower.
+- [x] Insertar runas en ítems para bonus pasivos (crit%, DPS%, coin bonus).
+- [x] 5 tipos de runas con 3 tiers cada una.
+- [x] Límite de runas por ítem según rareza.
 
 ### 3.2 Modo Desafío / Dungeons
 - [ ] Dungeon semanal con pisos infinitos y modificadores (2× HP, timer 60s, etc.).
@@ -124,9 +124,9 @@
 - [ ] Textos extraídos a archivos de traducción.
 
 ### 5.3 Sonido y música
-- [ ] Soundtrack ambient (2-3 tracks).
-- [ ] SFX para clicks, kills, level ups, summons.
-- [ ] Volumen configurable en settings.
+- [x] Soundtrack ambient (2-3 tracks).
+- [x] SFX para clicks, kills, level ups, summons.
+- [x] Volumen configurable en settings.
 
 ### 5.4 Analytics y balanceo
 - [ ] Telemetría anónima: puntos de atasco, compras.
@@ -156,18 +156,19 @@
 
 | Tipo | Cantidad actual | Objetivo v1.0 | Objetivo v2.0 |
 |------|----------------|---------------|---------------|
-| Héroes | 23 | 12 | 24+ |
+| Héroes | 34 | 12 | 24+ |
 | Enemigos | 25+ | 25+ | 40+ |
-| Ítems | 27 | 20 | 40+ |
+| Ítems | 38 | 20 | 40+ |
 | Upgrades (Academia) | 15 | 15 | 20 |
 | Prestige Lines | 8 | 8 | 12 |
 | Tower Floors | 22 | 12 | 22 |
 | Colecciones | 6 | 6 | 10 |
 | Eventos | 7 | 7 | 14 |
-| Logros | 78 | 70+ | 100+ |
-| Mascotas | 4 | 4 | 8 |
+| Logros | 102 | 70+ | 100+ |
+| Mascotas | 10 | 4 | 8 |
 | Mini-Juegos | 3 | 3 | 5 |
 | Misiones diarias | 3+2 semanales | 3 | 5 |
+| Runas | 15 (5×3) | — | 15 |
 | Runas | 0 | 0 | 15 |
 | Reliquias | 0 | 0 | 10 |
 

@@ -363,6 +363,7 @@ h1 {
 .party-member:nth-child(2) { animation-delay: 0.5s; }
 .party-member:nth-child(3) { animation-delay: 1s; }
 .party-member:nth-child(4) { animation-delay: 1.5s; }
+.party-member:nth-child(5) { animation-delay: 2s; }
 .p-svg svg { width: 50px; height: 50px; filter: drop-shadow(0 0 8px currentColor); }
 .p-lvl { font-size: 0.8rem; font-weight: 600; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;}
 
@@ -615,6 +616,76 @@ h1 {
 }
 .setting-toggle input:checked + .toggle-slider { background: rgba(0, 229, 255, 0.3); border-color: var(--neon-blue); }
 .setting-toggle input:checked + .toggle-slider::after { transform: translateX(22px); background: var(--neon-blue); box-shadow: 0 0 8px rgba(0, 229, 255, 0.5); }
+
+/* Volume Slider */
+.volume-slider {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.5rem 0 0.8rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem; color: var(--text-muted); font-weight: 500;
+}
+.volume-slider input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 120px; height: 6px; border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1); outline: none;
+  cursor: pointer;
+}
+.volume-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--neon-blue); border: none;
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.5);
+  cursor: pointer;
+}
+.volume-slider input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--neon-blue); border: none;
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.5);
+  cursor: pointer;
+}
+
+/* Runes System */
+.runes-container { display: flex; flex-direction: column; gap: 1.5rem; }
+.runes-inventory-section h3, .runes-socketed-section h3 { margin-bottom: 0.5rem; font-size: 1rem; color: var(--neon-blue); }
+.rune-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+.rune-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
+.rune-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 0.5rem; border-radius: 8px; border: 2px solid; cursor: default;
+  background: rgba(0, 0, 0, 0.3); text-align: center; transition: transform 0.15s;
+}
+.rune-item:hover { transform: scale(1.05); }
+.rune-icon { font-size: 1.3rem; }
+.rune-svg { width: 24px; height: 24px; }
+.rune-svg svg { width: 100%; height: 100%; }
+.rune-name { font-size: 0.7rem; font-weight: 600; }
+.rune-stat { font-size: 0.65rem; color: var(--text-muted); }
+.rune-socket-card {
+  background: rgba(255, 255, 255, 0.03); border-radius: 8px; padding: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 0.5rem;
+}
+.rune-socket-card.no-slots { opacity: 0.5; }
+.rune-socket-header { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; }
+.rune-no-slots { font-size: 0.75rem; color: var(--text-muted); }
+.rune-slots-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.rune-slot {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 0.4rem 0.6rem; border-radius: 6px; cursor: pointer;
+  min-width: 80px; text-align: center; transition: all 0.15s;
+}
+.rune-slot.empty {
+  background: rgba(255, 255, 255, 0.05); border: 2px dashed rgba(255, 255, 255, 0.15);
+}
+.rune-slot.empty:hover { border-color: var(--neon-blue); background: rgba(0, 229, 255, 0.05); }
+.rune-slot.filled {
+  background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.rune-slot.filled:hover { border-color: #ef5350; background: rgba(239, 83, 80, 0.1); }
+.rune-slot-icon { font-size: 1.1rem; }
+.rune-slot-name { font-size: 0.7rem; font-weight: 600; }
+.rune-slot-bonus { font-size: 0.65rem; color: var(--neon-green); }
+.equip-rune-dots { display: flex; gap: 2px; justify-content: center; margin-top: 2px; }
+.rune-dot { font-size: 0.5rem; opacity: 0.4; }
+.rune-dot.filled { opacity: 1; color: var(--neon-blue); }
 
 /* Game Info Card */
 .game-info-card { display: flex; flex-direction: column; gap: 0; }
