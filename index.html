@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Midnight Legends</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- HEADER -->
+      <header class="glass-panel">
+        <div class="header-content">
+          <div class="header-profile-hud" id="header-profile-hud">
+            <div class="hud-avatar" id="hud-avatar"></div>
+            <div class="hud-identity">
+              <div class="hud-name" id="hud-name">Adventurer</div>
+              <div class="hud-level-row">
+                <span class="hud-level" id="hud-level">Lv.1</span>
+                <span class="hud-title" id="hud-title">🌱 Novice</span>
+              </div>
+              <div class="hud-xp-bar">
+                <div class="hud-xp-fill" id="hud-xp-fill" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="stat-box coins" title="Coins — Earn from defeating enemies. Used for leveling heroes, upgrades, and basic summons.">
+               <svg fill="currentColor" viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="10"/></svg>
+               <span id="coins-display">0</span>
+            </div>
+            <div class="stat-box stardust" title="Stardust — Rare currency from bosses and the Tower. Used for Celestial Summons.">
+               <svg fill="currentColor" viewBox="0 0 24 24" class="icon"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon></svg>
+               <span id="stardust-display">0</span>
+            </div>
+            <div class="stat-box gems" title="Gems — Premium currency from bosses and Tower clears. Spend in the Gem Shop.">
+               <svg fill="currentColor" viewBox="0 0 24 24" class="icon"><polygon points="12,2 20,9 12,22 4,9"/></svg>
+               <span id="gems-display">0</span>
+            </div>
+            <div class="stat-box essence" title="Void Essence — Earned through Prestige. Provides permanent bonuses across all runs.">
+               <svg fill="currentColor" viewBox="0 0 24 24" class="icon"><circle cx="12" cy="12" r="8" opacity="0.5"/><circle cx="12" cy="12" r="4"/></svg>
+               <span id="essence-display">0</span>
+            </div>
+            <div class="stat-box stage" title="Current Stage — Enemies get stronger each stage. Every 10th stage is a Boss.">
+               <span>Stage: <span id="current-stage">1</span></span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- SUB-TAB BAR (for categories with multiple screens) -->
+      <div class="sub-tab-bar" id="sub-tab-bar">
+        <!-- Sub-tabs rendered dynamically by JS -->
+      </div>
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="game-container">
+        
+        <!-- COMBAT SCREEN -->
+        <section id="tab-combat" class="tab-content active glass-panel">
+           <div class="combat-arena">
+             <div class="enemy-area">
+                <div class="combat-particles">
+                  <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+                  <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+                  <div class="particle"></div><div class="particle"></div>
+                </div>
+                <h2 id="enemy-name">Lunar Slime</h2>
+                <div class="enemy-status-row" id="enemy-status-row">
+                  <!-- Status effects rendered by JS -->
+                </div>
+                <div class="hp-bar-bg">
+                  <div id="enemy-hp-fill" class="hp-bar-fill"></div>
+                  <div id="enemy-hp-text" class="hp-text">100 / 100</div>
+                </div>
+                <div class="shield-bar-bg" id="shield-bar" style="display:none">
+                  <div id="shield-bar-fill" class="shield-bar-fill"></div>
+                  <div id="shield-bar-text" class="shield-text">0</div>
+                </div>
+                <!-- COMBAT STAGE: Hero vs Enemy -->
+                <div class="combat-stage">
+                   <!-- LEFT: Hero Side -->
+                   <div class="hero-side" id="hero-combat-side">
+                      <div class="hero-combat-visual" id="hero-combat-visual">
+                        <!-- Main character SVG rendered here -->
+                      </div>
+                      <div class="hero-combat-name" id="hero-combat-name">No Hero</div>
+                   </div>
+                   
+                   <!-- CENTER: Versus -->
+                   <div class="combat-vs-container">
+                     <div class="combat-vs">VS</div>
+                     <div class="combat-clash-fx"></div>
+                   </div>
+
+                   <!-- RIGHT: Enemy Clicker Container -->
+                   <div id="enemy-container" class="enemy-visual-container">
+                      <div id="enemy-visual"></div>
+                   </div>
+                </div>
+             </div>
+
+             <!-- HERO STATS PANEL (below combat stage) -->
+             <div class="hero-stats-panel" id="hero-stats-panel">
+                <div class="hsp-header">
+                   <span class="hsp-title" id="hsp-hero-name">— No Hero Equipped —</span>
+                   <span class="hsp-level" id="hsp-hero-level"></span>
+                </div>
+                <div class="hsp-stats-row" id="hsp-stats-row">
+                   <!-- DPS, Rarity, equipment icons render here -->
+                </div>
+                <div class="hsp-equip-row" id="hsp-equip-row">
+                   <!-- Weapon/Armor/Accessory icons -->
+                </div>
+             </div>
+             
+             <div class="party-area">
+                <h3>Active Party</h3>
+                <div class="party-info-bar">
+                   <span class="dps-display" id="dps-display">DPS: 0</span>
+                   <span class="dps-display" id="click-dmg-display" title="Your manual click damage">Click: 1</span>
+                   <span class="kills-display" id="kills-display">Kills: 0</span>
+                   <span class="streak-bar" id="streak-bar" style="display:none" title="Kill enemies quickly for bonus rewards!">
+                      🔥 <span class="streak-count" id="streak-count">0</span> Streak <span class="streak-mult" id="streak-mult">×1.0</span>
+                   </span>
+                   <span class="combo-display" id="combo-display" style="display:none">
+                      ⚡ <span id="combo-hits">0</span> Hits <span id="combo-tier" class="combo-tier"></span>
+                   </span>
+                   <label class="auto-progress-toggle" title="Stop advancing after defeating a boss">
+                      <input type="checkbox" id="setting-auto-progress" checked />
+                      <span>Auto ▶</span>
+                   </label>
+                   <!-- Familiar Autoclicker (inline) -->
+                   <div class="familiar-area">
+                      <button id="familiar-btn" class="familiar-btn">
+                         <div class="familiar-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                         </div>
+                         <div class="familiar-info">
+                            <div id="familiar-title">Familiar Lv.0</div>
+                            <div id="familiar-cost" style="color:var(--coin-color); font-size:0.65rem;">100 C</div>
+                         </div>
+                      </button>
+                   </div>
+                </div>
+                <div class="stage-info-row" id="stage-info-row">
+                   <span class="stage-label" id="stage-label">Next Boss: 10</span>
+                   <div class="stage-progress-wrap">
+                     <div class="stage-progress-fill" id="stage-progress-fill" style="width:10%"></div>
+                   </div>
+                </div>
+                <div id="active-party-container" class="active-party-grid">
+                   <!-- Party renders here -->
+                </div>
+                <div id="synergy-bar" class="synergy-bar"></div>
+             </div>
+
+             <div class="battle-log-wrapper">
+                <div id="battle-log" class="battle-log"></div>
+             </div>
+           </div>
+        </section>
+
+        <!-- ACADEMY (UPGRADES) SCREEN -->
+        <section id="tab-academy" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Midnight Academy</h2>
+              <p>Invest in global upgrades that apply to your entire party permanently.</p>
+              <div class="buy-mode-bar">
+                 <span style="color:var(--text-muted);font-size:0.8rem;">Buy:</span>
+                 <button class="buy-mode-btn active" data-amount="1">×1</button>
+                 <button class="buy-mode-btn" data-amount="5">×5</button>
+                 <button class="buy-mode-btn" data-amount="10">×10</button>
+                 <button class="buy-mode-btn" data-amount="max">Max</button>
+                 <span style="margin-left:auto;"></span>
+                 <label class="auto-progress-toggle" title="Automatically buy the cheapest upgrade when you can afford it">
+                    <input type="checkbox" id="setting-auto-buy" />
+                    <span>Auto-Buy</span>
+                 </label>
+              </div>
+           </div>
+           <div id="academy-grid" class="academy-grid">
+              <!-- Upgrades spawn here -->
+           </div>
+        </section>
+
+        <!-- ROSTER SCREEN -->
+        <section id="tab-roster" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Hero Roster</h2>
+              <p>Level up and equip heroes to increase your DPS.</p>
+              <div class="roster-actions-bar">
+                <button class="quick-equip-btn" id="btn-quick-equip" title="Auto-equip best items to all heroes in your party">⚡ Quick Equip</button>
+                <button class="quick-equip-btn" id="btn-level-all" title="Level up all heroes in your party as much as possible">⬆ Level All</button>
+              </div>
+           </div>
+           <div id="roster-grid" class="roster-grid">
+              <!-- Heroes spawn here -->
+           </div>
+        </section>
+
+        <!-- INVENTORY SCREEN -->
+        <section id="tab-inventory" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Inventory</h2>
+              <p>Items dropped by bosses. Click an empty slot on a Hero to equip them.</p>
+              <div class="inventory-actions-bar">
+                <button class="quick-equip-btn" id="btn-sell-commons" title="Sell all common items for coins">💰 Sell Commons</button>
+                <button class="quick-equip-btn" id="btn-sell-selected" title="Click items to select, then sell">🗑️ Sell Mode</button>
+              </div>
+           </div>
+           
+           <div class="inventory-container">
+             <div class="inventory-section">
+               <h3>Weapons</h3>
+               <div id="inv-weapons" class="inv-grid"></div>
+             </div>
+             <div class="inventory-section">
+               <h3>Armor</h3>
+               <div id="inv-armor" class="inv-grid"></div>
+             </div>
+             <div class="inventory-section">
+               <h3>Accessories</h3>
+               <div id="inv-accessories" class="inv-grid"></div>
+             </div>
+           </div>
+        </section>
+
+        <!-- TAVERN SCREEN -->
+        <section id="tab-tavern" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>The Tavern</h2>
+              <p>Summon new heroes to join your cause. Each summon draws from a pool of heroes based on rarity.</p>
+           </div>
+           <div class="summon-area">
+              <div class="summon-banner standard">
+                 <h3>Basic Summon</h3>
+                 <div class="summon-rates">
+                    <span class="rate-tag" style="color:#a0a0a0">Common 90%</span>
+                    <span class="rate-tag" style="color:#03dac6">Rare 10%</span>
+                 </div>
+                 <p>Summon Common to Rare heroes with Coins.</p>
+                 <button id="summon-btn-coin" class="summon-btn glow-btn">Summon ×1 (1000 Coins)</button>
+                 <button id="summon-btn-coin-10" class="summon-btn glow-btn" style="margin-top:0.5rem; font-size:1rem;">Summon ×10 (9000 Coins)</button>
+              </div>
+              <div class="summon-banner premium">
+                 <h3>Celestial Summon</h3>
+                 <div class="summon-rates">
+                    <span class="rate-tag" style="color:#03dac6">Rare 78%</span>
+                    <span class="rate-tag" style="color:#bb86fc">Epic 20%</span>
+                    <span class="rate-tag" style="color:#ffb74d">Legendary 2%</span>
+                 </div>
+                 <p>Summon Rare to Legendary heroes with Stardust.</p>
+                 <button id="summon-btn-star" class="summon-btn premium glow-btn">Summon ×1 (100 Stardust)</button>
+                 <button id="summon-btn-star-10" class="summon-btn premium glow-btn" style="margin-top:0.5rem; font-size:1rem;">Summon ×10 (900 Stardust)</button>
+              </div>
+           </div>
+           <div class="tavern-hero-pool">
+              <h3>Hero Pool Preview</h3>
+              <div id="tavern-pool-grid" class="tavern-pool-grid">
+                 <!-- Hero pool thumbnails render here -->
+              </div>
+           </div>
+        </section>
+
+        <!-- ECLIPSE TOWER SCREEN -->
+        <section id="tab-tower" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2 style="color: var(--neon-purple);">Eclipse Tower</h2>
+              <p>Defeat elite bosses within 30 seconds to earn massive Stardust rewards.</p>
+           </div>
+           <div class="tower-container">
+               <div class="tower-info">
+                   <h3 id="tower-floor-display">Floor: 1</h3>
+                   <div id="tower-timer" class="tower-timer">30.0s</div>
+                   <button id="tower-start-btn" class="action-btn equip-btn" style="padding: 1rem 3rem; font-size: 1.2rem; margin-top: 1rem;">Challenge Floor</button>
+               </div>
+               <div id="tower-combat-area" class="tower-combat-area" style="display:none;">
+                   <h2 id="tower-boss-name" style="text-align: center; font-size: 2rem; margin-bottom: 2rem;">Boss Name</h2>
+                   <div class="hp-bar-bg" style="margin: 0 auto;">
+                     <div id="tower-hp-fill" class="hp-bar-fill" style="background: var(--neon-purple);"></div>
+                     <div id="tower-hp-text" class="hp-text">100 / 100</div>
+                   </div>
+                   <div id="tower-boss-visual" class="enemy-visual-container"></div>
+               </div>
+           </div>
+        </section>
+
+        <!-- GEM SHOP SCREEN -->
+        <section id="tab-shop" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2 style="color: var(--gem-color, #e040fb);">Gem Shop</h2>
+              <p>Spend Gems for powerful permanent bonuses and exclusive items.</p>
+           </div>
+           <div class="shop-currency-display">
+             <span class="shop-gem-count">
+               <svg fill="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;vertical-align:middle;color:var(--gem-color)"><polygon points="12,2 20,9 12,22 4,9"/></svg>
+               <span id="shop-gems">0</span> Gems
+             </span>
+           </div>
+           <div id="shop-grid" class="shop-grid">
+              <!-- Shop items spawn here -->
+           </div>
+        </section>
+
+        <!-- PRESTIGE SCREEN -->
+        <section id="tab-prestige" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2 style="color: var(--essence-color, #7c4dff);">Void Sanctum</h2>
+              <p>Sacrifice your progress to gain Void Essence — a powerful currency that permanently enhances all future runs.</p>
+           </div>
+           <div class="prestige-container">
+              <div class="prestige-info-card">
+                 <div class="prestige-essence-display">
+                    <div class="prestige-essence-icon">
+                       <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+                         <circle cx="32" cy="32" r="24" opacity="0.3"/>
+                         <circle cx="32" cy="32" r="16" opacity="0.5"/>
+                         <circle cx="32" cy="32" r="8" fill="currentColor"/>
+                         <path d="M32 8 L32 2 M32 56 L32 62 M8 32 L2 32 M56 32 L62 32" stroke-width="1.5" opacity="0.4"/>
+                       </svg>
+                    </div>
+                    <div>
+                       <div class="prestige-label">Void Essence</div>
+                       <div class="prestige-value" id="prestige-essence-current">0</div>
+                    </div>
+                 </div>
+                 <div class="prestige-preview">
+                    <div class="prestige-preview-label">Prestige now to gain:</div>
+                    <div class="prestige-preview-value" id="prestige-gain-preview">0 Essence</div>
+                    <div class="prestige-requirement" id="prestige-requirement">Reach Stage 50 to unlock Prestige</div>
+                 </div>
+                 <button id="prestige-btn" class="prestige-btn" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    Perform Void Rebirth
+                 </button>
+              </div>
+              <div class="prestige-bonuses">
+                 <h3>Essence Bonuses</h3>
+                 <div id="prestige-bonuses-grid" class="prestige-bonuses-grid">
+                    <!-- Prestige upgrades render here -->
+                 </div>
+              </div>
+              <div class="prestige-multipliers">
+                 <h3>Current Multipliers</h3>
+                 <div id="prestige-multipliers" class="prestige-multipliers-grid">
+                    <!-- Active multiplier display -->
+                 </div>
+              </div>
+           </div>
+        </section>
+
+        <!-- EVENTS SCREEN -->
+        <section id="tab-events" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2 style="color: var(--neon-green);">Active Events</h2>
+              <p>Time-limited events with special bonuses and rewards. Check back often!</p>
+           </div>
+           <!-- Daily Login -->
+           <div class="settings-group" style="border-color:rgba(0,229,255,0.15);">
+              <h3>Daily Login Rewards</h3>
+              <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:0.5rem;">Log in each day to earn escalating rewards! Streak resets after missing a day.</p>
+              <div class="daily-login-bar" id="daily-login-bar">
+                 <!-- Days render here -->
+              </div>
+              <button class="daily-claim-btn" id="daily-claim-btn" disabled>Claim Today's Reward</button>
+           </div>
+           <div id="events-container" class="events-container">
+              <!-- Events render here -->
+           </div>
+        </section>
+
+        <!-- COLLECTIONS SCREEN -->
+        <section id="tab-collections" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2 style="color: var(--neon-orange);">Collections</h2>
+              <p>Complete sets of heroes and items for permanent bonus effects!</p>
+           </div>
+           <div id="collections-container" class="collections-container">
+              <!-- Collections render here -->
+           </div>
+        </section>
+
+        <!-- STORAGE SCREEN -->
+        <section id="tab-storage" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Warehouse Storage</h2>
+              <p>Store excess items here. Max capacity: <span id="storage-capacity" style="color:var(--neon-green);">0 / 50</span></p>
+           </div>
+           <div class="storage-actions">
+              <button id="btn-store-all" class="action-btn equip-btn glow-btn">Store All Unequipped Items</button>
+              <button id="btn-retrieve-all" class="action-btn equip-btn glow-btn">Retrieve All</button>
+           </div>
+           <div class="inventory-container">
+             <div class="inventory-section">
+               <h3>Stored Weapons</h3>
+               <div id="storage-weapons" class="inv-grid"></div>
+             </div>
+             <div class="inventory-section">
+               <h3>Stored Armor</h3>
+               <div id="storage-armor" class="inv-grid"></div>
+             </div>
+             <div class="inventory-section">
+               <h3>Stored Accessories</h3>
+               <div id="storage-accessories" class="inv-grid"></div>
+             </div>
+           </div>
+        </section>
+
+        <!-- CODEX (LORE) SCREEN -->
+        <section id="tab-lore" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Midnight Codex</h2>
+              <p>Uncover the story of the Midnight Garden as you progress through stages.</p>
+           </div>
+           <div id="lore-container" class="lore-container">
+              <!-- Lore entries spawn here -->
+           </div>
+        </section>
+
+        <!-- STATS SCREEN -->
+        <section id="tab-stats" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Statistics & Metrics</h2>
+              <p>Track your journey through the Midnight Garden.</p>
+           </div>
+           <div class="stats-dashboard">
+              <!-- DPS Meter -->
+              <div class="stats-section">
+                 <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="stats-icon"><path d="m18 15-6-6-6 6"/></svg> Combat Metrics</h3>
+                 <div class="stats-grid" id="stats-combat">
+                 </div>
+              </div>
+              <!-- Economy -->
+              <div class="stats-section">
+                 <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="stats-icon"><circle cx="12" cy="12" r="8"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Economy</h3>
+                 <div class="stats-grid" id="stats-economy">
+                 </div>
+              </div>
+              <!-- Progression -->
+              <div class="stats-section">
+                 <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="stats-icon"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg> Progression</h3>
+                 <div class="stats-grid" id="stats-progression">
+                 </div>
+              </div>
+              <!-- Party Info -->
+              <div class="stats-section">
+                 <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="stats-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Party Overview</h3>
+                 <div class="stats-grid" id="stats-party">
+                 </div>
+              </div>
+              <!-- Save Management -->
+              <div class="stats-section">
+                 <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="stats-icon"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg> Save Management</h3>
+                 <div class="stats-actions">
+                    <button id="btn-save-now" class="action-btn equip-btn">Save Now</button>
+                    <button id="btn-export-save" class="action-btn equip-btn">Export Save</button>
+                    <button id="btn-import-save" class="action-btn equip-btn">Import Save</button>
+                    <button id="btn-hard-reset" class="action-btn equip-btn danger" style="border-color: var(--hp-red); color: var(--hp-red);">Hard Reset</button>
+                 </div>
+              </div>
+           </div>
+        </section>
+
+        <!-- ACHIEVEMENTS SCREEN -->
+        <section id="tab-achievements" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Trophies & Achievements</h2>
+              <p>Milestones of your journey. <span id="ach-counter" style="color:var(--neon-green);">0 / 0</span> unlocked.</p>
+           </div>
+           <div id="achievements-container" class="achievements-grid">
+              <!-- Achievements render here -->
+           </div>
+        </section>
+
+        <!-- PROFILE SCREEN -->
+        <section id="tab-profile" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Adventurer Profile</h2>
+              <p>Your journey through the Midnight Garden.</p>
+           </div>
+           <div class="profile-container">
+              <div class="profile-card">
+                 <div class="profile-avatar-area">
+                    <div class="profile-avatar" id="profile-avatar"></div>
+                    <div class="profile-identity">
+                       <div class="profile-name-label">Name</div>
+                       <div class="profile-name" id="profile-name" contenteditable="true" spellcheck="false">Adventurer</div>
+                       <div class="profile-title" id="profile-title">🌱 Novice</div>
+                    </div>
+                 </div>
+                 <div class="profile-level-area">
+                    <div class="profile-level-text">Level <span id="profile-level">1</span></div>
+                    <div class="xp-bar-bg">
+                       <div id="xp-bar-fill" class="xp-bar-fill"></div>
+                       <div id="xp-bar-text" class="xp-bar-text">0 / 100 XP</div>
+                    </div>
+                 </div>
+              </div>
+              <div class="profile-stats-grid" id="profile-stats"></div>
+              <div class="avatar-selection">
+                 <h3>Choose Avatar</h3>
+                 <div id="avatar-grid" class="avatar-grid"></div>
+              </div>
+           </div>
+        </section>
+
+        <!-- BESTIARY SCREEN -->
+        <section id="tab-bestiary" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Bestiary</h2>
+              <p>Compendium of creatures encountered. <span id="bestiary-counter" style="color:var(--neon-green);">0 / 0</span> discovered.</p>
+           </div>
+           <div id="bestiary-grid" class="bestiary-grid"></div>
+        </section>
+
+        <!-- SETTINGS SCREEN -->
+        <section id="tab-settings" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>Settings</h2>
+              <p>Configure your game experience.</p>
+           </div>
+           <div class="settings-container">
+              <div class="settings-group">
+                 <h3>Game Options</h3>
+                 <label class="setting-toggle">
+                    <span>Show Damage Numbers</span>
+                    <input type="checkbox" id="setting-damage-numbers" checked>
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Show Notifications</span>
+                    <input type="checkbox" id="setting-notifications" checked>
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Auto-Save</span>
+                    <input type="checkbox" id="setting-autosave" checked>
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Particle Effects</span>
+                    <input type="checkbox" id="setting-particles" checked>
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Compact Mode</span>
+                    <input type="checkbox" id="setting-compact">
+                    <span class="toggle-slider"></span>
+                 </label>
+              </div>
+
+              <div class="settings-group">
+                 <h3>Graphics & Performance</h3>
+                 <label class="setting-toggle">
+                    <span>Reduce Animations</span>
+                    <input type="checkbox" id="setting-reduce-animations">
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Low Quality Mode</span>
+                    <input type="checkbox" id="setting-low-quality">
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Disable Glow Effects</span>
+                    <input type="checkbox" id="setting-no-glow">
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Reduce Render Frequency</span>
+                    <input type="checkbox" id="setting-reduce-renders">
+                    <span class="toggle-slider"></span>
+                 </label>
+                 <label class="setting-toggle">
+                    <span>Disable Floating Text</span>
+                    <input type="checkbox" id="setting-no-float-text">
+                    <span class="toggle-slider"></span>
+                 </label>
+              </div>
+
+              <div class="settings-group">
+                 <h3>Game Info</h3>
+                 <div class="game-info-card">
+                    <div class="game-info-row"><span class="info-label">Version</span><span class="info-value">0.9.2</span></div>
+                    <div class="game-info-row"><span class="info-label">Enemies</span><span class="info-value" id="info-enemies">0</span></div>
+                    <div class="game-info-row"><span class="info-label">Heroes</span><span class="info-value" id="info-heroes">0</span></div>
+                    <div class="game-info-row"><span class="info-label">Items</span><span class="info-value" id="info-items">0</span></div>
+                    <div class="game-info-row"><span class="info-label">Upgrades</span><span class="info-value" id="info-upgrades">0</span></div>
+                    <div class="game-info-row"><span class="info-label">Tower Floors</span><span class="info-value" id="info-floors">0</span></div>
+                    <div class="game-info-row"><span class="info-label">Lore Entries</span><span class="info-value" id="info-lore">0</span></div>
+                    <div class="game-info-row"><span class="info-label">Achievements</span><span class="info-value" id="info-achievements">0</span></div>
+                 </div>
+              </div>
+
+              <div class="settings-group">
+                 <h3>About</h3>
+                 <div class="about-card">
+                    <div class="about-logo">
+                       <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="32" cy="32" r="28" stroke="url(#aboutGrad)" stroke-width="3" fill="none"/>
+                          <path d="M32 12 C22 12 12 22 12 32 C12 44 22 56 32 56 C28 48 28 40 32 32 C36 24 40 20 32 12Z" fill="url(#aboutGrad)" opacity="0.85"/>
+                          <circle cx="40" cy="18" r="3" fill="#ffb74d"/>
+                          <circle cx="46" cy="26" r="2" fill="#ffb74d" opacity="0.7"/>
+                          <circle cx="44" cy="16" r="1.5" fill="#ffb74d" opacity="0.5"/>
+                          <defs><linearGradient id="aboutGrad" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="#d500f9"/><stop offset="100%" stop-color="#00e5ff"/></linearGradient></defs>
+                       </svg>
+                    </div>
+                    <h4>Midnight Gardens</h4>
+                    <p class="about-subtitle">An Incremental RPG</p>
+                    <div class="about-divider"></div>
+                    <div class="about-dev">
+                       <p class="dev-studio">Sistemas Ursol</p>
+                       <p class="dev-name">Jeremy Arias S.</p>
+                       <p class="dev-email">deadmooncr@gmail.com</p>
+                       <p class="dev-location">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                          Costa Rica
+                       </p>
+                    </div>
+                    <div class="about-divider"></div>
+                    <p class="about-copyright">&copy; 2024-2026 Sistemas Ursol. All rights reserved.</p>
+                 </div>
+              </div>
+           </div>
+        </section>
+
+        <!-- SPIN WHEEL SCREEN -->
+        <section id="tab-spin" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>🎡 Fortune Wheel</h2>
+              <p>Spin for daily prizes! Free spin resets every day.</p>
+           </div>
+           <div class="spin-wheel-container">
+              <div class="spin-wheel-wrapper">
+                 <div class="spin-pointer">▼</div>
+                 <div class="spin-wheel" id="spin-wheel">
+                    <!-- Wheel segments rendered by JS -->
+                 </div>
+              </div>
+              <div class="spin-result" id="spin-result" style="display:none;">
+                 <div class="spin-prize-icon" id="spin-prize-icon"></div>
+                 <div class="spin-prize-name" id="spin-prize-name"></div>
+                 <div class="spin-prize-label" id="spin-prize-label"></div>
+              </div>
+              <div class="spin-actions">
+                 <button id="btn-free-spin" class="action-btn spin-btn free">🎡 Free Spin</button>
+                 <button id="btn-gem-spin" class="action-btn spin-btn gem">💎 Spin (15 Gems)</button>
+              </div>
+              <div class="spin-history" id="spin-history">
+                 <!-- Recent spins shown here -->
+              </div>
+           </div>
+        </section>
+
+        <!-- PET / TAMAGOTCHI SCREEN -->
+        <section id="tab-pets" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>🐾 Companion Garden</h2>
+              <p>Adopt, feed, and play with cute companions to earn passive bonuses!</p>
+           </div>
+           <div class="pet-container">
+              <div class="pet-active-area" id="pet-active-area">
+                 <!-- Active pet display rendered by JS -->
+              </div>
+              <div class="pet-actions" id="pet-actions" style="display:none;">
+                 <button id="btn-feed-pet" class="action-btn pet-btn" title="Feed your companion">🍖 Feed</button>
+                 <button id="btn-play-pet" class="action-btn pet-btn" title="Play with your companion">🎾 Play</button>
+                 <button id="btn-rest-pet" class="action-btn pet-btn" title="Let your companion rest">😴 Rest</button>
+              </div>
+              <h3>Available Companions</h3>
+              <div class="pet-grid" id="pet-grid">
+                 <!-- Pet cards rendered by JS -->
+              </div>
+           </div>
+        </section>
+
+        <!-- MINI-GAMES SCREEN -->
+        <section id="tab-minigames" class="tab-content glass-panel">
+           <div class="screen-header">
+              <h2>🎮 Arcade</h2>
+              <p>Play mini-games for extra rewards! Each game has a cooldown.</p>
+           </div>
+           <div class="minigame-container" id="minigame-container">
+              <!-- Mini-game cards rendered by JS -->
+           </div>
+           <div class="minigame-play-area" id="minigame-play-area" style="display:none;">
+              <!-- Active mini-game rendered here -->
+           </div>
+        </section>
+
+      </main>
+
+      <!-- HELP / GUIDE BAR -->
+      <footer id="guide-bar" class="glass-panel guide-bar">
+        <div class="guide-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="guide-text" id="guide-text">Click on the enemy to deal damage! Recruit heroes in the Tavern to boost your DPS.</div>
+        <div class="guide-controls">
+          <button id="guide-prev" class="guide-nav-btn" title="Previous tip">‹</button>
+          <span id="guide-counter" class="guide-counter">1/1</span>
+          <button id="guide-next" class="guide-nav-btn" title="Next tip">›</button>
+        </div>
+      </footer>
+
+      <!-- BOTTOM NAVIGATION -->
+      <nav class="bottom-nav" id="bottom-nav">
+        <button class="nav-item active" data-category="combat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/></svg>
+          <span>Combat</span>
+        </button>
+        <button class="nav-item" data-category="heroes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Heroes</span>
+        </button>
+        <button class="nav-item" data-category="power">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span>Power</span>
+        </button>
+        <button class="nav-item" data-category="world">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>World</span>
+        </button>
+        <button class="nav-item" data-category="more">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          <span>More</span>
+        </button>
+      </nav>
+
+      <!-- OVERLAYS -->
+      <div id="notification-bubble">
+        <div id="notif-toast" class="notif-toast hidden"></div>
+        <button id="notif-bell" class="notif-bell" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4a1.5 1.5 0 00-3 0v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+          <span id="notif-badge" class="notif-badge hidden">0</span>
+        </button>
+        <div id="notif-dropdown" class="notif-dropdown hidden">
+          <div class="notif-dropdown-header">
+            <span>Notificaciones</span>
+            <button id="notif-clear" class="notif-clear" title="Limpiar">✕</button>
+          </div>
+          <div id="notif-list" class="notif-list"></div>
+        </div>
+      </div>
+
+      <!-- Item Selector Overlay -->
+      <div id="select-overlay" class="select-overlay">
+        <div class="select-modal">
+          <h3>Select an Item</h3>
+          <div id="select-modal-grid" class="select-modal-grid"></div>
+          <button id="select-modal-close" class="action-btn equip-btn" style="margin-top:1rem;">Cancel</button>
+        </div>
+      </div>
+
+      <div id="feedback-layer"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

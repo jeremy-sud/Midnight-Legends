@@ -1,0 +1,65 @@
+// Milestone rewards for reaching specific stages
+export const MilestoneDatabase = [
+  {
+    stage: 10,
+    icon: "🏅",
+    title: "First Steps",
+    rewards: { coins: 500, stardust: 10 },
+    desc: "You survived the first 10 stages!",
+  },
+  {
+    stage: 25,
+    icon: "⭐",
+    title: "Rising Star",
+    rewards: { coins: 2000, stardust: 50, gems: 3 },
+    desc: "A promising adventurer emerges.",
+  },
+  {
+    stage: 50,
+    icon: "🔥",
+    title: "Midnight Warrior",
+    rewards: { coins: 10000, stardust: 200, gems: 10 },
+    desc: "The gardens tremble before you.",
+  },
+  {
+    stage: 100,
+    icon: "💎",
+    title: "Centurion",
+    rewards: { coins: 50000, stardust: 500, gems: 25 },
+    desc: "A legend in the making.",
+  },
+  {
+    stage: 150,
+    icon: "🌟",
+    title: "Starforged",
+    rewards: { coins: 150000, stardust: 1000, gems: 40 },
+    desc: "Your name echoes across the void.",
+  },
+  {
+    stage: 200,
+    icon: "👑",
+    title: "Sovereign",
+    rewards: { coins: 500000, stardust: 2500, gems: 60 },
+    desc: "All bow before the Midnight Sovereign.",
+  },
+  {
+    stage: 300,
+    icon: "🐉",
+    title: "Dragon Slayer",
+    rewards: { coins: 1500000, stardust: 5000, gems: 100 },
+    desc: "Even dragons fear your power.",
+  },
+  {
+    stage: 500,
+    icon: "∞",
+    title: "The Eternal",
+    rewards: { coins: 5000000, stardust: 15000, gems: 250, essence: 50 },
+    desc: "Beyond mortal comprehension.",
+  },
+];
+
+export function getUnclaimedMilestones(currentStage, claimedMilestones = []) {
+  return MilestoneDatabase.filter(
+    (m) => currentStage >= m.stage && !claimedMilestones.includes(m.stage)
+  );
+}
