@@ -110,22 +110,41 @@ function updateLoadingProgress(pct, text) {
   if (label) label.textContent = text;
 }
 
+const MIN_LOADING_MS = 5000;
+
 function dismissLoadingScreen(loader) {
   if (!loader) return;
-  clearInterval(loader.tipInterval);
-  updateLoadingProgress(100, 'Ready!');
+  const elapsed = Date.now() - loader.startTime;
+  const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+
+  // Animate progress smoothly during remaining wait
+  if (remaining > 0) {
+    updateLoadingProgress(95, 'Starting game...');
+    const rampStart = Date.now();
+    const rampInterval = setInterval(() => {
+      const t = Math.min((Date.now() - rampStart) / remaining, 1);
+      updateLoadingProgress(95 + t * 5, t < 1 ? 'Starting game...' : 'Ready!');
+      if (t >= 1) clearInterval(rampInterval);
+    }, 50);
+  }
+
   setTimeout(() => {
-    loader.screen.classList.add('ls-fade-out');
-    document.getElementById('app').style.display = '';
+    clearInterval(loader.tipInterval);
+    updateLoadingProgress(100, 'Ready!');
     setTimeout(() => {
-      loader.screen.remove();
-    }, 900);
-  }, 400);
+      loader.screen.classList.add('ls-fade-out');
+      document.getElementById('app').style.display = '';
+      setTimeout(() => {
+        loader.screen.remove();
+      }, 900);
+    }, 400);
+  }, remaining);
 }
 
 // Bootstrap
 document.addEventListener("DOMContentLoaded", () => {
   const loader = initLoadingScreen();
+  if (loader) loader.startTime = Date.now();
 
   updateLoadingProgress(10, 'Loading save data...');
   GameState.load();
