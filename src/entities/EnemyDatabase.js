@@ -211,8 +211,21 @@ export function getEnemyStats(stage) {
 
   // Each full cycle through all enemies = 1 loop (tier up)
   const loop = Math.floor((stage - 1) / EnemyDatabase.length);
-  const hpMultiplier = Math.pow(2.0, loop) * Math.pow(1.12, stage - 1);
-  const rewardMultiplier = Math.pow(2.2, loop) * Math.pow(1.18, stage - 1);
+
+  // Balanced difficulty curve: exponential early, softened after stage 100
+  let hpMultiplier, rewardMultiplier;
+  if (stage <= 100) {
+    hpMultiplier = Math.pow(2.0, loop) * Math.pow(1.12, stage - 1);
+    rewardMultiplier = Math.pow(2.2, loop) * Math.pow(1.18, stage - 1);
+  } else {
+    // Base at stage 100 — then softer polynomial growth
+    const base100Hp = Math.pow(2.0, Math.floor(99 / EnemyDatabase.length)) * Math.pow(1.12, 99);
+    const base100Rw = Math.pow(2.2, Math.floor(99 / EnemyDatabase.length)) * Math.pow(1.18, 99);
+    const beyond = stage - 100;
+    const softScale = 1 + beyond * 0.08 + Math.pow(beyond, 1.4) * 0.002;
+    hpMultiplier = Math.pow(2.0, loop) / Math.pow(2.0, Math.floor(99 / EnemyDatabase.length)) * base100Hp * softScale;
+    rewardMultiplier = Math.pow(2.2, loop) / Math.pow(2.2, Math.floor(99 / EnemyDatabase.length)) * base100Rw * softScale;
+  }
 
   // Tier name: "Lunar Slime" → "Lunar Slime II" → "Lunar Slime III" ...
   const tierLabel = getTierLabel(loop);

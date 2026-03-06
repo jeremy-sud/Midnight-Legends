@@ -103,6 +103,11 @@ class StateManager {
           bestWave: 0,
         },
         runes: [],                  // Array of rune instances: { uid, templateId }
+        completedCollections: [],   // Array of completed collection IDs
+        dungeon: {                  // Weekly dungeon state
+          lastWeek: null,
+          bestFloor: 0,
+        },
     };
   }
   /**

@@ -13,16 +13,16 @@
 - [x] **Combo real en Engine** — Multiplicadores progresivos por clicks rápidos consecutivos.
 
 ### 1.2 Calidad de vida (QoL)
-- [ ] Bulk-actions mejoradas (vender por rareza, auto-equip inteligente por DPS).
+- [x] Bulk-actions mejoradas (vender por rareza, auto-equip inteligente por DPS).
 - [ ] Tooltips en TODOS los ítems/héroes al hacer long-press (móvil).
-- [ ] Indicador de progreso offline desglosado (monedas, XP, stages avanzados).
-- [ ] Confirmaciones para acciones costosas (summon ×10, prestige).
+- [x] Indicador de progreso offline desglosado (monedas, XP, stages avanzados).
+- [x] Confirmaciones para acciones costosas (summon ×10, prestige).
 - [ ] Tutorial interactivo para nuevos jugadores (paso a paso con highlights).
 
 ### 1.3 Balance y progresión
-- [ ] Curva de dificultad revisada para stages 100-500.
-- [ ] Rebalancear costos de summon vs. recompensas.
-- [ ] Impacto real de mascotas en combate (no solo bonos pasivos).
+- [x] Curva de dificultad revisada para stages 100-500.
+- [x] Rebalancear costos de summon vs. recompensas.
+- [x] Impacto real de mascotas en combate (no solo bonos pasivos).
 
 ---
 
@@ -64,9 +64,9 @@
 - [x] Límite de runas por ítem según rareza.
 
 ### 3.2 Modo Desafío / Dungeons
-- [ ] Dungeon semanal con pisos infinitos y modificadores (2× HP, timer 60s, etc.).
-- [ ] Leaderboard local (mejor piso alcanzado).
-- [ ] Recompensas exclusivas: skins de héroes, ítems únicos.
+- [x] Dungeon semanal con pisos infinitos y modificadores (2× HP, timer 60s, etc.).
+- [x] Leaderboard local (mejor piso alcanzado).
+- [x] Recompensas exclusivas: skins de héroes, ítems únicos.
 
 ### 3.3 Prestige 2.0 — Sistema de Maestría
 - [ ] Tras X prestiges, desbloquear "Maestrías" por héroe.
@@ -79,9 +79,9 @@
 - [ ] Recompensas por participación + bonus por daño total.
 
 ### 3.5 Reliquias (artifacts permanentes)
-- [ ] Obtener reliquias al completar colecciones.
-- [ ] Bonus globales permanentes que escalan con prestige count.
-- [ ] 10 reliquias con efectos únicos.
+- [x] Obtener reliquias al completar colecciones.
+- [x] Bonus globales permanentes que escalan con prestige count.
+- [x] 10 reliquias con efectos únicos.
 
 ---
 

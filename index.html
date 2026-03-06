@@ -217,6 +217,7 @@
               <p>Items dropped by bosses. Click an empty slot on a Hero to equip them.</p>
               <div class="inventory-actions-bar">
                 <button class="quick-equip-btn" id="btn-sell-commons" title="Sell all common items for coins">💰 Sell Commons</button>
+                <button class="quick-equip-btn" id="btn-sell-rares" title="Sell all rare items for coins">💰 Sell Rares</button>
                 <button class="quick-equip-btn" id="btn-sell-selected" title="Click items to select, then sell">🗑️ Sell Mode</button>
               </div>
            </div>
@@ -429,6 +430,13 @@
            </div>
            <div id="collections-container" class="collections-container">
               <!-- Collections render here -->
+           </div>
+           <div class="screen-header" style="margin-top:1.5rem;">
+              <h2 style="color: var(--neon-purple);">🏛️ Relics</h2>
+              <p>Permanent artifacts unlocked via collections &amp; milestones. Bonuses scale with prestige count!</p>
+           </div>
+           <div id="relics-container" class="collections-container">
+              <!-- Relics render here -->
            </div>
         </section>
 
@@ -768,6 +776,15 @@
             <p>Fight 10 bosses in sequence! 60 seconds per boss. How far can you go?</p>
           </div>
           <div id="bossrush-container" class="bossrush-container"></div>
+        </section>
+
+        <!-- WEEKLY DUNGEON SCREEN -->
+        <section id="tab-dungeon" class="tab-content glass-panel">
+          <div class="screen-header">
+            <h2 style="color:var(--neon-purple);">🏚️ Weekly Dungeon</h2>
+            <p>Descend into the abyss! Infinite floors with modifiers. Resets every week.</p>
+          </div>
+          <div id="dungeon-container" class="bossrush-container"></div>
         </section>
 
         <!-- MINI-GAMES SCREEN -->

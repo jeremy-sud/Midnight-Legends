@@ -40,6 +40,8 @@ import { getCraftableGroups, fuseItems, getDismantleValue, CRAFT_COST, getNextRa
 import { getUnlockedRegions, ExpeditionRegions, startExpedition, calculateExpeditionRewards, getExpeditionTimeLeft } from "../entities/ExpeditionDatabase.js";
 import { BOSS_RUSH_CONFIG, BOSS_RUSH_NAMES, getBossRushHp, getBossRushReward, BOSS_RUSH_REWARDS, isBossRushReady, getBossRushCooldown } from "../entities/BossRushDatabase.js";
 import { RuneTemplate, RuneTypes, RuneTiers, getRuneInfo, getRuneBonus, getRuneSlots } from "../entities/RuneDatabase.js";
+import { RelicDatabase, isRelicUnlocked, getRelicBonusValue } from "../entities/RelicDatabase.js";
+import { DUNGEON_REWARDS, getDungeonFloorHp, getDungeonFloorTimer, getDungeonModifier, getDungeonWeekKey, isDungeonReady, getDungeonReward, getWeekSeed, getDungeonFloorName, DUNGEON_CONFIG } from "../entities/DungeonDatabase.js";
 
 export class UIManager {
   constructor() {
@@ -211,6 +213,7 @@ export class UIManager {
 
       // Collections
       collectionsContainer: document.getElementById("collections-container"),
+      relicsContainer: document.getElementById("relics-container"),
 
       // Stats
       statsCombat: document.getElementById("stats-combat"),
@@ -343,9 +346,9 @@ export class UIManager {
 
     // ×10 Multi-summon
     if (this.dom.summonBtnCoin10)
-      this.dom.summonBtnCoin10.onclick = () => this.multiSummon("coin", 10);
+      this.dom.summonBtnCoin10.onclick = () => this._confirmAction('Summon ×10 (Coins)', `Spend ${formatNumber(Config.coinSummonCost * 10)} coins to summon 10 heroes?`, () => this.multiSummon("coin", 10));
     if (this.dom.summonBtnStar10)
-      this.dom.summonBtnStar10.onclick = () => this.multiSummon("star", 10);
+      this.dom.summonBtnStar10.onclick = () => this._confirmAction('Summon ×10 (Stardust)', `Spend ${formatNumber(Config.gachaCost * 10)} stardust to summon 10 heroes?`, () => this.multiSummon("star", 10));
 
     // Storage buttons
     if (this.dom.btnStoreAll)
@@ -381,9 +384,14 @@ export class UIManager {
 
     // Item sell buttons
     if (this.dom.btnSellCommons)
-      this.dom.btnSellCommons.onclick = () => this.sellCommonItems();
+      this.dom.btnSellCommons.onclick = () => this.sellByRarity('Common');
     if (this.dom.btnSellSelected)
       this.dom.btnSellSelected.onclick = () => this.toggleSellMode();
+
+    // Sell rares button
+    const btnSellRares = document.getElementById('btn-sell-rares');
+    if (btnSellRares)
+      btnSellRares.onclick = () => this.sellByRarity('Rare');
 
     // Daily login claim
     if (this.dom.dailyClaimBtn)
@@ -441,9 +449,16 @@ export class UIManager {
       this.dom.towerStartBtn.onclick = () => EventBus.emit('startTower');
     }
 
-    // Prestige button
+    // Prestige button with confirmation
     if (this.dom.prestigeBtn) {
-      this.dom.prestigeBtn.onclick = () => EventBus.emit('performPrestige');
+      this.dom.prestigeBtn.onclick = () => {
+        const gain = calculatePrestigeGain(GameState.data.currentStage);
+        if (gain <= 0) {
+          this.showNotification('Need stage 50+ to prestige!');
+          return;
+        }
+        this._confirmAction('Void Rebirth', `Prestige to earn +${gain} Essence? All stage progress and currencies will be reset.`, () => EventBus.emit('performPrestige'));
+      };
     }
 
     // Guide navigation
@@ -656,6 +671,7 @@ export class UIManager {
       { id: 'tab-bestiary', label: 'Bestiary' },
       { id: 'tab-pets', label: 'Pets' },
       { id: 'tab-bossrush', label: 'Boss Rush' },
+      { id: 'tab-dungeon', label: 'Dungeon' },
       { id: 'tab-minigames', label: 'Arcade' },
     ],
     more: [
@@ -735,6 +751,7 @@ export class UIManager {
       case 'tab-bestiary': this.renderBestiary(); break;
       case 'tab-pets': this.renderPets(); break;
       case 'tab-bossrush': this.renderBossRush(); break;
+      case 'tab-dungeon': this.renderDungeon(); break;
       case 'tab-minigames': this.renderMiniGames(); break;
       case 'tab-profile': this.renderProfile(); this.renderAvatarGrid(); break;
       case 'tab-stats': this.renderStats(); break;
@@ -2929,6 +2946,167 @@ export class UIManager {
     this.updateStats();
   }
 
+  // --- Weekly Dungeon Tab ---
+  renderDungeon() {
+    const container = document.getElementById('dungeon-container');
+    if (!container) return;
+    const state = GameState.data;
+    if (!state.dungeon) state.dungeon = { lastWeek: null, bestFloor: 0 };
+
+    // If dungeon is active, render arena
+    if (this._dungeonActive) {
+      this._renderDungeonArena(container);
+      return;
+    }
+
+    const ready = isDungeonReady(state.dungeon);
+    const weekKey = getDungeonWeekKey();
+
+    let html = `<div class="br-status">
+      <div class="br-best">🏆 Best: Floor ${state.dungeon.bestFloor}</div>
+      <div class="br-best" style="font-size:0.8em;opacity:0.7">Week: ${weekKey}</div>
+    </div>`;
+
+    // Reward tiers preview
+    html += '<div class="br-rewards-preview"><h3>Floor Rewards</h3>';
+    for (const r of DUNGEON_REWARDS) {
+      const earned = state.dungeon.bestFloor >= r.floor;
+      html += `<div class="br-tier ${earned ? 'br-tier-earned' : ''}">
+        <span>Floor ${r.floor}:</span>
+        <span>🪙${formatNumber(r.coins)} ✨${r.stardust}${r.gems ? ' 💎' + r.gems : ''}${r.essence ? ' 🌀' + r.essence : ''}</span>
+      </div>`;
+    }
+    html += '</div>';
+
+    if (ready) {
+      html += '<button id="dg-start-btn" class="glow-btn" style="margin-top:12px;width:100%">🏚️ Enter Weekly Dungeon</button>';
+    } else {
+      html += `<p class="br-cooldown">Already attempted this week. Resets next Monday!</p>`;
+    }
+
+    container.innerHTML = html;
+
+    const startBtn = container.querySelector('#dg-start-btn');
+    if (startBtn) {
+      startBtn.onclick = () => this._startDungeon();
+    }
+  }
+
+  _startDungeon() {
+    this._dungeonActive = true;
+    this._dgFloor = 0;
+    this._dgBossHp = 0;
+    this._dgBossMaxHp = 0;
+    this._dgTimer = 0;
+    this._dgLastTick = Date.now();
+    this._dgKills = 0;
+    this._dgWeekSeed = getWeekSeed();
+    this._spawnDungeonFloor();
+    this.renderDungeon();
+    this._dgInterval = setInterval(() => this._tickDungeon(), 100);
+  }
+
+  _spawnDungeonFloor() {
+    const mod = getDungeonModifier(this._dgFloor, this._dgWeekSeed);
+    this._dgModifier = mod;
+    const hp = getDungeonFloorHp(this._dgFloor, GameState.data.currentStage, mod);
+    this._dgBossHp = hp;
+    this._dgBossMaxHp = hp;
+    this._dgTimer = getDungeonFloorTimer(this._dgFloor, mod);
+    this._dgLastTick = Date.now();
+  }
+
+  _tickDungeon() {
+    const now = Date.now();
+    const dt = now - this._dgLastTick;
+    this._dgLastTick = now;
+
+    // Timer countdown
+    this._dgTimer -= dt;
+    if (this._dgTimer <= 0) {
+      this._endDungeon();
+      return;
+    }
+
+    // Regen modifier
+    if (this._dgModifier && this._dgModifier.regen) {
+      this._dgBossHp = Math.min(this._dgBossMaxHp, this._dgBossHp + this._dgBossMaxHp * this._dgModifier.regen * (dt / 1000));
+    }
+
+    // Apply party DPS
+    const state = GameState.data;
+    let partyDps = 0;
+    state.activeParty.forEach(uid => {
+      const h = state.roster.find(r => r.uid === uid);
+      if (h) partyDps += getHeroStats(h).dps;
+    });
+    const dpsUpg = 1 + getUpgradeEffect("upg_global_dps", state.upgrades["upg_global_dps"] || 0);
+    let totalDps = partyDps * dpsUpg;
+
+    // Armored modifier: reduce damage
+    if (this._dgModifier && this._dgModifier.damageReduction) {
+      totalDps *= (1 - this._dgModifier.damageReduction);
+    }
+
+    const dmg = totalDps * (dt / 1000);
+    this._dgBossHp -= dmg;
+
+    if (this._dgBossHp <= 0) {
+      this._dgKills++;
+      this._dgFloor++;
+      this._spawnDungeonFloor();
+    }
+
+    const container = document.getElementById('dungeon-container');
+    if (container) this._renderDungeonArena(container);
+  }
+
+  _renderDungeonArena(container) {
+    const hpPct = Math.max(0, (this._dgBossHp / this._dgBossMaxHp) * 100);
+    const timerSec = Math.max(0, this._dgTimer / 1000).toFixed(1);
+    const floorName = getDungeonFloorName(this._dgFloor);
+    const mod = this._dgModifier;
+
+    container.innerHTML = `
+      <div class="br-arena">
+        <div class="br-wave-counter">Floor ${this._dgFloor + 1}</div>
+        <div class="br-timer ${this._dgTimer < 10000 ? 'br-timer-danger' : ''}">${timerSec}s</div>
+        <div class="br-boss-name">${floorName}</div>
+        <div style="font-size:0.85em;opacity:0.8;margin:4px 0">${mod ? mod.name + ' — ' + mod.desc : ''}</div>
+        <div class="br-hp-bar">
+          <div class="br-hp-fill" style="width:${hpPct}%"></div>
+        </div>
+        <div class="br-hp-text">${formatNumber(Math.max(0, Math.floor(this._dgBossHp)))} / ${formatNumber(this._dgBossMaxHp)}</div>
+        <div class="br-kills">Floors Cleared: ${this._dgKills}</div>
+      </div>`;
+  }
+
+  _endDungeon() {
+    clearInterval(this._dgInterval);
+    this._dungeonActive = false;
+    const state = GameState.data;
+    if (!state.dungeon) state.dungeon = { lastWeek: null, bestFloor: 0 };
+    state.dungeon.lastWeek = getDungeonWeekKey();
+
+    const cleared = this._dgKills;
+    if (cleared > state.dungeon.bestFloor) state.dungeon.bestFloor = cleared;
+
+    const reward = getDungeonReward(cleared);
+    if (reward) {
+      if (reward.coins) GameState.addCoins(reward.coins);
+      if (reward.stardust) GameState.addStardust(reward.stardust);
+      if (reward.gems) GameState.addGems(reward.gems);
+      if (reward.essence) GameState.addEssence(reward.essence);
+      this.showNotification(`🏚️ Dungeon Complete! Floor ${cleared} reached! +${formatNumber(reward.coins)} coins, +${reward.stardust} stardust${reward.gems ? ', +' + reward.gems + ' gems' : ''}`);
+    } else {
+      this.showNotification(`🏚️ Dungeon Failed. 0 floors cleared. Train harder!`);
+    }
+
+    GameState.save();
+    this.renderDungeon();
+    this.updateStats();
+  }
+
   // --- Expeditions Tab ---
   renderExpeditions() {
     const container = document.getElementById('expeditions-container');
@@ -3242,11 +3420,38 @@ export class UIManager {
         </div>
         <div class="collection-desc">${col.desc}</div>
         <div class="collection-items">${itemsHtml}</div>
-        <div class="collection-reward">${status.completed ? '✅' : '🔒'} Reward: ${col.reward.desc}</div>
+        <div class="collection-reward">${status.completed ? '✅' : '🔒'} Reward: ${col.reward.text}</div>
       `;
 
       this.dom.collectionsContainer.appendChild(card);
+
+      // Track completed collections in GameState
+      if (status.completed && !(GameState.data.completedCollections || []).includes(col.id)) {
+        if (!GameState.data.completedCollections) GameState.data.completedCollections = [];
+        GameState.data.completedCollections.push(col.id);
+      }
     });
+
+    // ── Render Relics ──
+    if (this.dom.relicsContainer) {
+      this.dom.relicsContainer.innerHTML = '';
+      const prestige = GameState.data.prestigeCount || 0;
+      RelicDatabase.forEach(relic => {
+        const unlocked = isRelicUnlocked(relic, GameState.data);
+        const val = getRelicBonusValue(relic, prestige);
+        const card = document.createElement('div');
+        card.className = `collection-card ${unlocked ? 'completed' : ''}`;
+        card.innerHTML = `
+          <div class="collection-header">
+            <div class="collection-name" style="color:${unlocked ? relic.color : 'var(--text-muted)'}">${relic.icon} ${unlocked ? relic.name : '???'}</div>
+            <div class="collection-progress">${unlocked ? '✅' : '🔒'}</div>
+          </div>
+          <div class="collection-desc">${unlocked ? relic.desc : relic.unlockDesc}</div>
+          <div class="collection-reward" style="color:${relic.color}">${unlocked ? relic.bonusDesc(val) : 'Locked'}</div>
+        `;
+        this.dom.relicsContainer.appendChild(card);
+      });
+    }
   }
 
   // --- Storage Tab ---
@@ -3677,34 +3882,56 @@ export class UIManager {
   }
 
   sellCommonItems() {
+    this.sellByRarity('Common');
+  }
+
+  sellByRarity(rarityName) {
     const state = GameState.data;
-    const commons = state.inventory.filter(item => {
-      const isCommon = (item.rarity?.name || 'Common') === 'Common';
+    const matching = state.inventory.filter(item => {
+      const itemRarity = item.rarity?.name || 'Common';
+      if (itemRarity !== rarityName) return false;
       // Don't sell equipped items
       const isEquipped = state.roster.some(h =>
         Object.values(h.equip || {}).some(e => e && e.uid === item.uid)
       );
-      return isCommon && !isEquipped;
+      return !isEquipped;
     });
 
-    if (commons.length === 0) {
-      this.showNotification('No common items to sell.');
+    if (matching.length === 0) {
+      this.showNotification(`No ${rarityName} items to sell.`);
       return;
     }
 
-    let totalGold = 0;
-    commons.forEach(item => {
-      totalGold += this.getItemSellValue(item);
+    this._confirmAction(`Sell ${rarityName} Items`, `Sell ${matching.length} ${rarityName} items?`, () => {
+      let totalGold = 0;
+      matching.forEach(item => {
+        totalGold += this.getItemSellValue(item);
+      });
+      const uids = new Set(matching.map(i => i.uid));
+      state.inventory = state.inventory.filter(i => !uids.has(i.uid));
+      state.coins += totalGold;
+      this.showNotification(`💰 Sold ${matching.length} ${rarityName} items for ${formatNumber(totalGold)} coins!`);
+      this.renderInventory();
+      this.updateStats();
     });
+  }
 
-    // Remove from inventory
-    const commonUids = new Set(commons.map(i => i.uid));
-    state.inventory = state.inventory.filter(i => !commonUids.has(i.uid));
-    state.coins += totalGold;
-
-    this.showNotification(`💰 Sold ${commons.length} common items for ${formatNumber(totalGold)} coins!`);
-    this.renderInventory();
-    this.updateStats();
+  _confirmAction(title, message, onConfirm) {
+    const overlay = document.createElement('div');
+    overlay.className = 'welcome-overlay';
+    overlay.innerHTML = `
+      <div class="welcome-modal" style="max-width:360px;">
+        <h2 style="color:var(--neon-orange);margin-bottom:8px;">⚠️ ${title}</h2>
+        <p style="color:var(--text-muted);margin-bottom:16px;">${message}</p>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="welcome-claim-btn confirm-yes" style="background:var(--neon-green);flex:1;">Confirm</button>
+          <button class="welcome-claim-btn confirm-no" style="background:var(--hp-red);flex:1;">Cancel</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('.confirm-yes').onclick = () => { overlay.remove(); onConfirm(); };
+    overlay.querySelector('.confirm-no').onclick = () => overlay.remove();
   }
 
   toggleSellMode() {

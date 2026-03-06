@@ -19,6 +19,7 @@ import { getHeroActiveSkill, getSkillDamage } from "../entities/HeroActiveSkills
 import { tickExpeditions } from "../entities/ExpeditionDatabase.js";
 import { getHeroElement } from "../entities/HeroDatabase.js";
 import { generateRuneDrop, getRuneInfo } from "../entities/RuneDatabase.js";
+import { getRelicBonuses } from "../entities/RelicDatabase.js";
 
 export class Engine {
   constructor(uiManager) {
@@ -259,7 +260,8 @@ export class Engine {
     const collectionBonuses = getCollectionBonuses(state);
     const skillBonuses = getPartySkillBonuses(state.activeParty, state.roster);
     const petBonuses = getPetBonuses(state.pets || {});
-    partyDps *= dpsMult * (1 + synergyBonuses.dpsBonus) * (1 + (skillBonuses.dpsBonus || 0)) * (1 + (petBonuses.dpsBonus || 0)) * shopBonuses.dpsMultiplier * prestigeBonuses.dpsMultiplier * eventBonuses.dpsMultiplier * collectionBonuses.dpsMultiplier;
+    const relicBonuses = getRelicBonuses(state);
+    partyDps *= dpsMult * (1 + synergyBonuses.dpsBonus) * (1 + (skillBonuses.dpsBonus || 0)) * (1 + (petBonuses.dpsBonus || 0)) * shopBonuses.dpsMultiplier * prestigeBonuses.dpsMultiplier * eventBonuses.dpsMultiplier * collectionBonuses.dpsMultiplier * relicBonuses.dpsMultiplier;
 
     // Autoclicker Damage
     let autoclickDamage = 0;
@@ -277,6 +279,13 @@ export class Engine {
     // Apply passive damage and Tower Timer logic
     const totalPassiveDps = partyDps + autoclickDamage;
     let damageAmount = totalPassiveDps * (deltaMs / 1000);
+
+    // ── Pet Combat Attack ──
+    // Active pet deals periodic damage based on level and mood
+    if (petBonuses.dpsBonus > 0) {
+      const petAttackDps = partyDps * petBonuses.dpsBonus * 0.5;
+      damageAmount += petAttackDps * (deltaMs / 1000);
+    }
 
     // ── Element Multiplier ──
     if (!this.towerActive && this.currentEnemyElement) {
@@ -423,7 +432,8 @@ export class Engine {
     const shopBonusesCrit = getShopBonuses(state.shopPurchases || {});
     const evtBonusesCrit = getEventBonuses();
     const skillBonClick = getPartySkillBonuses(state.activeParty, state.roster);
-    const isActuallyCrit = Math.random() < 0.1 + bonusCritChance + (shopBonusesCrit.critChanceBonus || 0) + (evtBonusesCrit.critChanceBonus || 0) + (skillBonClick.critChanceBonus || 0);
+    const relicBonCrit = getRelicBonuses(state);
+    const isActuallyCrit = Math.random() < 0.1 + bonusCritChance + (shopBonusesCrit.critChanceBonus || 0) + (evtBonusesCrit.critChanceBonus || 0) + (skillBonClick.critChanceBonus || 0) + (relicBonCrit.critBonus || 0);
 
     let finalDamage = clickPower;
 
@@ -431,7 +441,8 @@ export class Engine {
     const clickPowerMult = 1 + getUpgradeEffect("upg_click_power", state.upgrades["upg_click_power"] || 0);
     const shopBonuses = getShopBonuses(state.shopPurchases || {});
     const prestigeBonuses = getPrestigeBonuses(state.prestigeUpgrades || {});
-    finalDamage *= clickPowerMult * (1 + (skillBonClick.clickDmgBonus || 0)) * shopBonuses.clickMultiplier * prestigeBonuses.clickMultiplier;
+    const relicBonClick = getRelicBonuses(state);
+    finalDamage *= clickPowerMult * (1 + (skillBonClick.clickDmgBonus || 0)) * shopBonuses.clickMultiplier * prestigeBonuses.clickMultiplier * relicBonClick.clickMultiplier;
 
     // Apply global DPS upgrade to manual clicks too
     const dpsMult =
@@ -516,6 +527,7 @@ export class Engine {
     const evtBon = getEventBonuses();
     const colBon = getCollectionBonuses(state);
     const petBon = getPetBonuses(state.pets || {});
+    const relBon = getRelicBonuses(state);
 
     // Rewards
     let finalCoins = enemyInfo.coinDrop;
@@ -526,7 +538,7 @@ export class Engine {
       const soulSiphonBonus = 1 + getUpgradeEffect("upg_hp_drain", state.upgrades["upg_hp_drain"] || 0);
       const bossSkillMult = enemyInfo.isBoss ? (1 + (skillBon.bossCoinsBonus || 0)) : 1;
       const skillCoinBuff = this.getPartyCoinBuff();
-      finalCoins = Math.floor(finalCoins * coinMult * soulSiphonBonus * (1 + synBonus.coinBonus) * (1 + (skillBon.coinBonus || 0)) * (1 + (petBon.coinBonus || 0)) * bossSkillMult * skillCoinBuff * shopBon.coinMultiplier * presBon.coinMultiplier * evtBon.coinMultiplier * colBon.coinMultiplier * streakMult);
+      finalCoins = Math.floor(finalCoins * coinMult * soulSiphonBonus * (1 + synBonus.coinBonus) * (1 + (skillBon.coinBonus || 0)) * (1 + (petBon.coinBonus || 0)) * bossSkillMult * skillCoinBuff * shopBon.coinMultiplier * presBon.coinMultiplier * evtBon.coinMultiplier * colBon.coinMultiplier * relBon.coinMultiplier * streakMult);
       GameState.addCoins(finalCoins);
     }
     // Stardust base reward + bonus chance from upgrade + shop/prestige multiplier + event bonus
@@ -540,13 +552,13 @@ export class Engine {
       stardustReward = 1; // Bonus stardust proc from upgrade or event
     }
     if (stardustReward > 0) {
-      stardustReward = Math.max(1, Math.floor(stardustReward * (1 + (skillBon.stardustBonus || 0)) * (1 + (petBon.stardustBonus || 0)) * shopBon.stardustMultiplier * presBon.stardustMultiplier * evtBon.stardustMultiplier * colBon.stardustMultiplier));
+      stardustReward = Math.max(1, Math.floor(stardustReward * (1 + (skillBon.stardustBonus || 0)) * (1 + (petBon.stardustBonus || 0)) * shopBon.stardustMultiplier * presBon.stardustMultiplier * evtBon.stardustMultiplier * colBon.stardustMultiplier * relBon.stardustMultiplier));
       GameState.addStardust(stardustReward);
     }
 
     // Gem drop chance (bosses: 50%, normal: 1% + prestige + event + gem_magnet upgrade bonus)
     const gemMagnetBonus = getUpgradeEffect("upg_gem_magnet", state.upgrades["upg_gem_magnet"] || 0) / 100;
-    const gemChance = enemyInfo.isBoss ? 0.50 : (0.01 + (presBon.gemChanceBonus || 0) + (evtBon.gemChanceBonus || 0) + gemMagnetBonus + (skillBon.gemChanceBonus || 0));
+    const gemChance = enemyInfo.isBoss ? 0.50 : (0.01 + (presBon.gemChanceBonus || 0) + (evtBon.gemChanceBonus || 0) + gemMagnetBonus + (skillBon.gemChanceBonus || 0) + (relBon.gemChanceBonus || 0));
     if (Math.random() < gemChance) {
       const gemAmount = enemyInfo.isBoss ? Math.max(1, Math.floor(state.currentStage / 10)) : 1;
       GameState.addGems(gemAmount);
@@ -555,7 +567,7 @@ export class Engine {
 
     let dropMsg = "";
     // Boss Loot Check (Every 10 stages, or 1% chance otherwise + loot luck upgrade + shop + event + collection bonus)
-    const lootLuckBonus = getUpgradeEffect("upg_loot_luck", state.upgrades["upg_loot_luck"] || 0) / 100 + (shopBon.lootChanceBonus || 0) + (evtBon.lootChanceBonus || 0) + (colBon.lootChanceBonus || 0) + (skillBon.lootChanceBonus || 0) + (petBon.lootBonus || 0);
+    const lootLuckBonus = getUpgradeEffect("upg_loot_luck", state.upgrades["upg_loot_luck"] || 0) / 100 + (shopBon.lootChanceBonus || 0) + (evtBon.lootChanceBonus || 0) + (colBon.lootChanceBonus || 0) + (skillBon.lootChanceBonus || 0) + (petBon.lootBonus || 0) + (relBon.lootChanceBonus || 0);
     const eliteLootBonus = this.isEliteEnemy ? 0.25 : 0; // Elites have 25% extra loot chance
     if (state.currentStage % 10 === 0 || Math.random() < (0.01 + lootLuckBonus + eliteLootBonus)) {
       const item = generateRandomLootDrop(state.currentStage);
@@ -573,7 +585,7 @@ export class Engine {
     // XP gain (with shop/prestige/event/collection/upgrade/pet multipliers)
     const xpUpgBonus = 1 + getUpgradeEffect("upg_xp_boost", state.upgrades["upg_xp_boost"] || 0);
     const baseXp = enemyInfo.isBoss ? state.currentStage * 8 : Math.max(1, Math.floor(state.currentStage * 1.5));
-    const xpGain = Math.floor(baseXp * (1 + (petBon.xpBonus || 0)) * shopBon.xpMultiplier * presBon.xpMultiplier * evtBon.xpMultiplier * colBon.xpMultiplier * xpUpgBonus * streakMult);
+    const xpGain = Math.floor(baseXp * (1 + (petBon.xpBonus || 0)) * shopBon.xpMultiplier * presBon.xpMultiplier * evtBon.xpMultiplier * colBon.xpMultiplier * relBon.xpMultiplier * xpUpgBonus * streakMult);
     this.addXp(xpGain);
 
     // Bestiary tracking
@@ -731,7 +743,9 @@ export class Engine {
     const gain = calculatePrestigeGain(state.currentStage);
     if (gain <= 0) return false;
 
-    GameState.addEssence(gain);
+    const relBonPrestige = getRelicBonuses(state);
+    const finalEssence = Math.floor(gain * relBonPrestige.essenceMultiplier);
+    GameState.addEssence(finalEssence);
     state.prestigeCount = (state.prestigeCount || 0) + 1;
 
     // Preserve these across prestige (heroes, items, and permanent progress persist)
@@ -757,6 +771,8 @@ export class Engine {
       activeParty: state.activeParty || [],
       heroAscensions: state.heroAscensions || {},
       storage: state.storage || [],
+      completedCollections: state.completedCollections || [],
+      dungeon: state.dungeon || { lastWeek: null, bestFloor: 0 },
     };
 
     // Get start stage bonus from prestige
@@ -794,9 +810,11 @@ export class Engine {
     state.activeParty = preserved.activeParty;
     state.heroAscensions = preserved.heroAscensions;
     state.storage = preserved.storage;
+    state.completedCollections = preserved.completedCollections;
+    state.dungeon = preserved.dungeon;
 
     GameState.save();
-    this.ui.showNotification(`🌀 Void Rebirth! +${gain} Essence. A new journey begins...`);
+    this.ui.showNotification(`🌀 Void Rebirth! +${finalEssence} Essence. A new journey begins...`);
 
     // Re-spawn enemy and re-init UI
     this.spawnEnemy();
