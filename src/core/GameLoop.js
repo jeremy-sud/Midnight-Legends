@@ -16,6 +16,7 @@ import { getPartySkillBonuses } from "../entities/SkillDatabase.js";
 import { formatNumber } from "./Utils.js";
 import { getPartyElementMultiplier, processStatusEffects, createStatusEffect, EnemyAuras, getComboTier, Elements } from "../entities/ElementDatabase.js";
 import { getHeroActiveSkill, getSkillDamage } from "../entities/HeroActiveSkills.js";
+import { tickExpeditions } from "../entities/ExpeditionDatabase.js";
 import { getHeroElement } from "../entities/HeroDatabase.js";
 
 export class Engine {
@@ -390,6 +391,9 @@ export class Engine {
 
     // Check streak expiry
     this.ui.checkStreakExpiry();
+
+    // Tick expeditions
+    tickExpeditions(state);
 
     // Auto-buy cheapest upgrade (every ~1 second = 10 ticks)
     this._autoBuyCounter = (this._autoBuyCounter || 0) + 1;

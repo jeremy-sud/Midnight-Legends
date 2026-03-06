@@ -34,8 +34,10 @@ import { getAllHeroSkills, getHeroSkills, getPartySkillBonuses } from "../entiti
 import { SpinWheelPrizes, SPIN_COST_GEMS, spinWheel, canFreeSpin } from "../entities/SpinWheelDatabase.js";
 import { PetDatabase, PetFoods, getPetMood, getPetBonuses } from "../entities/PetDatabase.js";
 import { MiniGameDatabase, isMiniGameReady, getMiniGameCooldown } from "../entities/MiniGameDatabase.js";
-import { getDailyQuests, getQuestProgress } from "../entities/QuestDatabase.js";
+import { getDailyQuests, getQuestProgress, getWeeklyQuests, getWeekKey, getStreakBonus } from "../entities/QuestDatabase.js";
 import { getCraftableGroups, fuseItems, getDismantleValue, CRAFT_COST, getNextRarity } from "../entities/CraftingDatabase.js";
+import { getUnlockedRegions, ExpeditionRegions, startExpedition, calculateExpeditionRewards, getExpeditionTimeLeft } from "../entities/ExpeditionDatabase.js";
+import { BOSS_RUSH_CONFIG, BOSS_RUSH_NAMES, getBossRushHp, getBossRushReward, BOSS_RUSH_REWARDS, isBossRushReady, getBossRushCooldown } from "../entities/BossRushDatabase.js";
 
 export class UIManager {
   constructor() {
@@ -620,10 +622,12 @@ export class UIManager {
     world: [
       { id: 'tab-events', label: 'Events' },
       { id: 'tab-quests', label: 'Quests' },
+      { id: 'tab-expeditions', label: 'Expeditions' },
       { id: 'tab-collections', label: 'Collections' },
       { id: 'tab-lore', label: 'Codex' },
       { id: 'tab-bestiary', label: 'Bestiary' },
       { id: 'tab-pets', label: 'Pets' },
+      { id: 'tab-bossrush', label: 'Boss Rush' },
       { id: 'tab-minigames', label: 'Arcade' },
     ],
     more: [
@@ -696,10 +700,12 @@ export class UIManager {
       case 'tab-spin': this.renderSpinWheel(); break;
       case 'tab-events': this.renderEvents(); this.renderDailyLogin(); break;
       case 'tab-quests': this.renderDailyQuests(); break;
+      case 'tab-expeditions': this.renderExpeditions(); break;
       case 'tab-collections': this.renderCollections(); break;
       case 'tab-lore': this.renderLore(); break;
       case 'tab-bestiary': this.renderBestiary(); break;
       case 'tab-pets': this.renderPets(); break;
+      case 'tab-bossrush': this.renderBossRush(); break;
       case 'tab-minigames': this.renderMiniGames(); break;
       case 'tab-profile': this.renderProfile(); this.renderAvatarGrid(); break;
       case 'tab-stats': this.renderStats(); break;
@@ -1150,7 +1156,7 @@ export class UIManager {
           return `
                <div class="equip-slot filled" style="border-color:${iStats.rarity.color}; color:${iStats.rarity.color}" data-slot="${slotName}" data-cat="${categoryStr}">
                   ${iStats.svg}
-                  <div class="equip-tooltip">${iStats.name}</div>
+                  <div class="equip-tooltip">${iStats.displayName || iStats.name}</div>
                </div>
              `;
         } else {
@@ -1325,7 +1331,7 @@ export class UIManager {
         };
       } else {
         el.innerHTML = stats.svg;
-        el.title = `${stats.name} (${stats.rarity.name})`;
+        el.title = `${stats.displayName || stats.name} (${stats.rarity.name})`;
         // Hover tooltip
         el.addEventListener('mouseenter', (e) => this.showItemTooltip(e, item));
         el.addEventListener('mouseleave', () => this.hideItemTooltip());
@@ -1800,15 +1806,20 @@ export class UIManager {
   renderAchievements() {
     if (!this.dom.achievementsContainer) return;
     const unlocked = GameState.data.unlockedAchievements || [];
+    const visibleCount = AchievementDatabase.filter(a => !a.secret || unlocked.includes(a.id)).length;
 
     if (this.dom.achCounter) {
-      this.dom.achCounter.textContent = `${unlocked.length} / ${AchievementDatabase.length}`;
+      this.dom.achCounter.textContent = `${unlocked.length} / ${visibleCount}`;
     }
 
     this.dom.achievementsContainer.innerHTML = "";
 
     AchievementDatabase.forEach((ach) => {
       const isUnlocked = unlocked.includes(ach.id);
+
+      // Secret achievements: completely hidden until unlocked
+      if (ach.secret && !isUnlocked) return;
+
       const card = document.createElement("div");
       card.className = `achievement-card ${isUnlocked ? "unlocked" : "locked"}`;
 
@@ -2311,7 +2322,7 @@ export class UIManager {
         const equipped = hData.equip[slotName];
         if (equipped) {
           const iStats = getItemStats(equipped);
-          return `<div class="hsp-equip-item" style="border-color:${iStats.rarity.color};color:${iStats.rarity.color}" title="${iStats.name} (${iStats.rarity.name})">${iStats.svg}</div>`;
+          return `<div class="hsp-equip-item" style="border-color:${iStats.rarity.color};color:${iStats.rarity.color}" title="${iStats.displayName || iStats.name} (${iStats.rarity.name})">${iStats.svg}</div>`;
         }
         return `<div class="hsp-equip-item hsp-equip-empty" title="No ${label}">${label[0]}</div>`;
       };
@@ -2442,7 +2453,7 @@ export class UIManager {
         if (newItem) {
           GameState.data.inventory.push(newItem);
           const st = getItemStats(newItem);
-          this.showNotification(`Forged ${st.name} (${st.rarity.name})!`);
+          this.showNotification(`Forged ${st.displayName || st.name} (${st.rarity.name})!`);
           GameState.save();
           this.renderCrafting();
         }
@@ -2471,6 +2482,280 @@ export class UIManager {
     });
   }
 
+  // --- Boss Rush Tab ---
+  renderBossRush() {
+    const container = document.getElementById('bossrush-container');
+    if (!container) return;
+    const state = GameState.data;
+    if (!state.bossRush) state.bossRush = { lastPlayed: null, bestWave: 0 };
+
+    // If a rush is active, show the arena
+    if (this._bossRushActive) {
+      this._renderBossRushArena(container);
+      return;
+    }
+
+    const ready = isBossRushReady(state.bossRush.lastPlayed);
+    const cdMs = getBossRushCooldown(state.bossRush.lastPlayed);
+    const cdMin = Math.ceil(cdMs / 60_000);
+
+    let html = `<div class="br-status">
+      <div class="br-best">🏆 Best: Wave ${state.bossRush.bestWave} / ${BOSS_RUSH_CONFIG.totalBosses}</div>
+    </div>`;
+
+    // Reward tiers preview
+    html += '<div class="br-rewards-preview"><h3>Reward Tiers</h3>';
+    for (const r of BOSS_RUSH_REWARDS) {
+      const earned = state.bossRush.bestWave >= r.bosses;
+      html += `<div class="br-tier ${earned ? 'br-tier-earned' : ''}">
+        <span>${r.bosses} bosses:</span>
+        <span>🪙${formatNumber(r.coins)} ✨${r.stardust}${r.gems ? ' 💎' + r.gems : ''}${r.essence ? ' 🌀' + r.essence : ''}</span>
+      </div>`;
+    }
+    html += '</div>';
+
+    if (ready) {
+      html += '<button id="br-start-btn" class="glow-btn" style="margin-top:12px;width:100%">⚔️ Start Boss Rush!</button>';
+    } else {
+      html += `<p class="br-cooldown">Cooldown: ${cdMin} min remaining</p>`;
+    }
+
+    container.innerHTML = html;
+
+    const startBtn = container.querySelector('#br-start-btn');
+    if (startBtn) {
+      startBtn.onclick = () => this._startBossRush();
+    }
+
+    // Auto-refresh cooldown
+    if (!ready) {
+      clearTimeout(this._brCdTimer);
+      this._brCdTimer = setTimeout(() => this.renderBossRush(), 5000);
+    }
+  }
+
+  _startBossRush() {
+    this._bossRushActive = true;
+    this._brWave = 0;
+    this._brBossHp = 0;
+    this._brBossMaxHp = 0;
+    this._brTimer = BOSS_RUSH_CONFIG.timerPerBoss;
+    this._brLastTick = Date.now();
+    this._brKills = 0;
+    this._spawnBossRushBoss();
+    this.renderBossRush();
+    // Start tick loop
+    this._brInterval = setInterval(() => this._tickBossRush(), 100);
+  }
+
+  _spawnBossRushBoss() {
+    const hp = getBossRushHp(this._brWave, GameState.data.currentStage);
+    this._brBossHp = hp;
+    this._brBossMaxHp = hp;
+    this._brTimer = BOSS_RUSH_CONFIG.timerPerBoss;
+    this._brLastTick = Date.now();
+  }
+
+  _tickBossRush() {
+    const now = Date.now();
+    const dt = now - this._brLastTick;
+    this._brLastTick = now;
+
+    // Timer countdown
+    this._brTimer -= dt;
+    if (this._brTimer <= 0) {
+      // Time's up — end rush
+      this._endBossRush();
+      return;
+    }
+
+    // Apply party DPS
+    const state = GameState.data;
+    let partyDps = 0;
+    state.activeParty.forEach(uid => {
+      const h = state.roster.find(r => r.uid === uid);
+      if (h) partyDps += getHeroStats(h).dps;
+    });
+
+    // Include upgrade multipliers
+    const dpsUpg = 1 + getUpgradeEffect("upg_global_dps", state.upgrades["upg_global_dps"] || 0);
+    const totalDps = partyDps * dpsUpg;
+    const dmg = totalDps * (dt / 1000);
+
+    this._brBossHp -= dmg;
+    if (this._brBossHp <= 0) {
+      this._brKills++;
+      this._brWave++;
+      if (this._brWave >= BOSS_RUSH_CONFIG.totalBosses) {
+        this._endBossRush();
+        return;
+      }
+      this._spawnBossRushBoss();
+    }
+
+    // Update display
+    const container = document.getElementById('bossrush-container');
+    if (container) this._renderBossRushArena(container);
+  }
+
+  _renderBossRushArena(container) {
+    const hpPct = Math.max(0, (this._brBossHp / this._brBossMaxHp) * 100);
+    const timerSec = Math.max(0, this._brTimer / 1000).toFixed(1);
+    const bossName = BOSS_RUSH_NAMES[this._brWave] || `Boss ${this._brWave + 1}`;
+
+    container.innerHTML = `
+      <div class="br-arena">
+        <div class="br-wave-counter">Wave ${this._brWave + 1} / ${BOSS_RUSH_CONFIG.totalBosses}</div>
+        <div class="br-timer ${this._brTimer < 10000 ? 'br-timer-danger' : ''}">${timerSec}s</div>
+        <div class="br-boss-name">${bossName}</div>
+        <div class="br-hp-bar">
+          <div class="br-hp-fill" style="width:${hpPct}%"></div>
+        </div>
+        <div class="br-hp-text">${formatNumber(Math.max(0, Math.floor(this._brBossHp)))} / ${formatNumber(this._brBossMaxHp)}</div>
+        <div class="br-kills">Defeated: ${this._brKills}</div>
+      </div>`;
+  }
+
+  _endBossRush() {
+    clearInterval(this._brInterval);
+    this._bossRushActive = false;
+    const state = GameState.data;
+    if (!state.bossRush) state.bossRush = { lastPlayed: null, bestWave: 0 };
+    state.bossRush.lastPlayed = Date.now();
+
+    const kills = this._brKills;
+    if (kills > state.bossRush.bestWave) state.bossRush.bestWave = kills;
+
+    // Grant rewards
+    const reward = getBossRushReward(kills);
+    if (reward) {
+      if (reward.coins) GameState.addCoins(reward.coins);
+      if (reward.stardust) GameState.addStardust(reward.stardust);
+      if (reward.gems) GameState.addGems(reward.gems);
+      if (reward.essence) GameState.addEssence(reward.essence);
+      this.showNotification(`⚔️ Boss Rush: ${kills} bosses defeated! +${formatNumber(reward.coins)} coins, +${reward.stardust} stardust${reward.gems ? ', +' + reward.gems + ' gems' : ''}`);
+    } else {
+      this.showNotification(`⚔️ Boss Rush: 0 bosses defeated. Try harder!`);
+    }
+
+    GameState.save();
+    this.renderBossRush();
+    this.updateStats();
+  }
+
+  // --- Expeditions Tab ---
+  renderExpeditions() {
+    const container = document.getElementById('expeditions-container');
+    if (!container) return;
+    const state = GameState.data;
+    if (!state.expeditions) state.expeditions = [];
+
+    const regions = getUnlockedRegions(state.currentStage);
+    const activeExps = state.expeditions.filter(e => !e.claimed);
+
+    // Idle heroes (in roster, not in party, not on expedition)
+    const onExpUids = new Set(activeExps.filter(e => !e.completed || !e.claimed).map(e => e.heroUid));
+    const idleHeroes = state.roster.filter(h =>
+      !state.activeParty.includes(h.uid) && !onExpUids.has(h.uid)
+    );
+
+    let html = '';
+
+    // Active expeditions
+    if (activeExps.length > 0) {
+      html += '<h3 class="exp-section-title">Active Expeditions</h3>';
+      for (const exp of activeExps) {
+        const region = ExpeditionRegions.find(r => r.id === exp.regionId);
+        const hero = state.roster.find(h => h.uid === exp.heroUid);
+        const heroTpl = hero ? HeroTemplate.find(t => t.id === hero.id) : null;
+        const heroName = heroTpl ? heroTpl.name : 'Unknown';
+        const heroElement = hero ? getHeroElement(hero.id) : null;
+        const elementMatch = region && region.element && heroElement === region.element;
+
+        html += `<div class="exp-card ${exp.completed ? 'exp-done' : ''}">
+          <div class="exp-region-icon">${region ? region.icon : '?'}</div>
+          <div class="exp-card-info">
+            <span class="exp-region-name">${region ? region.name : 'Unknown'}</span>
+            <span class="exp-hero-name">${heroName} ${elementMatch ? '🔷' : ''}</span>
+            <span class="exp-timer">${exp.completed ? '✅ Complete!' : getExpeditionTimeLeft(exp)}</span>
+          </div>
+          ${exp.completed ? `<button class="quest-claim-btn exp-claim-btn" data-expid="${exp.id}">Claim</button>` : ''}
+        </div>`;
+      }
+    }
+
+    // Send new expedition
+    if (activeExps.filter(e => !e.completed).length < 3 && regions.length > 0 && idleHeroes.length > 0) {
+      html += '<h3 class="exp-section-title">Send Expedition</h3>';
+      html += '<div class="exp-form">';
+      html += '<select id="exp-hero-select" class="exp-select">';
+      for (const h of idleHeroes) {
+        const tpl = HeroTemplate.find(t => t.id === h.id);
+        const el = getHeroElement(h.id);
+        html += `<option value="${h.uid}">${tpl ? tpl.name : h.id} ${el ? '(' + el + ')' : ''}</option>`;
+      }
+      html += '</select>';
+      html += '<select id="exp-region-select" class="exp-select">';
+      for (const r of regions) {
+        const dur = r.durationMs / 3600_000;
+        html += `<option value="${r.id}">${r.icon} ${r.name} — ${dur}h (${r.element || 'any'})</option>`;
+      }
+      html += '</select>';
+      html += '<button id="exp-send-btn" class="craft-btn">Send</button>';
+      html += '</div>';
+    } else if (idleHeroes.length === 0 && activeExps.filter(e => !e.completed).length < 3) {
+      html += '<p class="exp-empty">No idle heroes available. Remove a hero from your party first.</p>';
+    } else if (regions.length === 0) {
+      html += '<p class="exp-empty">No regions unlocked yet. Progress further in stages!</p>';
+    }
+
+    container.innerHTML = html;
+
+    // Bind claim buttons
+    container.querySelectorAll('.exp-claim-btn').forEach(btn => {
+      btn.onclick = () => {
+        const exp = state.expeditions.find(e => e.id === btn.dataset.expid);
+        if (!exp || !exp.completed || exp.claimed) return;
+        const rewards = calculateExpeditionRewards(exp, state);
+        if (!rewards) return;
+        exp.claimed = true;
+        GameState.addCoins(rewards.coins);
+        state.stardust += rewards.stardust;
+        rewards.items.forEach(it => state.inventory.push(it));
+        const bonusText = rewards.elementBonus ? ' (Element Bonus!)' : '';
+        this.showNotification(`Expedition: +${rewards.coins} coins, +${rewards.stardust} stardust${rewards.items.length ? ', +1 item' : ''}${bonusText}`);
+        // Clean up claimed expeditions
+        state.expeditions = state.expeditions.filter(e => !e.claimed);
+        GameState.save();
+        this.renderExpeditions();
+        this.updateStats();
+      };
+    });
+
+    // Bind send button
+    const sendBtn = container.querySelector('#exp-send-btn');
+    if (sendBtn) {
+      sendBtn.onclick = () => {
+        const heroUid = container.querySelector('#exp-hero-select').value;
+        const regionId = container.querySelector('#exp-region-select').value;
+        const result = startExpedition(state, heroUid, regionId);
+        if (result.ok) {
+          this.showNotification('Expedition started!');
+          GameState.save();
+          this.renderExpeditions();
+        } else {
+          this.showNotification(result.error);
+        }
+      };
+    }
+
+    // Auto-refresh timer every second if there are active expeditions
+    if (activeExps.some(e => !e.completed)) {
+      clearTimeout(this._expTimer);
+      this._expTimer = setTimeout(() => this.renderExpeditions(), 1000);
+    }
+  }
+
   // --- Daily Quests Tab ---
   renderDailyQuests() {
     const container = document.getElementById('quests-container');
@@ -2478,39 +2763,89 @@ export class UIManager {
 
     const state = GameState.data;
     const today = new Date().toISOString().slice(0, 10);
+    const weekKey = getWeekKey(today);
 
     // Initialize or reset daily quests
-    if (!state.dailyQuests) state.dailyQuests = { date: null, completed: [], snapshots: {} };
+    if (!state.dailyQuests) state.dailyQuests = { date: null, completed: [], snapshots: {}, streak: 0, lastStreakDate: null };
     if (state.dailyQuests.date !== today) {
-      // New day — snapshot current stats and reset
+      // Check if yesterday was a full completion for streak
+      if (state.dailyQuests.date && state.dailyQuests.completed.length >= 3) {
+        const yesterday = new Date(today + 'T12:00:00Z');
+        yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+        const yStr = yesterday.toISOString().slice(0, 10);
+        if (state.dailyQuests.date === yStr) {
+          state.dailyQuests.streak = (state.dailyQuests.streak || 0) + 1;
+          state.dailyQuests.lastStreakDate = today;
+        } else {
+          state.dailyQuests.streak = 0;
+        }
+      } else if (state.dailyQuests.date) {
+        state.dailyQuests.streak = 0;
+      }
       state.dailyQuests.date = today;
       state.dailyQuests.completed = [];
       state.dailyQuests.snapshots = { ...state.playerDamageStats };
-      // Track stage-based quests
       state.dailyQuests.snapshots._stagesAdvanced = state.currentStage;
       state.dailyQuests.snapshots._heroLevels = this._countTotalHeroLevels();
     }
 
-    const quests = getDailyQuests(today);
-    const completed = state.dailyQuests.completed || [];
+    // Initialize or reset weekly quests
+    if (!state.weeklyQuests) state.weeklyQuests = { week: null, completed: [], snapshots: {} };
+    if (state.weeklyQuests.week !== weekKey) {
+      state.weeklyQuests.week = weekKey;
+      state.weeklyQuests.completed = [];
+      state.weeklyQuests.snapshots = { ...state.playerDamageStats };
+      state.weeklyQuests.snapshots._stagesAdvanced = state.currentStage;
+      state.weeklyQuests.snapshots._heroLevels = this._countTotalHeroLevels();
+    }
 
-    container.innerHTML = quests.map(quest => {
+    const dailyQuests = getDailyQuests(today);
+    const weeklyQuests = getWeeklyQuests(today);
+    const streak = state.dailyQuests.streak || 0;
+    const streakBonus = getStreakBonus(streak);
+
+    let html = '';
+
+    // Streak display
+    html += `<div class="quest-streak-bar">
+      <span class="quest-streak-label">🔥 Racha: ${streak} día${streak !== 1 ? 's' : ''}</span>
+      ${streakBonus > 0 ? `<span class="quest-streak-bonus">+${streakBonus} 💎/día</span>` : ''}
+    </div>`;
+
+    // Daily section
+    html += '<h3 class="quest-section-title">Diarias</h3>';
+    html += this._renderQuestList(dailyQuests, state.dailyQuests, state);
+
+    // Weekly section
+    html += '<h3 class="quest-section-title" style="margin-top:14px;">Semanales</h3>';
+    html += this._renderQuestList(weeklyQuests, state.weeklyQuests, state);
+
+    container.innerHTML = html;
+
+    // Bind claim buttons
+    container.querySelectorAll('.quest-claim-btn').forEach(btn => {
+      btn.onclick = () => this.claimQuest(btn.dataset.questId, btn.dataset.weekly === 'true');
+    });
+  }
+
+  _renderQuestList(quests, questState, state) {
+    const completed = questState.completed || [];
+    return quests.map(quest => {
       const isDone = completed.includes(quest.id);
       const currentStats = { ...state.playerDamageStats, _stagesAdvanced: state.currentStage, _heroLevels: this._countTotalHeroLevels() };
-      const startVal = state.dailyQuests.snapshots[quest.stat] || 0;
+      const startVal = questState.snapshots[quest.stat] || 0;
       const currentVal = currentStats[quest.stat] || 0;
       const progress = Math.max(0, currentVal - startVal);
       const pct = Math.min(100, (progress / quest.target) * 100);
       const isComplete = progress >= quest.target;
 
-      // Reward text
       const rewardParts = [];
       if (quest.reward.coins) rewardParts.push(`🪙${formatNumber(quest.reward.coins)}`);
       if (quest.reward.stardust) rewardParts.push(`✨${quest.reward.stardust}`);
       if (quest.reward.gems) rewardParts.push(`💎${quest.reward.gems}`);
       if (quest.reward.essence) rewardParts.push(`🌀${quest.reward.essence}`);
 
-      return `<div class="quest-card ${isDone ? 'quest-done' : ''} ${isComplete && !isDone ? 'quest-claimable' : ''}">
+      return `<div class="quest-card ${isDone ? 'quest-done' : ''} ${isComplete && !isDone ? 'quest-claimable' : ''} ${quest.weekly ? 'quest-weekly' : ''}">
         <div class="quest-icon">${isDone ? '✅' : quest.icon}</div>
         <div class="quest-info">
           <div class="quest-name">${quest.name}</div>
@@ -2522,30 +2857,26 @@ export class UIManager {
         </div>
         <div class="quest-reward">
           <div class="quest-reward-label">${rewardParts.join(' ')}</div>
-          ${isDone ? '<span class="quest-claimed">Reclamada</span>' : isComplete ? `<button class="quest-claim-btn" data-quest-id="${quest.id}">Reclamar</button>` : ''}
+          ${isDone ? '<span class="quest-claimed">Reclamada</span>' : isComplete ? `<button class="quest-claim-btn" data-quest-id="${quest.id}" data-weekly="${!!quest.weekly}">Reclamar</button>` : ''}
         </div>
       </div>`;
     }).join('');
-
-    // Bind claim buttons
-    container.querySelectorAll('.quest-claim-btn').forEach(btn => {
-      btn.onclick = () => this.claimQuest(btn.dataset.questId);
-    });
   }
 
-  claimQuest(questId) {
+  claimQuest(questId, isWeekly) {
     const state = GameState.data;
-    if (!state.dailyQuests) return;
-    if (state.dailyQuests.completed.includes(questId)) return;
-
     const today = new Date().toISOString().slice(0, 10);
-    const quests = getDailyQuests(today);
+    const questState = isWeekly ? state.weeklyQuests : state.dailyQuests;
+    if (!questState) return;
+    if (questState.completed.includes(questId)) return;
+
+    const quests = isWeekly ? getWeeklyQuests(today) : getDailyQuests(today);
     const quest = quests.find(q => q.id === questId);
     if (!quest) return;
 
     // Verify completion
     const currentStats = { ...state.playerDamageStats, _stagesAdvanced: state.currentStage, _heroLevels: this._countTotalHeroLevels() };
-    const startVal = state.dailyQuests.snapshots[quest.stat] || 0;
+    const startVal = questState.snapshots[quest.stat] || 0;
     const progress = (currentStats[quest.stat] || 0) - startVal;
     if (progress < quest.target) return;
 
@@ -2555,7 +2886,17 @@ export class UIManager {
     if (quest.reward.gems) GameState.addGems(quest.reward.gems);
     if (quest.reward.essence) GameState.addEssence(quest.reward.essence);
 
-    state.dailyQuests.completed.push(questId);
+    questState.completed.push(questId);
+
+    // Check if all 3 daily quests completed → award streak bonus
+    if (!isWeekly && state.dailyQuests.completed.length === 3) {
+      const streakBonus = getStreakBonus(state.dailyQuests.streak || 0);
+      if (streakBonus > 0) {
+        GameState.addGems(streakBonus);
+        this.showNotification(`🔥 ¡Racha de ${state.dailyQuests.streak} días! +${streakBonus} 💎`);
+      }
+    }
+
     this.showNotification(`📋 ¡Misión completada! ${quest.icon} ${quest.name}`);
     this.renderDailyQuests();
     this.updateStats();
@@ -2640,7 +2981,7 @@ export class UIManager {
       el.style.borderColor = stats.rarity.color;
       el.style.color = stats.rarity.color;
       el.innerHTML = stats.svg;
-      el.title = `${stats.name} (${stats.rarity.name}) — Click to retrieve`;
+      el.title = `${stats.displayName || stats.name} (${stats.rarity.name}) — Click to retrieve`;
       el.onclick = () => {
         // Move item from storage to inventory
         GameState.data.storage.splice(idx, 1);
@@ -3018,8 +3359,9 @@ export class UIManager {
     if (stats.critBonus) statsHtml += `<div class="item-tooltip-stat"><span class="item-tooltip-stat-label">Crit Bonus</span><span class="item-tooltip-stat-value">+${(stats.critBonus * 100).toFixed(0)}%</span></div>`;
 
     tooltip.innerHTML = `
-      <div class="item-tooltip-name" style="color:${stats.rarity.color}">${stats.name}</div>
+      <div class="item-tooltip-name" style="color:${stats.prefix ? stats.prefix.color : stats.rarity.color}">${stats.displayName || stats.name}</div>
       <div class="item-tooltip-rarity" style="color:${stats.rarity.color}">${stats.rarity.name}</div>
+      ${stats.prefix ? `<div class="item-tooltip-prefix" style="color:${stats.prefix.color}">⚡ ${stats.prefix.bonus.type === 'dps' ? '+' + (stats.prefix.bonus.value * 100) + '% DPS' : stats.prefix.bonus.type === 'crit' ? '+' + stats.prefix.bonus.value + '% Crit' : '+' + (stats.prefix.bonus.value * 100) + '% Coins'}</div>` : ''}
       ${statsHtml ? '<div class="item-tooltip-stats">' + statsHtml + '</div>' : ''}
       <div class="item-tooltip-category">${stats.category || 'Item'}</div>
     `;

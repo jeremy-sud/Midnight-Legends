@@ -183,19 +183,50 @@ export function generateRandomLootDrop(stage) {
   const template =
     ItemTemplate[Math.floor(Math.random() * ItemTemplate.length)];
 
+  // Roll for prefix (30% chance on Rare+, 60% on Epic+, 100% on Legendary)
+  let prefix = null;
+  const prefixRoll = Math.random();
+  if (rarity === ItemRarities.LEGENDARY || 
+      (rarity === ItemRarities.EPIC && prefixRoll < 0.6) ||
+      (rarity === ItemRarities.RARE && prefixRoll < 0.3)) {
+    prefix = ItemPrefixes[Math.floor(Math.random() * ItemPrefixes.length)];
+  }
+
   return {
     uid: "i_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
     templateId: template.id,
     rarity: rarity,
+    prefix: prefix ? prefix.id : null,
   };
+}
+
+// ── Item Prefixes ──────────────────────────────────────────────────
+export const ItemPrefixes = [
+  { id: 'blazing',   name: 'Blazing',   bonus: { type: 'dps',      value: 0.10 }, color: '#ff6b35' },
+  { id: 'frozen',    name: 'Frozen',    bonus: { type: 'dps',      value: 0.08 }, color: '#4fc3f7' },
+  { id: 'shadow',    name: 'Shadow',    bonus: { type: 'crit',     value: 3 },    color: '#9575cd' },
+  { id: 'blessed',   name: 'Blessed',   bonus: { type: 'coins',    value: 0.15 }, color: '#ffd54f' },
+  { id: 'ancient',   name: 'Ancient',   bonus: { type: 'dps',      value: 0.15 }, color: '#8d6e63' },
+  { id: 'void',      name: 'Void',      bonus: { type: 'crit',     value: 5 },    color: '#ce93d8' },
+  { id: 'stellar',   name: 'Stellar',   bonus: { type: 'dps',      value: 0.12 }, color: '#81d4fa' },
+  { id: 'cursed',    name: 'Cursed',    bonus: { type: 'dps',      value: 0.20 }, color: '#ef5350' },
+  { id: 'radiant',   name: 'Radiant',   bonus: { type: 'coins',    value: 0.20 }, color: '#fff176' },
+  { id: 'spectral',  name: 'Spectral',  bonus: { type: 'crit',     value: 4 },    color: '#b0bec5' },
+];
+
+export function getPrefix(prefixId) {
+  return ItemPrefixes.find(p => p.id === prefixId) || null;
 }
 
 export function getItemStats(itemInstance) {
   const template = ItemTemplate.find((t) => t.id === itemInstance.templateId);
   const value = template.baseValue * itemInstance.rarity.statMult;
+  const prefix = itemInstance.prefix ? getPrefix(itemInstance.prefix) : null;
   return {
     ...template,
     rarity: itemInstance.rarity,
     computedValue: value,
+    prefix,
+    displayName: prefix ? `${prefix.name} ${template.name}` : template.name,
   };
 }

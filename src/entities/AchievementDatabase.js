@@ -644,4 +644,99 @@ export const AchievementDatabase = [
     reward: { coins: 100000 },
     condition: (stats) => stats.totalPlayTimeMs >= 360000000,
   },
+
+  // ── Secret Achievements ────────────────────────────────────────────
+  {
+    id: "ach_secret_midnight",
+    name: "Midnight Gardener",
+    desc: "Play the game at exactly midnight (00:00).",
+    icon: "🌙",
+    category: "secret",
+    secret: true,
+    reward: { gems: 10, essence: 5 },
+    condition: () => new Date().getHours() === 0,
+  },
+  {
+    id: "ach_secret_stage_42",
+    name: "The Answer",
+    desc: "Reach stage 42 — the answer to life, the universe, and everything.",
+    icon: "🌌",
+    category: "secret",
+    secret: true,
+    reward: { coins: 4242, gems: 4 },
+    condition: (stats, state) => (state.currentStage || 1) >= 42,
+  },
+  {
+    id: "ach_secret_full_party",
+    name: "Dream Team",
+    desc: "Have 4 legendary heroes in your party simultaneously.",
+    icon: "👑",
+    category: "secret",
+    secret: true,
+    reward: { gems: 20, essence: 10 },
+    condition: (stats, state) => {
+      if (!state.activeParty || state.activeParty.length < 4) return false;
+      return state.activeParty.every(uid => {
+        const h = state.roster.find(r => r.uid === uid);
+        return h && h.id && ['h_dragon_knight', 'h_moon_king', 'h_void_empress'].some(lid => h.id === lid);
+      });
+    },
+  },
+  {
+    id: "ach_secret_hoarder",
+    name: "Dragon's Hoard",
+    desc: "Have 50 items in your inventory at the same time.",
+    icon: "💰",
+    category: "secret",
+    secret: true,
+    reward: { coins: 10000, stardust: 25 },
+    condition: (stats, state) => (state.inventory || []).length >= 50,
+  },
+  {
+    id: "ach_secret_speed_demon",
+    name: "Speed Demon",
+    desc: "Click 100 times in under 30 seconds.",
+    icon: "⚡",
+    category: "secret",
+    secret: true,
+    reward: { gems: 5, coins: 5000 },
+    condition: (stats) => stats.totalClicks >= 100 && stats.totalPlayTimeMs < 30000,
+  },
+  {
+    id: "ach_secret_ascended",
+    name: "Transcendence",
+    desc: "Ascend any hero 3 times.",
+    icon: "🔮",
+    category: "secret",
+    secret: true,
+    reward: { gems: 15, essence: 20 },
+    condition: (stats, state) => {
+      const asc = state.heroAscensions || {};
+      return Object.values(asc).some(level => level >= 3);
+    },
+  },
+  {
+    id: "ach_secret_boss_rush_10",
+    name: "Unstoppable",
+    desc: "Defeat all 10 bosses in Boss Rush mode.",
+    icon: "🏴",
+    category: "secret",
+    secret: true,
+    reward: { gems: 25, essence: 30, coins: 50000 },
+    condition: (stats, state) => (state.bossRush && state.bossRush.bestWave >= 10),
+  },
+  {
+    id: "ach_secret_no_coins",
+    name: "Minimalist",
+    desc: "Reach stage 20 without spending any coins on upgrades.",
+    icon: "🪶",
+    category: "secret",
+    secret: true,
+    reward: { gems: 8, stardust: 15 },
+    condition: (stats, state) => {
+      const upgrades = state.upgrades || {};
+      const totalLevels = Object.values(upgrades).reduce((a, b) => a + b, 0);
+      return (state.currentStage || 1) >= 20 && totalLevels === 0;
+    },
+  },
 ];

@@ -1222,6 +1222,7 @@ body.compact .enemy-blob.boss-true { width: 220px; height: 220px; }
 }
 .item-tooltip-name { font-size: 1rem; font-weight: 800; margin-bottom: 2px; }
 .item-tooltip-rarity { font-size: 0.7rem; font-weight: 700; opacity: 0.8; margin-bottom: 6px; }
+.item-tooltip-prefix { font-size: 0.72rem; font-weight: 600; margin-bottom: 4px; }
 .item-tooltip-stats { display: flex; flex-direction: column; gap: 3px; }
 .item-tooltip-stat { display: flex; justify-content: space-between; gap: 1rem; }
 .item-tooltip-stat-label { color: var(--text-muted); }
@@ -2299,6 +2300,35 @@ body.no-float-text .click-feedback {
   font-size: 0.7rem;
   color: var(--text-muted);
 }
+.quest-streak-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: rgba(255,150,0,0.08);
+  border: 1px solid rgba(255,150,0,0.2);
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+.quest-streak-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.quest-streak-bonus {
+  font-size: 0.8rem;
+  color: var(--neon-green);
+  font-weight: 600;
+}
+.quest-section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: 4px 0;
+}
+.quest-card.quest-weekly {
+  border-left: 3px solid var(--neon-blue);
+}
 
 /* ===== Crafting / Forge ===== */
 .crafting-container {
@@ -2378,3 +2408,110 @@ body.no-float-text .click-feedback {
   color: var(--hp-red);
   border-color: var(--hp-red);
 }
+
+/* ===== Expeditions ===== */
+.expeditions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.exp-section-title {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 8px 0 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.exp-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  transition: border-color 0.2s;
+}
+.exp-card.exp-done {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px rgba(118,255,3,0.08);
+}
+.exp-region-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  width: 40px;
+  text-align: center;
+}
+.exp-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.exp-region-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+.exp-hero-name {
+  font-size: 0.8rem;
+  color: var(--neon-blue);
+}
+.exp-timer {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.exp-claim-btn {
+  flex-shrink: 0;
+}
+.exp-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.exp-select {
+  flex: 1;
+  min-width: 120px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-main);
+  font-size: 0.82rem;
+}
+.exp-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 20px 0;
+}
+
+/* ===== Boss Rush ===== */
+.bossrush-container { display: flex; flex-direction: column; gap: 10px; }
+.br-status { text-align: center; margin-bottom: 8px; }
+.br-best { font-size: 1.1rem; font-weight: 700; color: var(--neon-green); }
+.br-rewards-preview { display: flex; flex-direction: column; gap: 4px; }
+.br-rewards-preview h3 {
+  font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted);
+  letter-spacing: 0.5px; margin-bottom: 2px;
+}
+.br-tier {
+  display: flex; justify-content: space-between; padding: 6px 10px;
+  background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.br-tier-earned { color: var(--neon-green); background: rgba(118,255,3,0.06); }
+.br-cooldown { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 10px; }
+.br-arena { text-align: center; }
+.br-wave-counter { font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+.br-timer { font-size: 2rem; font-weight: 800; color: var(--neon-blue); }
+.br-timer-danger { color: var(--hp-red); animation: pulse 0.5s infinite alternate; }
+.br-boss-name { font-size: 1.2rem; font-weight: 700; margin: 8px 0; }
+.br-hp-bar {
+  height: 14px; background: rgba(255,255,255,0.08); border-radius: 7px;
+  overflow: hidden; margin: 6px auto; max-width: 300px;
+}
+.br-hp-fill { height: 100%; background: linear-gradient(90deg, var(--hp-red), #ff6b35); border-radius: 7px; transition: width 0.1s; }
+.br-hp-text { font-size: 0.8rem; color: var(--text-muted); }
+.br-kills { font-size: 0.9rem; color: var(--neon-green); font-weight: 600; margin-top: 6px; }

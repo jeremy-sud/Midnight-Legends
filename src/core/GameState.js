@@ -81,10 +81,22 @@ class StateManager {
       },
       sessionStartTime: Date.now(),
         heroAscensions: {}, // { heroUid: ascensionLevel }
+        expeditions: [],            // Active expeditions
         dailyQuests: {              // Daily quest tracking
           date: null,               // Date string 'YYYY-MM-DD'
           completed: [],            // Array of quest IDs completed today
           snapshots: {},            // Stat snapshots at quest reset
+          streak: 0,               // Consecutive days all dailies completed
+          lastStreakDate: null,     // Last date streak was awarded
+        },
+        weeklyQuests: {             // Weekly quest tracking
+          week: null,               // Week key 'YYYY-Wnn'
+          completed: [],
+          snapshots: {},
+        },
+        bossRush: {                 // Boss Rush mode state
+          lastPlayed: null,
+          bestWave: 0,
         },
     };
   }

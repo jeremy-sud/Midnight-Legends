@@ -201,6 +201,7 @@ export function getHeroStats(heroInstance) {
   let critChance = 0;
 
   if (heroInstance.equip) {
+    const slots = ['weapon', 'armor', 'acc'];
     if (heroInstance.equip.weapon) {
       const wStats = getItemStats(heroInstance.equip.weapon);
       baseDps += wStats.computedValue;
@@ -212,6 +213,17 @@ export function getHeroStats(heroInstance) {
     if (heroInstance.equip.acc) {
       const accStats = getItemStats(heroInstance.equip.acc);
       critChance += accStats.computedValue;
+    }
+    // Apply prefix bonuses from all equipped items
+    for (const slot of slots) {
+      const item = heroInstance.equip[slot];
+      if (item) {
+        const st = getItemStats(item);
+        if (st.prefix && st.prefix.bonus) {
+          if (st.prefix.bonus.type === 'dps') dpsMult += st.prefix.bonus.value;
+          if (st.prefix.bonus.type === 'crit') critChance += st.prefix.bonus.value / 100;
+        }
+      }
     }
   }
 

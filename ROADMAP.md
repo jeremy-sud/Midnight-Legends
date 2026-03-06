@@ -8,8 +8,8 @@
 ## 📌 FASE 1 — Pulir lo existente (v1.0)
 
 ### 1.1 Completar sistemas a medio implementar
-- [ ] **Ascensión de héroes** — UI completa con pantalla de confirmación, animación, y display de bonus permanentes. El código ya existe en `GameState.ascendHero()`.
-- [ ] **Sistema de elementos visual** — Feedback en combate: ventaja/desventaja elemental (fire>ice>shadow>light>void>fire). Indicadores de multiplicador elemental en daño.
+- [x] **Ascensión de héroes** — UI completa con pantalla de confirmación, animación, y display de bonus permanentes.
+- [x] **Sistema de elementos visual** — Feedback en combate: ventaja/desventaja elemental. Indicadores de multiplicador elemental en daño.
 - [ ] **Combo real en Engine** — Multiplicadores progresivos por clicks rápidos consecutivos.
 
 ### 1.2 Calidad de vida (QoL)
@@ -29,22 +29,22 @@
 ## 🚀 FASE 2 — Contenido mid-game (v1.1)
 
 ### 2.1 Sistema de Crafting
-- [ ] Combinar ítems duplicados para mejorar rareza (3 Common → 1 Rare).
-- [ ] Materiales de desmantelamiento de ítems vendidos.
+- [x] Combinar ítems duplicados para mejorar rareza (3 Common → 1 Rare).
+- [x] Materiales de desmantelamiento de ítems vendidos.
 - [ ] Recetas desbloqueables por stage/colección.
-- [ ] Ítems con prefijos aleatorios ("Blazing Iron Sword", "Frozen Eclipse Scythe").
+- [x] Ítems con prefijos aleatorios ("Blazing Iron Sword", "Frozen Eclipse Scythe").
 
 ### 2.2 Misiones y Desafíos diarios
-- [ ] 3 misiones diarias (ej: "Derrota 50 enemigos", "Gasta 1000 monedas").
-- [ ] Recompensas en gemas/esencia.
-- [ ] Misiones semanales más difíciles con mejores premios.
-- [ ] Racha de misiones completas (streak bonus).
+- [x] 3 misiones diarias (ej: "Derrota 50 enemigos", "Gasta 1000 monedas").
+- [x] Recompensas en gemas/esencia.
+- [x] Misiones semanales más difíciles con mejores premios.
+- [x] Racha de misiones completas (streak bonus).
 
 ### 2.3 Exploración / Expediciones
-- [ ] Enviar héroes NO activos a expediciones con temporizador (1h, 4h, 8h).
-- [ ] Recompensas aleatorias: ítems, monedas, materiales de craft.
-- [ ] Bonus por enviar héroes con el elemento correcto.
-- [ ] Mapa visual con regiones desbloqueables por stage.
+- [x] Enviar héroes NO activos a expediciones con temporizador (1h, 4h, 8h).
+- [x] Recompensas aleatorias: ítems, monedas, materiales de craft.
+- [x] Bonus por enviar héroes con el elemento correcto.
+- [x] Mapa visual con regiones desbloqueables por stage.
 
 ### 2.4 Más contenido
 - [ ] 8-12 héroes nuevos (completar 24 totales, 6 por rareza).
@@ -141,14 +141,14 @@
 |---|------|---------|----------|--------|
 | B1 | Fusión de héroes (2 iguales → ascensión) | Alto | Medio | Pendiente |
 | B2 | Modo AFK mejorado (ganancias offline) | Alto | Bajo | Ya existe offline |
-| B3 | Enemigos de élite aleatorios (1% chance, ×3 recompensa) | Medio | Bajo | Pendiente |
+| B3 | Enemigos de élite aleatorios (1% chance, ×3 recompensa) | Medio | Bajo | ✅ Hecho |
 | B4 | Logbook/diario de aventura narrativo | Medio | Medio | Pendiente |
 | B5 | Puzzle minigame nuevo (match-3 temático) | Medio | Alto | Pendiente |
 | B6 | Time-limited banners de summon (tasa UP) | Alto | Medio | Pendiente |
-| B7 | Achievements secretos / Easter eggs | Bajo | Bajo | Pendiente |
+| B7 | Achievements secretos / Easter eggs | Bajo | Bajo | ✅ Hecho |
 | B8 | Modo nocturno automático (hora real) | Bajo | Bajo | Pendiente |
 | B9 | Sistema de trading entre saves | Alto | Alto | Pendiente |
-| B10 | Boss rush mode (10 bosses seguidos, timer) | Alto | Medio | Pendiente |
+| B10 | Boss rush mode (10 bosses seguidos, timer) | Alto | Medio | ✅ Hecho |
 
 ---
 
@@ -164,10 +164,10 @@
 | Tower Floors | 12 | 12 | 22 |
 | Colecciones | 6 | 6 | 10 |
 | Eventos | 7 | 7 | 14 |
-| Logros | 50+ | 70+ | 100+ |
+| Logros | 78 | 70+ | 100+ |
 | Mascotas | 4 | 4 | 8 |
 | Mini-Juegos | 3 | 3 | 5 |
-| Misiones diarias | 0 | 3 | 5 |
+| Misiones diarias | 3+2 semanales | 3 | 5 |
 | Runas | 0 | 0 | 15 |
 | Reliquias | 0 | 0 | 10 |
 
