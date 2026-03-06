@@ -128,6 +128,13 @@
 - [x] SFX para clicks, kills, level ups, summons.
 - [x] Volumen configurable en settings.
 
+### 5.5 Pantalla de Carga
+- [x] Loading screen animado con logo, nombre del juego, versión y desarrollador.
+- [x] Animaciones de SVGs de héroes y enemigos flotando/orbitando.
+- [x] Starfield de fondo con partículas de colores ascendentes.
+- [x] Barra de progreso con texto de estado y tips rotativos.
+- [x] Transición suave al juego al completar la carga.
+
 ### 5.4 Analytics y balanceo
 - [ ] Telemetría anónima: puntos de atasco, compras.
 - [ ] A/B testing de curvas de dificultad.

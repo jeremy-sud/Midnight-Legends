@@ -2613,3 +2613,247 @@ body.no-float-text .click-feedback {
 .recipe-ingredients { font-size: 0.78rem; color: var(--neon-cyan); }
 .recipe-cost { font-size: 0.78rem; color: var(--text-secondary); }
 .recipe-craft-btn { white-space: nowrap; }
+
+/* ═══════════════════════════════════════════════════════════════
+   LOADING SCREEN
+   ═══════════════════════════════════════════════════════════════ */
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #0b0c10;
+  background-image: radial-gradient(circle at 50% 40%, #1a1a3e 0%, #0b0c10 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+#loading-screen.ls-fade-out {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+/* ── Starfield background ── */
+.ls-starfield {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.ls-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff;
+  animation: ls-twinkle var(--dur) ease-in-out infinite alternate;
+}
+@keyframes ls-twinkle {
+  0% { opacity: 0.1; transform: scale(0.5); }
+  100% { opacity: var(--peak, 0.9); transform: scale(1.2); }
+}
+
+/* ── Floating entities (heroes/enemies orbiting) ── */
+.ls-floating-entities {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ls-entity {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  animation: ls-orbit var(--orbit-dur, 8s) linear infinite;
+  filter: drop-shadow(0 0 8px var(--entity-color, #d500f9));
+  opacity: 0;
+  animation-delay: var(--delay, 0s);
+}
+.ls-entity svg {
+  width: 100%;
+  height: 100%;
+  color: var(--entity-color, #d500f9);
+}
+@keyframes ls-orbit {
+  0% {
+    opacity: 0;
+    transform: translate(var(--sx), var(--sy)) rotate(0deg) scale(0.3);
+  }
+  10% { opacity: 0.7; }
+  50% {
+    opacity: 0.9;
+    transform: translate(var(--mx), var(--my)) rotate(180deg) scale(1);
+  }
+  90% { opacity: 0.7; }
+  100% {
+    opacity: 0;
+    transform: translate(var(--ex), var(--ey)) rotate(360deg) scale(0.3);
+  }
+}
+
+/* ── Center content ── */
+.ls-center {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+/* Logo */
+.ls-logo-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 8px;
+  animation: ls-logo-float 3s ease-in-out infinite;
+}
+.ls-logo {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 20px #d500f9) drop-shadow(0 0 40px #00e5ff);
+  animation: ls-logo-spin 20s linear infinite;
+}
+.ls-logo-glow {
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(213,0,249,0.25) 0%, rgba(0,229,255,0.1) 40%, transparent 70%);
+  animation: ls-glow-pulse 2s ease-in-out infinite alternate;
+}
+@keyframes ls-logo-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes ls-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes ls-glow-pulse {
+  0% { transform: scale(0.9); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+/* Title */
+.ls-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #f5f5f5;
+  text-shadow: 0 0 20px rgba(213,0,249,0.6), 0 0 40px rgba(0,229,255,0.3);
+  animation: ls-title-glow 3s ease-in-out infinite alternate;
+}
+.ls-title-accent {
+  background: linear-gradient(90deg, #d500f9, #00e5ff, #76ff03, #ffb74d, #d500f9);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ls-gradient-shift 4s linear infinite;
+}
+@keyframes ls-title-glow {
+  0% { text-shadow: 0 0 20px rgba(213,0,249,0.6), 0 0 40px rgba(0,229,255,0.3); }
+  100% { text-shadow: 0 0 30px rgba(0,229,255,0.8), 0 0 60px rgba(213,0,249,0.5), 0 0 80px rgba(118,255,3,0.2); }
+}
+@keyframes ls-gradient-shift {
+  0% { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+/* Version */
+.ls-version {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Progress bar */
+.ls-progress-wrap {
+  position: relative;
+  width: min(320px, 80vw);
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+.ls-progress-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #d500f9, #00e5ff, #76ff03);
+  background-size: 200% 100%;
+  animation: ls-progress-shimmer 2s linear infinite;
+  transition: width 0.3s ease;
+}
+@keyframes ls-progress-shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: 0% center; }
+}
+.ls-progress-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+/* Tip */
+.ls-tip {
+  font-size: 0.8rem;
+  color: var(--neon-blue);
+  opacity: 0.8;
+  max-width: 320px;
+  margin-top: 8px;
+  font-style: italic;
+  animation: ls-tip-fade 5s ease-in-out infinite;
+}
+@keyframes ls-tip-fade {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Developer credit */
+.ls-dev {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin-top: 20px;
+  letter-spacing: 1px;
+}
+.ls-dev-name {
+  color: var(--neon-orange);
+  font-weight: 600;
+}
+
+/* ── Particle effects ── */
+.ls-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ls-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: ls-particle-rise var(--pdur, 4s) ease-out infinite;
+  animation-delay: var(--pdelay, 0s);
+  opacity: 0;
+}
+@keyframes ls-particle-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translateY(-20vh) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) scale(0.3);
+  }
+}
