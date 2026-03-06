@@ -2515,3 +2515,14 @@ body.no-float-text .click-feedback {
 .br-hp-fill { height: 100%; background: linear-gradient(90deg, var(--hp-red), #ff6b35); border-radius: 7px; transition: width 0.1s; }
 .br-hp-text { font-size: 0.8rem; color: var(--text-muted); }
 .br-kills { font-size: 0.9rem; color: var(--neon-green); font-weight: 600; margin-top: 6px; }
+
+/* ── Crafting Recipes ──────────────────────────────────────────── */
+.recipe-section { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.recipe-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; margin-bottom: 8px; background: var(--surface); border-radius: var(--radius); border-left: 3px solid var(--neon-green); }
+.recipe-row.recipe-locked { opacity: 0.5; border-left-color: var(--text-muted); }
+.recipe-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.recipe-name { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+.recipe-desc { font-size: 0.78rem; color: var(--text-muted); }
+.recipe-ingredients { font-size: 0.78rem; color: var(--neon-cyan); }
+.recipe-cost { font-size: 0.78rem; color: var(--text-secondary); }
+.recipe-craft-btn { white-space: nowrap; }

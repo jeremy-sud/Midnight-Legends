@@ -171,6 +171,121 @@ export const HeroTemplate = [
     svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="dk1" cx="32" cy="30" r="28" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.18"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="30" r="26" fill="url(#dk1)"/><path d="M20 32 Q14 22 20 14 L26 20 L32 12 L38 20 L44 14 Q50 22 44 32Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="28" cy="24" r="2" fill="currentColor" fill-opacity="0.5"/><circle cx="36" cy="24" r="2" fill="currentColor" fill-opacity="0.5"/><path d="M30 30 L32 34 L34 30" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.2"/><ellipse cx="32" cy="44" rx="14" ry="8" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><circle cx="32" cy="40" r="4" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.08"/><circle cx="31" cy="39" r="0.8" fill="currentColor"/><circle cx="33" cy="39" r="0.8" fill="currentColor"/><path d="M18 36 L8 32" stroke="currentColor" stroke-width="1.5"/><path d="M46 36 L56 32" stroke="currentColor" stroke-width="1.5"/><path d="M8 32 L4 38" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M56 32 L60 38" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M28 52 L26 60" stroke="currentColor" stroke-width="2"/><path d="M36 52 L38 60" stroke="currentColor" stroke-width="2"/></svg>',
     desc: "Rides a spectral drake into battle with overwhelming power.",
   },
+
+  // ── NEW HEROES (Phase 2.4) ────────────────────────────────────────
+
+  // --- NEW COMMON ---
+  {
+    id: "h_torchbearer",
+    name: "Torchbearer",
+    rarity: Rarities.COMMON,
+    baseDps: 3,
+    baseCost: 200,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><circle cx="30" cy="15" r="1" fill="currentColor"/><circle cx="34" cy="15" r="1" fill="currentColor"/><line x1="32" y1="22" x2="32" y2="42" stroke="currentColor" stroke-width="2.5"/><line x1="28" y1="42" x2="24" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="42" x2="40" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="30" x2="22" y2="36" stroke="currentColor" stroke-width="2"/><line x1="32" y1="30" x2="44" y2="24" stroke="currentColor" stroke-width="2"/><path d="M42 14 Q44 8 46 14 Q48 20 44 22 Q40 20 42 14Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.25"/><circle cx="44" cy="12" r="2" fill="currentColor" opacity="0.4"/></svg>',
+    desc: "Carries the eternal flame that lights the darkest corners of the garden.",
+  },
+  {
+    id: "h_frost_acolyte",
+    name: "Frost Acolyte",
+    rarity: Rarities.COMMON,
+    baseDps: 3.5,
+    baseCost: 240,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><circle cx="30" cy="15" r="1" fill="currentColor"/><circle cx="34" cy="15" r="1" fill="currentColor"/><line x1="32" y1="22" x2="32" y2="42" stroke="currentColor" stroke-width="2.5"/><line x1="28" y1="42" x2="24" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="42" x2="40" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="30" x2="20" y2="36" stroke="currentColor" stroke-width="2"/><line x1="32" y1="30" x2="44" y2="36" stroke="currentColor" stroke-width="2"/><path d="M44 36 L50 30 M50 30 L50 38 M50 30 L56 30" stroke="currentColor" stroke-width="1.2" opacity="0.6"/><circle cx="50" cy="30" r="3" stroke="currentColor" stroke-width="0.8" stroke-dasharray="1.5 1.5" opacity="0.4"/></svg>',
+    desc: "A young disciple of ice who freezes corruption on contact.",
+  },
+
+  // --- NEW RARE ---
+  {
+    id: "h_wind_dancer",
+    name: "Wind Dancer",
+    rarity: Rarities.RARE,
+    baseDps: 18,
+    baseCost: 1400,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="14" r="5.5" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.08"/><circle cx="30" cy="13" r="0.9" fill="currentColor"/><circle cx="34" cy="13" r="0.9" fill="currentColor"/><path d="M27 20h10l1 18H26Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.05"/><line x1="29" y1="38" x2="26" y2="50" stroke="currentColor" stroke-width="2"/><line x1="35" y1="38" x2="38" y2="50" stroke="currentColor" stroke-width="2"/><path d="M26 28 Q16 20 10 28" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><path d="M38 28 Q48 20 54 28" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><path d="M8 32 Q14 26 20 32" stroke="currentColor" stroke-width="0.8" opacity="0.3"/><path d="M44 32 Q50 26 56 32" stroke="currentColor" stroke-width="0.8" opacity="0.3"/></svg>',
+    desc: "Moves with the wind, striking enemies before they can react.",
+  },
+  {
+    id: "h_blood_mage",
+    name: "Blood Mage",
+    rarity: Rarities.RARE,
+    baseDps: 22,
+    baseCost: 1800,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="14" r="5.5" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="13" r="1" fill="currentColor"/><circle cx="34" cy="13" r="1" fill="currentColor"/><path d="M27 20h10l1 20H26Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.06"/><line x1="29" y1="40" x2="27" y2="54" stroke="currentColor" stroke-width="2.2"/><line x1="35" y1="40" x2="37" y2="54" stroke="currentColor" stroke-width="2.2"/><path d="M24 28 L14 24" stroke="currentColor" stroke-width="1.5"/><path d="M40 28 L50 24" stroke="currentColor" stroke-width="1.5"/><path d="M12 30 Q14 22 16 30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.2"/><path d="M48 30 Q50 22 52 30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.2"/></svg>',
+    desc: "Sacrifices vitality to unleash devastating arcane attacks.",
+  },
+
+  // --- NEW EPIC ---
+  {
+    id: "h_storm_warden",
+    name: "Storm Warden",
+    rarity: Rarities.EPIC,
+    baseDps: 200,
+    baseCost: 25000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sw1" cx="32" cy="28" r="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.15"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="28" r="24" fill="url(#sw1)"/><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="15" r="1.2" fill="currentColor"/><circle cx="34" cy="15" r="1.2" fill="currentColor"/><path d="M24 24h16l2 20H22Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><line x1="28" y1="44" x2="26" y2="58" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="44" x2="38" y2="58" stroke="currentColor" stroke-width="2.5"/><path d="M40 30 L50 24 L46 34 L56 28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M24 30 L14 26" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="24" r="4" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.08"/></svg>',
+    desc: "Commands lightning to smite enemies from the heavens.",
+  },
+  {
+    id: "h_frost_queen",
+    name: "Frost Queen",
+    rarity: Rarities.EPIC,
+    baseDps: 190,
+    baseCost: 24000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fq1" cx="32" cy="26" r="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.15"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="26" r="24" fill="url(#fq1)"/><path d="M26 10 L28 4 L30 10 L32 2 L34 10 L36 4 L38 10" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.08"/><circle cx="32" cy="18" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="17" r="1" fill="currentColor"/><circle cx="34" cy="17" r="1" fill="currentColor"/><path d="M24 26h16l2 20H22Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><line x1="28" y1="46" x2="26" y2="58" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="46" x2="38" y2="58" stroke="currentColor" stroke-width="2.5"/><path d="M22 34 L10 30" stroke="currentColor" stroke-width="1.5"/><path d="M42 34 L54 30" stroke="currentColor" stroke-width="1.5"/><path d="M8 28 L10 30 L8 32" stroke="currentColor" stroke-width="1" opacity="0.5"/><path d="M56 28 L54 30 L56 32" stroke="currentColor" stroke-width="1" opacity="0.5"/></svg>',
+    desc: "Encases enemies in glacial prisons, shattering them from within.",
+  },
+
+  // --- NEW LEGENDARY ---
+  {
+    id: "h_celestial_arbiter",
+    name: "Celestial Arbiter",
+    rarity: Rarities.LEGENDARY,
+    baseDps: 1200,
+    baseCost: 350000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ca1" cx="32" cy="24" r="30" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.22"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="24" r="28" fill="url(#ca1)"/><circle cx="32" cy="20" r="7" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.12"/><circle cx="30" cy="19" r="1.2" fill="currentColor"/><circle cx="34" cy="19" r="1.2" fill="currentColor"/><path d="M22 28h20l3 20H19Z" stroke="currentColor" stroke-width="2.5" fill="currentColor" fill-opacity="0.08"/><line x1="28" y1="48" x2="26" y2="60" stroke="currentColor" stroke-width="3"/><line x1="36" y1="48" x2="38" y2="60" stroke="currentColor" stroke-width="3"/><path d="M18 34 L8 28" stroke="currentColor" stroke-width="2"/><path d="M46 34 L56 28" stroke="currentColor" stroke-width="2"/><path d="M8 28 L4 20 L12 24" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1"/><path d="M56 28 L60 20 L52 24" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1"/><circle cx="32" cy="8" r="4" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.3"/><path d="M28 6 L24 2" stroke="currentColor" stroke-width="1"/><path d="M36 6 L40 2" stroke="currentColor" stroke-width="1"/></svg>',
+    desc: "Judge of all realms who balances light and shadow with absolute authority.",
+  },
+  {
+    id: "h_eclipse_saint",
+    name: "Eclipse Saint",
+    rarity: Rarities.LEGENDARY,
+    baseDps: 1800,
+    baseCost: 750000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="es1" cx="32" cy="26" r="30" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.25"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="26" r="28" fill="url(#es1)"/><circle cx="32" cy="32" r="20" stroke="currentColor" stroke-width="1" opacity="0.15" stroke-dasharray="3 3"/><circle cx="32" cy="18" r="7" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.12"/><circle cx="30" cy="17" r="1.2" fill="currentColor"/><circle cx="34" cy="17" r="1.2" fill="currentColor"/><path d="M22 26h20l3 22H19Z" stroke="currentColor" stroke-width="2.5" fill="currentColor" fill-opacity="0.08"/><line x1="28" y1="48" x2="26" y2="60" stroke="currentColor" stroke-width="3"/><line x1="36" y1="48" x2="38" y2="60" stroke="currentColor" stroke-width="3"/><path d="M20 34 L8 30" stroke="currentColor" stroke-width="2"/><path d="M44 34 L56 30" stroke="currentColor" stroke-width="2"/><path d="M32 4 L30 10 M32 4 L34 10 M32 4 L32 10" stroke="currentColor" stroke-width="1.5" opacity="0.6"/><circle cx="8" cy="30" r="4" stroke="currentColor" stroke-width="0.8" opacity="0.3" fill="currentColor" fill-opacity="0.06"/><circle cx="56" cy="30" r="4" stroke="currentColor" stroke-width="0.8" opacity="0.3" fill="currentColor" fill-opacity="0.06"/></svg>',
+    desc: "Born in the moment between light and dark. The most powerful being in the Garden.",
+  },
+
+  // --- NEW COMMON ---
+  {
+    id: "h_void_scout",
+    name: "Void Scout",
+    rarity: Rarities.COMMON,
+    baseDps: 2,
+    baseCost: 120,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.08"/><circle cx="30" cy="15" r="1" fill="currentColor"/><circle cx="34" cy="15" r="1" fill="currentColor"/><line x1="32" y1="22" x2="32" y2="42" stroke="currentColor" stroke-width="2.5"/><line x1="28" y1="42" x2="24" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="42" x2="40" y2="56" stroke="currentColor" stroke-width="2.5"/><line x1="32" y1="30" x2="22" y2="36" stroke="currentColor" stroke-width="2"/><line x1="32" y1="30" x2="42" y2="36" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="36" r="5" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.4"/><circle cx="14" cy="40" r="3" stroke="currentColor" stroke-width="0.6" stroke-dasharray="1.5 1.5" opacity="0.3"/></svg>',
+    desc: "Scouts the edges of the Void, mapping the unknowable.",
+  },
+
+  // --- NEW RARE ---
+  {
+    id: "h_shadow_priest",
+    name: "Shadow Priest",
+    rarity: Rarities.RARE,
+    baseDps: 20,
+    baseCost: 1600,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="14" r="5.5" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="13" r="1" fill="currentColor"/><circle cx="34" cy="13" r="1" fill="currentColor"/><path d="M26 20h12l1 22H25Z" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.06"/><line x1="29" y1="42" x2="27" y2="56" stroke="currentColor" stroke-width="2"/><line x1="35" y1="42" x2="37" y2="56" stroke="currentColor" stroke-width="2"/><path d="M24 28 L14 24" stroke="currentColor" stroke-width="1.5"/><path d="M40 28 L50 24" stroke="currentColor" stroke-width="1.5"/><path d="M14 20 L14 28" stroke="currentColor" stroke-width="1.5"/><path d="M10 24 L18 24" stroke="currentColor" stroke-width="1.5"/><circle cx="50" cy="22" r="3" stroke="currentColor" stroke-width="0.8" opacity="0.4" stroke-dasharray="2 1"/></svg>',
+    desc: "Channels shadow energy to heal allies and curse enemies.",
+  },
+
+  // --- NEW EPIC ---
+  {
+    id: "h_phoenix_knight",
+    name: "Phoenix Knight",
+    rarity: Rarities.EPIC,
+    baseDps: 230,
+    baseCost: 30000,
+    svg: '<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="pk1" cx="32" cy="28" r="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="currentColor" stop-opacity="0.18"/><stop offset="100%" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="28" r="24" fill="url(#pk1)"/><circle cx="32" cy="16" r="6" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.1"/><circle cx="30" cy="15" r="1.2" fill="currentColor"/><circle cx="34" cy="15" r="1.2" fill="currentColor"/><path d="M24 24h16l2 20H22Z" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity="0.06"/><line x1="28" y1="44" x2="26" y2="58" stroke="currentColor" stroke-width="2.5"/><line x1="36" y1="44" x2="38" y2="58" stroke="currentColor" stroke-width="2.5"/><path d="M20 30 L10 22 Q8 32 14 36" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.1"/><path d="M44 30 L54 22 Q56 32 50 36" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.1"/><path d="M28 8 Q32 2 36 8" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.15"/></svg>',
+    desc: "Rises from ashes with each fall, growing stronger every time.",
+  },
 ];
 
 export function getHeroLevelCost(heroId, level) {
@@ -187,6 +302,13 @@ const HERO_ELEMENTS = {
   h_paladin: 'light',     h_assassin: 'shadow',
   h_necromancer: 'void',  h_dragon_knight: 'fire',
   h_moon_king: 'light',   h_void_empress: 'void',
+  // New heroes
+  h_torchbearer: 'fire',  h_frost_acolyte: 'ice',
+  h_void_scout: 'void',   h_wind_dancer: 'ice',
+  h_blood_mage: 'shadow', h_shadow_priest: 'shadow',
+  h_storm_warden: 'fire', h_frost_queen: 'ice',
+  h_phoenix_knight: 'fire', h_celestial_arbiter: 'light',
+  h_eclipse_saint: 'shadow',
 };
 
 export function getHeroElement(heroId) {

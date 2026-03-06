@@ -156,6 +156,113 @@ export const ItemTemplate = [
     desc: "A fragment of the Moon King's lost crown. Radiates ancient power.",
     svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L6 8 12 14 18 8 21 18Z"/><path d="M3 18h18"/><circle cx="12" cy="14" r="2" fill="currentColor"/></svg>',
   },
+
+  // ── NEW ITEMS (Phase 2.4) ─────────────────────────────────────────
+
+  // --- WEAPONS with special effects ---
+  {
+    id: "i_vampiric_fang",
+    name: "Vampiric Fang",
+    category: ItemCategories.WEAPON,
+    baseValue: 60,
+    desc: "Drains the life essence of every foe it strikes.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 12h3v8l5-10h-3z"/></svg>',
+    effect: { type: 'lifesteal', value: 0.02, desc: '+2% Lifesteal' },
+  },
+  {
+    id: "i_inferno_blade",
+    name: "Inferno Blade",
+    category: ItemCategories.WEAPON,
+    baseValue: 100,
+    desc: "Burns with an eternal flame that ignites everything it touches.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-4-3-8-7-8-12a8 8 0 0 1 16 0c0 5-4 9-8 12z"/><path d="M12 22c-1.5-2-3-4.5-3-7a3 3 0 0 1 6 0c0 2.5-1.5 5-3 7z"/></svg>',
+    effect: { type: 'dot', value: 0.05, desc: '+5% Burn DoT' },
+  },
+  {
+    id: "i_glacial_hammer",
+    name: "Glacial Hammer",
+    category: ItemCategories.WEAPON,
+    baseValue: 90,
+    desc: "Freezes enemies on impact, slowing their defenses.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v4M14 2v4M6 6h12v4l-3 4v4H9v-4L6 10V6z"/><path d="M10 18v4M14 18v4"/></svg>',
+    effect: { type: 'slow', value: 0.10, desc: '+10% enemy slow' },
+  },
+  {
+    id: "i_splinter_glaive",
+    name: "Splinter Glaive",
+    category: ItemCategories.WEAPON,
+    baseValue: 110,
+    desc: "Shatters into fragments on impact, hitting multiple targets.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L20 4"/><path d="M15 4h5v5"/><path d="M4 20l4-1 1-4"/><path d="M9 9l-3 3M15 15l3-3"/></svg>',
+    effect: { type: 'splash', value: 0.15, desc: '+15% Splash damage' },
+  },
+
+  // --- ARMOR with special effects ---
+  {
+    id: "i_thornmail",
+    name: "Thornmail",
+    category: ItemCategories.ARMOR,
+    baseValue: 0.45,
+    desc: "Reflects a portion of incoming aura damage back to enemies.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M8 10l3-3M16 10l-3-3M12 16v-4"/></svg>',
+    effect: { type: 'reflect', value: 0.05, desc: '+5% Damage reflect' },
+  },
+  {
+    id: "i_phantom_cloak",
+    name: "Phantom Cloak",
+    category: ItemCategories.ARMOR,
+    baseValue: 0.8,
+    desc: "Phases between dimensions, avoiding damage entirely.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" stroke-dasharray="3 3"/><circle cx="12" cy="12" r="4"/></svg>',
+    effect: { type: 'dodge', value: 0.08, desc: '+8% Dodge chance' },
+  },
+  {
+    id: "i_sunforged_plate",
+    name: "Sunforged Plate",
+    category: ItemCategories.ARMOR,
+    baseValue: 1.2,
+    desc: "Forged in the heart of a dying star. Nearly indestructible.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5.5-3.8 10-8 12-4.2-2-8-6.5-8-12V6l8-4z"/><circle cx="12" cy="10" r="3"/><path d="M12 13v4"/></svg>',
+    effect: { type: 'dps_aura', value: 0.10, desc: '+10% Party DPS aura' },
+  },
+
+  // --- ACCESSORIES with special effects ---
+  {
+    id: "i_lucky_clover",
+    name: "Lucky Clover",
+    category: ItemCategories.ACCESSORY,
+    baseValue: 15,
+    desc: "Makes the impossible possible. Lucky drops guaranteed.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2-5-2-5 1s3 3 5 5c2-2 5-2 5-5s-3-3-5-1z"/><path d="M12 12c-2 2-2 5 1 5s3-3 5-5"/><path d="M12 12c2-2 2-5-1-5s-3 3-5 5"/><path d="M12 17v5"/></svg>',
+    effect: { type: 'loot_bonus', value: 0.05, desc: '+5% Loot chance' },
+  },
+  {
+    id: "i_berserker_totem",
+    name: "Berserker Totem",
+    category: ItemCategories.ACCESSORY,
+    baseValue: 25,
+    desc: "The lower your enemy's health, the harder you hit.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><circle cx="12" cy="8" r="3"/><path d="M9 14h6M9 17h6"/></svg>',
+    effect: { type: 'execute', value: 0.20, desc: '+20% DMG below 30% HP' },
+  },
+  {
+    id: "i_chrono_lens",
+    name: "Chrono Lens",
+    category: ItemCategories.ACCESSORY,
+    baseValue: 35,
+    desc: "Bends time around the wearer, accelerating all actions.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 4"/><path d="M2 12h2M20 12h2M12 2v2M12 20v2"/></svg>',
+    effect: { type: 'speed', value: 0.10, desc: '+10% Attack speed' },
+  },
+  {
+    id: "i_void_heart",
+    name: "Void Heart",
+    category: ItemCategories.ACCESSORY,
+    baseValue: 45,
+    desc: "Pulses with raw void energy. Amplifies all damage sources.",
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/><circle cx="12" cy="12" r="3" stroke-dasharray="2 2"/></svg>',
+    effect: { type: 'dmg_amp', value: 0.12, desc: '+12% All DMG amp' },
+  },
 ];
 
 // Factory to generate an instanced item

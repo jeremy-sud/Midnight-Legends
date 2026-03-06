@@ -35,7 +35,7 @@ import { SpinWheelPrizes, SPIN_COST_GEMS, spinWheel, canFreeSpin } from "../enti
 import { PetDatabase, PetFoods, getPetMood, getPetBonuses } from "../entities/PetDatabase.js";
 import { MiniGameDatabase, isMiniGameReady, getMiniGameCooldown } from "../entities/MiniGameDatabase.js";
 import { getDailyQuests, getQuestProgress, getWeeklyQuests, getWeekKey, getStreakBonus } from "../entities/QuestDatabase.js";
-import { getCraftableGroups, fuseItems, getDismantleValue, CRAFT_COST, getNextRarity } from "../entities/CraftingDatabase.js";
+import { getCraftableGroups, fuseItems, getDismantleValue, CRAFT_COST, getNextRarity, getUnlockedRecipes, canCraftRecipe, craftRecipe } from "../entities/CraftingDatabase.js";
 import { getUnlockedRegions, ExpeditionRegions, startExpedition, calculateExpeditionRewards, getExpeditionTimeLeft } from "../entities/ExpeditionDatabase.js";
 import { BOSS_RUSH_CONFIG, BOSS_RUSH_NAMES, getBossRushHp, getBossRushReward, BOSS_RUSH_REWARDS, isBossRushReady, getBossRushCooldown } from "../entities/BossRushDatabase.js";
 
@@ -2480,6 +2480,57 @@ export class UIManager {
         }
       };
     });
+
+    // ── Crafting Recipes Section ──
+    const recipes = getUnlockedRecipes(GameState.data.currentStage || 1);
+    if (recipes.length > 0) {
+      const recipeHtml = recipes.map(r => {
+        const can = canCraftRecipe(r, GameState.data.inventory, GameState.data);
+        const costParts = [];
+        if (r.cost.coins) costParts.push(`🪙${formatNumber(r.cost.coins)}`);
+        if (r.cost.stardust) costParts.push(`✨${r.cost.stardust}`);
+        if (r.cost.essence) costParts.push(`🌀${r.cost.essence}`);
+        const ingParts = r.ingredients.map(ing => {
+          const tpl = getItemStats({ templateId: ing.templateId, rarity: { id: ing.rarity, statMult: 1 }, uid: '_' });
+          return `${ing.qty}× ${tpl.name} (${ing.rarity})`;
+        }).join(', ');
+        return `
+          <div class="recipe-row ${can ? '' : 'recipe-locked'}">
+            <div class="recipe-info">
+              <span class="recipe-name">📜 ${r.name}</span>
+              <span class="recipe-desc">${r.desc}</span>
+              <span class="recipe-ingredients">Needs: ${ingParts}</span>
+              <span class="recipe-cost">Cost: ${costParts.join(' ')}</span>
+            </div>
+            <button class="craft-btn recipe-craft-btn ${can ? '' : 'disabled'}" data-recipe="${r.id}">
+              Craft
+            </button>
+          </div>`;
+      }).join('');
+
+      container.insertAdjacentHTML('beforeend', `
+        <div class="recipe-section">
+          <h3 class="quest-section-title">📜 Recipes</h3>
+          ${recipeHtml}
+        </div>
+      `);
+
+      container.querySelectorAll('.recipe-craft-btn:not(.disabled)').forEach(btn => {
+        btn.onclick = () => {
+          const recipe = recipes.find(r => r.id === btn.dataset.recipe);
+          if (!recipe) return;
+          const newItem = craftRecipe(recipe, GameState.data.inventory, GameState.data);
+          if (newItem) {
+            GameState.data.inventory.push(newItem);
+            const st = getItemStats(newItem);
+            this.showNotification(`Crafted ${st.displayName || st.name} (${st.rarity.name})!`);
+            GameState.save();
+            this.renderCrafting();
+            this.updateStats();
+          }
+        };
+      });
+    }
   }
 
   // --- Boss Rush Tab ---

@@ -10,7 +10,7 @@
 ### 1.1 Completar sistemas a medio implementar
 - [x] **Ascensión de héroes** — UI completa con pantalla de confirmación, animación, y display de bonus permanentes.
 - [x] **Sistema de elementos visual** — Feedback en combate: ventaja/desventaja elemental. Indicadores de multiplicador elemental en daño.
-- [ ] **Combo real en Engine** — Multiplicadores progresivos por clicks rápidos consecutivos.
+- [x] **Combo real en Engine** — Multiplicadores progresivos por clicks rápidos consecutivos.
 
 ### 1.2 Calidad de vida (QoL)
 - [ ] Bulk-actions mejoradas (vender por rareza, auto-equip inteligente por DPS).
@@ -31,7 +31,7 @@
 ### 2.1 Sistema de Crafting
 - [x] Combinar ítems duplicados para mejorar rareza (3 Common → 1 Rare).
 - [x] Materiales de desmantelamiento de ítems vendidos.
-- [ ] Recetas desbloqueables por stage/colección.
+- [x] Recetas desbloqueables por stage/colección.
 - [x] Ítems con prefijos aleatorios ("Blazing Iron Sword", "Frozen Eclipse Scythe").
 
 ### 2.2 Misiones y Desafíos diarios
@@ -47,9 +47,9 @@
 - [x] Mapa visual con regiones desbloqueables por stage.
 
 ### 2.4 Más contenido
-- [ ] 8-12 héroes nuevos (completar 24 totales, 6 por rareza).
-- [ ] 10+ ítems nuevos con efectos especiales (lifesteal, DoT, splash).
-- [ ] 10 nuevos pisos de torre (floor 13-22).
+- [x] 8-12 héroes nuevos (completar 24 totales, 6 por rareza).
+- [x] 10+ ítems nuevos con efectos especiales (lifesteal, DoT, splash).
+- [x] 10 nuevos pisos de torre (floor 13-22).
 - [ ] 20+ logros adicionales.
 - [ ] 4 mascotas nuevas con mecánicas únicas.
 
@@ -156,12 +156,12 @@
 
 | Tipo | Cantidad actual | Objetivo v1.0 | Objetivo v2.0 |
 |------|----------------|---------------|---------------|
-| Héroes | 12 | 12 | 24+ |
+| Héroes | 23 | 12 | 24+ |
 | Enemigos | 25+ | 25+ | 40+ |
-| Ítems | 14 | 20 | 40+ |
+| Ítems | 27 | 20 | 40+ |
 | Upgrades (Academia) | 15 | 15 | 20 |
 | Prestige Lines | 8 | 8 | 12 |
-| Tower Floors | 12 | 12 | 22 |
+| Tower Floors | 22 | 12 | 22 |
 | Colecciones | 6 | 6 | 10 |
 | Eventos | 7 | 7 | 14 |
 | Logros | 78 | 70+ | 100+ |
