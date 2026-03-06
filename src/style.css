@@ -1228,6 +1228,15 @@ body.compact .enemy-blob.boss-true { width: 220px; height: 220px; }
 }
 .streak-bar .streak-count { color: #fff; }
 .streak-bar .streak-mult { color: var(--neon-green); }
+.streak-timer-wrap {
+  width: 40px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px;
+  overflow: hidden; margin-left: 2px;
+}
+.streak-timer {
+  display: block; height: 100%; width: 100%;
+  background: linear-gradient(90deg, var(--neon-orange), #ff5722);
+  border-radius: 2px; transition: width 0.1s linear;
+}
 
 /* Milestone Reward */
 .milestone-overlay {

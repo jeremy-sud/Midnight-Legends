@@ -156,6 +156,7 @@
                    <span class="kills-display" id="kills-display">Kills: 0</span>
                    <span class="streak-bar" id="streak-bar" style="display:none" title="Kill enemies quickly for bonus rewards!">
                       🔥 <span class="streak-count" id="streak-count">0</span> Streak <span class="streak-mult" id="streak-mult">×1.0</span>
+                      <span class="streak-timer-wrap"><span class="streak-timer" id="streak-timer"></span></span>
                    </span>
                    <span class="combo-display" id="combo-display" style="display:none">
                       ⚡ <span id="combo-hits">0</span> Hits <span id="combo-tier" class="combo-tier"></span>
@@ -305,8 +306,8 @@
                     <span class="rate-tag" style="color:#03dac6">Rare 10%</span>
                  </div>
                  <p>Summon Common to Rare heroes with Coins.</p>
-                 <button id="summon-btn-coin" class="summon-btn glow-btn">Summon ×1 (1000 Coins)</button>
-                 <button id="summon-btn-coin-10" class="summon-btn glow-btn" style="margin-top:0.5rem; font-size:1rem;">Summon ×10 (9000 Coins)</button>
+                 <button id="summon-btn-coin" class="summon-btn glow-btn">Summon ×1 (800 Coins)</button>
+                 <button id="summon-btn-coin-10" class="summon-btn glow-btn" style="margin-top:0.5rem; font-size:1rem;">Summon ×10 (8,000 Coins)</button>
               </div>
               <div class="summon-banner premium">
                  <h3>Celestial Summon</h3>
@@ -316,8 +317,8 @@
                     <span class="rate-tag" style="color:#ffb74d">Legendary 2%</span>
                  </div>
                  <p>Summon Rare to Legendary heroes with Stardust.</p>
-                 <button id="summon-btn-star" class="summon-btn premium glow-btn">Summon ×1 (100 Stardust)</button>
-                 <button id="summon-btn-star-10" class="summon-btn premium glow-btn" style="margin-top:0.5rem; font-size:1rem;">Summon ×10 (900 Stardust)</button>
+                 <button id="summon-btn-star" class="summon-btn premium glow-btn">Summon ×1 (80 Stardust)</button>
+                 <button id="summon-btn-star-10" class="summon-btn premium glow-btn" style="margin-top:0.5rem; font-size:1rem;">Summon ×10 (800 Stardust)</button>
               </div>
            </div>
            <div class="tavern-hero-pool">
@@ -438,8 +439,8 @@
         <!-- DAILY QUESTS SCREEN -->
         <section id="tab-quests" class="tab-content glass-panel">
            <div class="screen-header">
-              <h2 style="color: var(--neon-cyan, var(--neon-blue));">📋 Misiones Diarias</h2>
-              <p>Completa misiones cada día para obtener recompensas. ¡Se renuevan a diario!</p>
+              <h2 style="color: var(--neon-cyan, var(--neon-blue));">📋 Daily Quests</h2>
+              <p>Complete quests each day to earn rewards. They refresh daily!</p>
            </div>
            <div id="quests-container" class="quests-container">
               <!-- Quests render here -->

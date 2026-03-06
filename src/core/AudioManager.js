@@ -122,6 +122,134 @@ class AudioManagerClass {
     osc.stop(now + 0.1);
   }
 
+  /** Triumphant fanfare for boss kills */
+  playBossKill() {
+    if (!this.sfxEnabled) return;
+    this._ensureContext();
+    const now = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+    notes.forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.18, now + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.3);
+      osc.connect(gain);
+      gain.connect(this.sfxGain);
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 0.35);
+    });
+  }
+
+  /** Prestige whoosh + chime */
+  playPrestige() {
+    if (!this.sfxEnabled) return;
+    this._ensureContext();
+    const now = this.ctx.currentTime;
+    // Sweeping whoosh
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(100, now);
+    osc.frequency.exponentialRampToValueAtTime(2000, now + 0.4);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.linearRampToValueAtTime(0.15, now + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+    osc.connect(gain);
+    gain.connect(this.sfxGain);
+    osc.start(now);
+    osc.stop(now + 0.55);
+    // Chime
+    const chime = this.ctx.createOscillator();
+    const chimeGain = this.ctx.createGain();
+    chime.type = 'sine';
+    chime.frequency.value = 1318.51; // E6
+    chimeGain.gain.setValueAtTime(0.2, now + 0.35);
+    chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+    chime.connect(chimeGain);
+    chimeGain.connect(this.sfxGain);
+    chime.start(now + 0.35);
+    chime.stop(now + 1.05);
+  }
+
+  /** Milestone reward jingle */
+  playMilestone() {
+    if (!this.sfxEnabled) return;
+    this._ensureContext();
+    const now = this.ctx.currentTime;
+    const notes = [783.99, 987.77, 1174.66]; // G5 B5 D6
+    notes.forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, now + i * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.4);
+      osc.connect(gain);
+      gain.connect(this.sfxGain);
+      osc.start(now + i * 0.12);
+      osc.stop(now + i * 0.12 + 0.45);
+    });
+  }
+
+  /** Level up ding */
+  playLevelUp() {
+    if (!this.sfxEnabled) return;
+    this._ensureContext();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.connect(gain);
+    gain.connect(this.sfxGain);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  }
+
+  /** Achievement unlocked sound */
+  playAchievement() {
+    if (!this.sfxEnabled) return;
+    this._ensureContext();
+    const now = this.ctx.currentTime;
+    const notes = [659.25, 783.99, 1046.50]; // E5 G5 C6
+    notes.forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.12, now + i * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.35);
+      osc.connect(gain);
+      gain.connect(this.sfxGain);
+      osc.start(now + i * 0.1);
+      osc.stop(now + i * 0.1 + 0.4);
+    });
+  }
+
+  /** Summon hero sparkle */
+  playSummon() {
+    if (!this.sfxEnabled) return;
+    this._ensureContext();
+    const now = this.ctx.currentTime;
+    // Rising sparkle sweep
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(1600, now + 0.15);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc.connect(gain);
+    gain.connect(this.sfxGain);
+    osc.start(now);
+    osc.stop(now + 0.25);
+  }
+
   // ── Volume controls ────────────────────────────────────────────
   setMusicVolume(v) {
     this.musicVolume = Math.max(0, Math.min(1, v));

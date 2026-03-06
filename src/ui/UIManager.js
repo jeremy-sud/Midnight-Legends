@@ -139,6 +139,7 @@ export class UIManager {
       streakBar: document.getElementById("streak-bar"),
       streakCount: document.getElementById("streak-count"),
       streakMult: document.getElementById("streak-mult"),
+      streakTimer: document.getElementById("streak-timer"),
       stageProgressFill: document.getElementById("stage-progress-fill"),
       stageLabel: document.getElementById("stage-label"),
       synergyBar: document.getElementById("synergy-bar"),
@@ -438,7 +439,7 @@ export class UIManager {
     // Ascension event handler
     document.addEventListener('heroAscended', (e) => {
       const { template, ascLevel } = e.detail;
-      this.showNotification(`⭐ ¡Ascensión! ${template.name} → Ascensión ${ascLevel}`);
+      this.showNotification(`⭐ Ascension! ${template.name} → Ascension ${ascLevel}`);
       this.renderHeroStatsPanel();
       this.renderRoster();
       this.renderActiveParty();
@@ -510,7 +511,7 @@ export class UIManager {
     if (this.dom.btnHardReset) {
       this.dom.btnHardReset.onclick = () => {
         if (confirm('Are you sure? This will DELETE ALL progress!')) {
-          localStorage.removeItem('midnight_gardens_save');
+          localStorage.removeItem(Config.saveKey);
           location.reload();
         }
       };
@@ -1613,6 +1614,7 @@ export class UIManager {
 
     GameState.addHero(chosen.id);
 
+    AudioManager.playSummon();
     this.showNotification(`Summoned ${chosen.name} (${rarityPool.name})!`);
     this.updateStats();
     this.renderRoster();
@@ -1834,7 +1836,6 @@ export class UIManager {
   }
 
   // --- Kill Streak ---
-  // --- Kill Streak ---
   registerKill() {
     const now = Date.now();
     const streakWindow = 3000; // 3 seconds to maintain streak
@@ -1849,8 +1850,8 @@ export class UIManager {
 
   getStreakMultiplier() {
     if (this.killStreak < 3) return 1.0;
-    // +5% per streak kill after 3, capped at +100% (×2.0)
-    return Math.min(2.0, 1.0 + (this.killStreak - 2) * 0.05);
+    // +5% per streak kill after 3, capped at +200% (×3.0)
+    return Math.min(3.0, 1.0 + (this.killStreak - 2) * 0.05);
   }
 
   updateStreakDisplay() {
@@ -1859,6 +1860,7 @@ export class UIManager {
       this.dom.streakBar.style.display = '';
       this.dom.streakCount.textContent = this.killStreak;
       this.dom.streakMult.textContent = `×${this.getStreakMultiplier().toFixed(2)}`;
+      if (this.dom.streakTimer) this.dom.streakTimer.style.width = '100%';
     } else {
       this.dom.streakBar.style.display = 'none';
     }
@@ -1868,6 +1870,10 @@ export class UIManager {
     if (this.killStreak > 0 && Date.now() - this.lastKillTime > 3000) {
       this.killStreak = 0;
       this.updateStreakDisplay();
+    } else if (this.killStreak >= 3 && this.dom.streakTimer) {
+      const elapsed = Date.now() - this.lastKillTime;
+      const remaining = Math.max(0, 1 - elapsed / 3000);
+      this.dom.streakTimer.style.width = (remaining * 100) + '%';
     }
   }
 
@@ -1893,11 +1899,13 @@ export class UIManager {
       GameState.data.coins -= cheapestCost;
       const lvl = GameState.data.upgrades[cheapest.id] || 0;
       GameState.data.upgrades[cheapest.id] = lvl + 1;
+      this.addBattleLog(`🤖 Auto-buy: ${cheapest.icon} ${cheapest.name} Lv.${lvl + 1}`, 'info');
     }
   }
 
   // --- Milestone Reward Modal ---
   showMilestoneReward(milestone) {
+    AudioManager.playMilestone();
     const overlay = document.createElement('div');
     overlay.className = 'milestone-overlay';
 
@@ -2044,8 +2052,10 @@ export class UIManager {
           if (ach.reward.gems) { GameState.addGems(ach.reward.gems); rewardText += ` +${ach.reward.gems} Gems`; }
           if (ach.reward.essence) { GameState.addEssence(ach.reward.essence); rewardText += ` +${ach.reward.essence} Essence`; }
           this.showNotification(`Achievement Unlocked: ${ach.icon} ${ach.name}!${rewardText}`);
+          AudioManager.playAchievement();
         } else {
           this.showNotification(`Achievement Unlocked: ${ach.icon} ${ach.name}!`);
+          AudioManager.playAchievement();
         }
       }
     });
@@ -2549,7 +2559,7 @@ export class UIManager {
       const maxLevel = template.rarity.id === 'legendary' ? 100 : 50;
       const ascLevel = hData.ascensionLevel || 0;
       if (hData.level >= maxLevel) {
-        ascensionBtn = `<button class="ascend-btn glow-btn" data-ascend-uid="${hData.uid}">⭐ Ascender</button>`;
+        ascensionBtn = `<button class="ascend-btn glow-btn" data-ascend-uid="${hData.uid}">⭐ Ascend</button>`;
       }
       const ascensionDisplay = ascLevel > 0 ? `<span class="ascension-star">⭐${ascLevel}</span>` : '';
       this.dom.hspStatsRow.innerHTML = `
@@ -2557,7 +2567,7 @@ export class UIManager {
         <div class="hsp-stat"><span class="hsp-stat-value">${template.baseDps}</span><span style="font-size:0.65em;color:var(--text-muted)">Base</span></div>
         <div class="hsp-stat"><span class="hsp-stat-value">${elemDisplay}</span><span style="font-size:0.65em;color:var(--text-muted)">Element</span></div>
         <div class="hsp-stat"><span class="hsp-stat-value">${getHeroLevelCost(hData.id, hData.level)}</span><span style="font-size:0.65em;color:var(--text-muted)">Lvl Cost</span></div>
-        <div class="hsp-stat"><span class="hsp-stat-value">${ascensionDisplay || 'Ascensión 0'}</span><span style="font-size:0.65em;color:var(--text-muted)">Ascensión</span></div>
+        <div class="hsp-stat"><span class="hsp-stat-value">${ascensionDisplay || 'Ascension 0'}</span><span style="font-size:0.65em;color:var(--text-muted)">Ascension</span></div>
         ${ascensionBtn}
       `;
 

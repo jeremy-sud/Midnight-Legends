@@ -20,6 +20,7 @@ import { tickExpeditions } from "../entities/ExpeditionDatabase.js";
 import { getHeroElement } from "../entities/HeroDatabase.js";
 import { generateRuneDrop, getRuneInfo } from "../entities/RuneDatabase.js";
 import { getRelicBonuses } from "../entities/RelicDatabase.js";
+import { AudioManager } from "./AudioManager.js";
 
 export class Engine {
   constructor(uiManager) {
@@ -112,8 +113,8 @@ export class Engine {
     const totalDps = partyDps + autoclickDmg;
     if (totalDps <= 0) return; // No DPS = no offline progress
 
-    // Estimate kills during offline period (50% efficiency — idle penalty)
-    const efficiency = 0.5;
+    // Estimate kills during offline period (65% efficiency — idle penalty)
+    const efficiency = 0.65;
     const effectiveDps = totalDps * efficiency;
 
     let coinsEarned = 0;
@@ -580,6 +581,7 @@ export class Engine {
       this.ui.showNotification(
         `Defeated ${this.isEliteEnemy ? '⚡ Elite ' : ''}${enemyInfo.name}! +${formatNumber(finalCoins)} Coins${dropMsg}`
       );
+      if (enemyInfo.isBoss) AudioManager.playBossKill();
     }
 
     // XP gain (with shop/prestige/event/collection/upgrade/pet multipliers)
@@ -721,6 +723,7 @@ export class Engine {
       profile.xp -= xpNeeded;
       profile.level++;
       this.ui.showNotification(`⬆ Level Up! You are now Level ${profile.level}!`);
+      AudioManager.playLevelUp();
       this.ui.addBattleLog(`⬆ Level ${profile.level} reached!`, 'level');
       xpNeeded = this.getXpForLevel(profile.level);
     }
@@ -814,6 +817,7 @@ export class Engine {
     state.dungeon = preserved.dungeon;
 
     GameState.save();
+    AudioManager.playPrestige();
     this.ui.showNotification(`🌀 Void Rebirth! +${finalEssence} Essence. A new journey begins...`);
 
     // Re-spawn enemy and re-init UI
