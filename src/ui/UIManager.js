@@ -2455,18 +2455,51 @@ export class UIManager {
 
   // --- Hero Combat Visual (main character on combat screen) ---
   MAIN_HERO_SVG = `<svg viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cloakGrad" cx="50%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="currentColor" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#0a0a15" stop-opacity="0.8"/>
+      </radialGradient>
+      <radialGradient id="armorGrad" cx="35%" cy="30%" r="65%">
+        <stop offset="0%" stop-color="#2a2a4e" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#0f0f1a" stop-opacity="1"/>
+      </radialGradient>
+      <radialGradient id="headGrad" cx="40%" cy="35%" r="55%">
+        <stop offset="0%" stop-color="#252545"/>
+        <stop offset="100%" stop-color="#0f0f1a"/>
+      </radialGradient>
+      <linearGradient id="swordGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#c0caf5"/>
+        <stop offset="50%" stop-color="#8892b0"/>
+        <stop offset="100%" stop-color="#5c6680"/>
+      </linearGradient>
+      <linearGradient id="shieldGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#1e2640"/>
+        <stop offset="100%" stop-color="#0a0e1a"/>
+      </linearGradient>
+    </defs>
+    <!-- Ground shadow -->
+    <ellipse cx="60" cy="136" rx="30" ry="4" fill="#000" opacity="0.25"/>
     <!-- Cloak / Cape -->
     <path d="M30 55 Q25 90 20 130 L100 130 Q95 90 90 55 Z" fill="url(#cloakGrad)" opacity="0.7"/>
+    <path d="M35 60 Q32 88 28 125" stroke="currentColor" stroke-width="0.5" opacity="0.1"/>
+    <path d="M85 60 Q88 88 92 125" stroke="currentColor" stroke-width="0.5" opacity="0.1"/>
     <!-- Body Armor -->
-    <path d="M40 50 L80 50 L85 95 L35 95 Z" fill="#1a1a2e" stroke="currentColor" stroke-width="2"/>
+    <path d="M40 50 L80 50 L85 95 L35 95 Z" fill="url(#armorGrad)" stroke="currentColor" stroke-width="2"/>
     <path d="M45 55 L75 55 L78 90 L42 90 Z" fill="#16213e" stroke="currentColor" stroke-width="1" opacity="0.8"/>
+    <!-- Armor highlights -->
+    <path d="M48 56 L52 56 L54 88 L46 88 Z" fill="white" opacity="0.04"/>
     <!-- Chest Emblem -->
     <path d="M55 62 L60 56 L65 62 L60 75 Z" fill="currentColor" opacity="0.6"/>
     <circle cx="60" cy="65" r="3" fill="currentColor" opacity="0.9"/>
+    <circle cx="59" cy="64" r="1.2" fill="white" opacity="0.3"/>
     <!-- Head -->
-    <circle cx="60" cy="32" r="16" fill="#1a1a2e" stroke="currentColor" stroke-width="2"/>
+    <circle cx="60" cy="32" r="16" fill="url(#headGrad)" stroke="currentColor" stroke-width="2"/>
+    <!-- Head specular -->
+    <ellipse cx="54" cy="24" rx="6" ry="4" fill="white" opacity="0.04"/>
     <!-- Helmet/Hood -->
     <path d="M44 32 Q44 14 60 12 Q76 14 76 32" fill="#0f0f1a" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M48 18 Q60 14 72 18" stroke="white" stroke-width="0.5" opacity="0.08"/>
     <path d="M44 32 L48 36 L72 36 L76 32" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
     <!-- Eyes (glowing) -->
     <ellipse cx="53" cy="30" rx="3" ry="2.5" fill="currentColor"/>
@@ -2476,33 +2509,40 @@ export class UIManager {
     <!-- Mouth -->
     <path d="M56 37 Q60 39 64 37" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
     <!-- Left Arm + Sword -->
-    <path d="M40 55 L25 75 L30 78 L42 60 Z" fill="#1a1a2e" stroke="currentColor" stroke-width="1.5"/>
-    <rect x="16" y="30" width="3" height="48" rx="1" fill="#8892b0" stroke="currentColor" stroke-width="0.5" transform="rotate(-15, 20, 55)"/>
+    <path d="M40 55 L25 75 L30 78 L42 60 Z" fill="url(#armorGrad)" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="16" y="30" width="3" height="48" rx="1" fill="url(#swordGrad)" stroke="currentColor" stroke-width="0.5" transform="rotate(-15, 20, 55)"/>
     <path d="M14 28 L20 22 L26 28 L20 32 Z" fill="currentColor" stroke="currentColor" stroke-width="0.5" transform="rotate(-15, 20, 30)"/>
+    <!-- Sword specular -->
+    <rect x="17" y="32" width="1" height="44" rx="0.5" fill="white" opacity="0.12" transform="rotate(-15, 20, 55)"/>
     <!-- Right Arm + Shield -->
-    <path d="M80 55 L95 70 L90 75 L78 60 Z" fill="#1a1a2e" stroke="currentColor" stroke-width="1.5"/>
-    <ellipse cx="100" cy="68" rx="12" ry="16" fill="#16213e" stroke="currentColor" stroke-width="2"/>
+    <path d="M80 55 L95 70 L90 75 L78 60 Z" fill="url(#armorGrad)" stroke="currentColor" stroke-width="1.5"/>
+    <ellipse cx="100" cy="68" rx="12" ry="16" fill="url(#shieldGrad)" stroke="currentColor" stroke-width="2"/>
+    <ellipse cx="96" cy="62" rx="5" ry="8" fill="white" opacity="0.04"/>
     <path d="M96 58 L100 54 L104 58 L100 78 Z" fill="currentColor" opacity="0.4"/>
     <circle cx="100" cy="66" r="3" fill="currentColor" opacity="0.6"/>
+    <circle cx="99" cy="65" r="1" fill="white" opacity="0.3"/>
     <!-- Legs -->
     <rect x="42" y="95" width="14" height="30" rx="3" fill="#0f0f1a" stroke="currentColor" stroke-width="1.5"/>
     <rect x="64" y="95" width="14" height="30" rx="3" fill="#0f0f1a" stroke="currentColor" stroke-width="1.5"/>
+    <!-- Leg highlights -->
+    <rect x="44" y="97" width="3" height="26" rx="1" fill="white" opacity="0.03"/>
+    <rect x="66" y="97" width="3" height="26" rx="1" fill="white" opacity="0.03"/>
     <!-- Boots -->
     <path d="M40 122 L56 122 L58 132 L38 132 Z" fill="#1a1a2e" stroke="currentColor" stroke-width="1.5"/>
     <path d="M62 122 L78 122 L80 132 L60 132 Z" fill="#1a1a2e" stroke="currentColor" stroke-width="1.5"/>
+    <!-- Boot highlights -->
+    <path d="M42 123 L50 123 L51 130 L41 130 Z" fill="white" opacity="0.03"/>
     <!-- Belt -->
     <rect x="38" y="92" width="44" height="5" rx="2" fill="#2a1a0a" stroke="currentColor" stroke-width="1"/>
+    <rect x="39" y="93" width="20" height="2" rx="1" fill="white" opacity="0.04"/>
     <circle cx="60" cy="94.5" r="2.5" fill="currentColor"/>
+    <circle cx="59" cy="93.5" r="0.8" fill="white" opacity="0.3"/>
     <!-- Shoulder pads -->
     <ellipse cx="38" cy="53" rx="8" ry="5" fill="#16213e" stroke="currentColor" stroke-width="1.5"/>
     <ellipse cx="82" cy="53" rx="8" ry="5" fill="#16213e" stroke="currentColor" stroke-width="1.5"/>
-    <!-- Gradient defs -->
-    <defs>
-      <radialGradient id="cloakGrad" cx="50%" cy="30%" r="70%">
-        <stop offset="0%" stop-color="currentColor" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="#0a0a15" stop-opacity="0.8"/>
-      </radialGradient>
-    </defs>
+    <!-- Shoulder highlights -->
+    <ellipse cx="36" cy="51" rx="4" ry="2.5" fill="white" opacity="0.04"/>
+    <ellipse cx="80" cy="51" rx="4" ry="2.5" fill="white" opacity="0.04"/>
   </svg>`;
 
   renderHeroCombat() {
@@ -4350,6 +4390,7 @@ export class UIManager {
       if (f.cost.coins) return state.coins >= f.cost.coins;
       if (f.cost.stardust) return state.stardust >= f.cost.stardust;
       if (f.cost.gems) return (state.gems || 0) >= f.cost.gems;
+      if (f.cost.essence) return (state.essence || 0) >= f.cost.essence;
       return false;
     });
     if (!food) {
@@ -4359,11 +4400,17 @@ export class UIManager {
     if (food.cost.coins) GameState.spendCoins(food.cost.coins);
     else if (food.cost.stardust) GameState.spendStardust(food.cost.stardust);
     else if (food.cost.gems) GameState.spendGems(food.cost.gems);
+    else if (food.cost.essence) { state.essence = (state.essence || 0) - food.cost.essence; }
 
     pet.hunger = Math.min(100, (pet.hunger || 0) + food.hungerRestore);
+    if (food.happinessRestore) pet.happiness = Math.min(100, (pet.happiness || 0) + food.happinessRestore);
+    if (food.energyRestore) pet.energy = Math.min(100, (pet.energy || 0) + food.energyRestore);
     // Feeding also slightly increases level XP
     this._petXpGain(pet, 5);
-    this.showNotification(`${food.icon} Fed ${PetDatabase.find(p => p.id === pet.id)?.name || 'pet'}! Hunger +${food.hungerRestore}`);
+    const parts = [`Hunger +${food.hungerRestore}`];
+    if (food.happinessRestore) parts.push(`Happiness +${food.happinessRestore}`);
+    if (food.energyRestore) parts.push(`Energy +${food.energyRestore}`);
+    this.showNotification(`${food.icon} Fed ${PetDatabase.find(p => p.id === pet.id)?.name || 'pet'}! ${parts.join(', ')}`);
     this.renderPets();
   }
 
@@ -4656,7 +4703,8 @@ export class UIManager {
   // TALENTS TAB
   // ============================================
   renderTalents() {
-    const container = this.dom.mainContent;
+    const container = document.getElementById('talents-container');
+    if (!container) return;
     const state = GameState.data;
     const talentState = state.talents || {};
     const bonuses = getTalentBonuses(talentState);
@@ -4738,7 +4786,8 @@ export class UIManager {
   // MASTERY TAB
   // ============================================
   renderMastery() {
-    const container = this.dom.mainContent;
+    const container = document.getElementById('mastery-container');
+    if (!container) return;
     const state = GameState.data;
     const prestigeCount = state.prestigeCount || 0;
     const masteryState = state.mastery || {};
@@ -4834,7 +4883,8 @@ export class UIManager {
   // CHALLENGES TAB
   // ============================================
   renderChallenges() {
-    const container = this.dom.mainContent;
+    const container = document.getElementById('challenges-container');
+    if (!container) return;
     const state = GameState.data;
     const challengeState = state.challenges || {};
     const today = new Date().toISOString().split('T')[0];
@@ -4951,7 +5001,8 @@ export class UIManager {
   // BANNERS TAB
   // ============================================
   renderBanners() {
-    const container = this.dom.mainContent;
+    const container = document.getElementById('banners-container');
+    if (!container) return;
     const state = GameState.data;
     const banner = getActiveBanner();
     const bannerHistory = state.bannerHistory || {};

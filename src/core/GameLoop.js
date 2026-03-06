@@ -99,6 +99,18 @@ export class Engine {
     const shopBonuses = getShopBonuses(state.shopPurchases || {});
     const prestigeBonuses = getPrestigeBonuses(state.prestigeUpgrades || {});
     const collectionBonuses = getCollectionBonuses(state);
+    const talentBonuses = getTalentBonuses(state.talents || {});
+
+    // Aggregate mastery bonuses from active party heroes
+    let masteryCoinBonus = 0;
+    state.activeParty.forEach(uid => {
+      const heroData = state.roster.find(h => h.uid === uid);
+      if (heroData) {
+        const mb = getHeroMasteryBonuses(heroData.id, state.mastery || {});
+        masteryCoinBonus += mb.coins;
+      }
+    });
+
     partyDps *= dpsMult * shopBonuses.dpsMultiplier * prestigeBonuses.dpsMultiplier * collectionBonuses.dpsMultiplier;
 
     // Autoclicker damage
