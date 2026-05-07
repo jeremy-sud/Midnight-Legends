@@ -2,7 +2,7 @@
 
 > *Un RPG incremental/idle ambientado en un jardín maldito donde la luna nunca se pone y las estrellas susurran secretos olvidados.*
 
-[![Versión](https://img.shields.io/badge/versión-0.9.2-blueviolet)]()
+[![Versión](https://img.shields.io/badge/versión-0.9.3-blueviolet)]()
 [![Stack](https://img.shields.io/badge/stack-Vite%20+%20Vanilla%20JS-brightgreen)]()
 [![Licencia](https://img.shields.io/badge/licencia-MIT-blue)]()
 
@@ -19,6 +19,9 @@
 - [La Torre Eclipse](#-la-torre-eclipse)
 - [Expediciones](#-expediciones)
 - [Boss Rush](#-boss-rush)
+- [Banners de Invocación](#-banners-de-invocación)
+- [Runas](#-runas)
+- [Talentos y Maestrías](#-talentos-y-maestrías)
 - [Mascotas](#-mascotas)
 - [Ítems y Prefijos](#-ítems-y-prefijos)
 - [Misiones](#-misiones)
@@ -105,6 +108,9 @@ Midnight Gardens combina mecánicas idle/incremental con RPG táctico:
 - **Progresión por stages** — Enemigos cada vez más fuertes, jefes cada 10 niveles
 - **Party de 4 héroes** — Elige combinaciones estratégicas de elementos
 - **Equipamiento** — Armas, armaduras, accesorios con rareza y prefijos
+- **Banners rotativos** — Invoca héroes con pity, rate-up y temas semanales
+- **Runas y sockets** — Mejora ítems con bonificaciones pasivas de runas
+- **Weekly Dungeon** — Piso semanal con modificadores y recompensas especiales
 - **Gacha / Invocación** — Gasta Stardust o monedas para reclutar héroes
 - **Prestige** — Reinicia para ganar bonus permanentes exponenciales
 - **Eventos diarios** — Bonus diferentes cada día de la semana
@@ -114,7 +120,7 @@ Midnight Gardens combina mecánicas idle/incremental con RPG táctico:
 
 ## 🦸 Héroes
 
-12 héroes disponibles en 4 niveles de rareza:
+34 héroes disponibles en 4 niveles de rareza:
 
 ### ⚪ Comunes
 | Héroe | Elemento | DPS Base | Rol |
@@ -205,7 +211,7 @@ Cada 10 stages aparece un **jefe** con un timer de 30 segundos. Si no lo derrota
 
 ## 🏰 La Torre Eclipse
 
-La Torre Eclipse es donde el Rey Luna selló sus fragmentos de poder. 12 pisos de dificultad creciente:
+La Torre Eclipse es donde el Rey Luna selló sus fragmentos de poder. 22 pisos de dificultad creciente:
 
 | Piso | Jefe | HP | Recompensa (Stardust) |
 |------|------|----|-----------------------|
@@ -213,8 +219,10 @@ La Torre Eclipse es donde el Rey Luna selló sus fragmentos de poder. 12 pisos d
 | 2 | Shadow Drake | 25K | 150 |
 | 3 | Eclipse Guardian | 100K | 500 |
 | 6 | The Hollow King | 10M | 15K |
-| 9 | Astral Behemoth | 7.5B | 2.5M |
 | 12 | The Midnight Sovereign | 500B | 50M |
+| 22 | The Void Seed | 500T | 200T |
+
+El contenido de la torre se extiende hasta el piso 22, con recompensas crecientes y drops de runas raras para los jugadores que progresan al endgame.
 
 Cada piso tiene un timer de 30 segundos. Completar toda la torre reinicia el ciclo con escalado exponencial.
 
@@ -258,7 +266,51 @@ Cada jefe tiene ×1.4 HP del anterior. Cinco tiers de recompensa:
 | 7 | 15000 monedas + 10 gemas + 3 Esencia |
 | 10 | 50000 monedas + 200 Stardust + 20 gemas + 10 Esencia |
 
+## 🎴 Banners de Invocación
+
+Los banners rotativos permiten invocar héroes con tasa UP y progreso de pity.
+- 6 banners semanales con temas elementales.
+- Cada banner destaca 3 héroes con **rate-up 3×**.
+- Pity garantizado tras 20–30 invocaciones.
+- UI clara con héroes destacados, progreso de pity y costo de invocación.
+
+## 🧿 Runas
+
+El sistema de runas agrega profundidad al equipo midgame.
+- 15 runas disponibles en 5 tipos diferentes.
+- Las runas se obtienen como drops raros en la Torre Eclipse.
+- Cada ítem puede equipar sockets según su rareza.
+- Bonificaciones pasivas: DPS, crítico, monedas, Stardust y más.
+
+## 🌿 Talentos y Maestrías
+
+Progresión permanente para tu cuenta y héroes.
+- 24 talentos globales repartidos en ramas Offense, Economy y Utility.
+- Los talentos se compran con Stardust y afectan DPS, ganancias y exploración.
+- Maestrías de héroe desbloqueables tras varios Prestiges.
+- Cada héroe puede recibir bonificaciones únicas persistentes.
+
+---
+
+## 🗺️ Roadmap
+
+El desarrollo activo se documenta en detalle en [`ROADMAP.md`](ROADMAP.md). La versión actual del proyecto es **0.9.3** (actualizado Mayo 2026), con soporte activo para Boss Rush, expediciones, talentos, maestrías, banners rotativos y sistema de guía in-game.
+
 **Cooldown:** 30 minutos entre intentos. Se guarda tu mejor oleada alcanzada.
+
+## 🛠️ Desarrollo
+
+La versión **0.9.3** apunta a consolidar el contenido existente y la progresión mid-game. Ya implementadas en el juego están:
+- Boss Rush y recompensas escaladas por oleada.
+- Expediciones con 6 regiones elementales.
+- Banners rotativos con héroes destacados y pity.
+- Sistema de runas para equipar ítems.
+- Árbol global de talentos y Maestrías por héroe.
+- Weekly Dungeon con modificadores semanales.
+- Audio manager y pantalla de carga animada.
+- 22 pisos completos de la Torre Eclipse.
+
+Las metas pendientes y la planificación de futuras fases se documentan en [`ROADMAP.md`](ROADMAP.md).
 
 ---
 
@@ -292,9 +344,9 @@ Las mascotas tienen **hambre**, **felicidad** y **energía**. Su humor (0-100%) 
 
 ### Categorías
 
-- **Armas** (5): Iron Sword, Steel Axe, Moonblade, Eclipse Scythe, Stellar Bow
-- **Armaduras** (5): Leather Tunic, Chain Mail, Shadow Cloak, Lunar Plate, Voidweave Robe
-- **Accesorios** (6): Copper Ring, Silver Amulet, Crystal Orb, Twilight Pendant, Void Charm, Crown Shard
+- **Armas** (14): Iron Sword, Steel Axe, Moonblade, Eclipse Scythe, Stellar Bow
+- **Armaduras** (11): Leather Tunic, Chain Mail, Shadow Cloak, Lunar Plate, Voidweave Robe
+- **Accesorios** (12): Copper Ring, Silver Amulet, Crystal Orb, Twilight Pendant, Void Charm, Crown Shard
 
 ### Sistema de prefijos
 
@@ -415,30 +467,33 @@ src/
 │   ├── GameState.js     # Estado persistente + save/load
 │   └── Utils.js         # Utilidades compartidas
 ├── entities/
-│   ├── AchievementDatabase.js   # 78 logros (8 secretos)
+│   ├── AchievementDatabase.js   # 121 logros
+│   ├── BannerDatabase.js        # 6 banners rotativos
 │   ├── BossRushDatabase.js      # Modo Boss Rush
-│   ├── CollectionDatabase.js    # 6 colecciones
+│   ├── CollectionDatabase.js    # 10 colecciones
 │   ├── CraftingDatabase.js      # Sistema de forge
 │   ├── DailyLoginDatabase.js    # Recompensas diarias
 │   ├── ElementDatabase.js       # 5 elementos + efectos
-│   ├── EnemyDatabase.js         # 20+ enemigos
+│   ├── EnemyDatabase.js         # 33 enemigos
 │   ├── EventDatabase.js         # 7 eventos semanales
 │   ├── ExpeditionDatabase.js    # 6 regiones de expedición
 │   ├── GuideDatabase.js         # Guías in-game
 │   ├── HeroActiveSkills.js      # Habilidades activas
-│   ├── HeroDatabase.js          # 12 héroes + stats
-│   ├── ItemDatabase.js          # 16 ítems + prefijos
+│   ├── HeroDatabase.js          # 34 héroes + stats
+│   ├── ItemDatabase.js          # 37 ítems base + 10 prefijos
 │   ├── LoreDatabase.js          # 18 entradas narrativas
 │   ├── MilestoneDatabase.js     # Hitos de progresión
 │   ├── MiniGameDatabase.js      # 3 mini-juegos
-│   ├── PetDatabase.js           # 6 mascotas Synthari
-│   ├── PrestigeDatabase.js      # 8 mejoras de prestige
+│   ├── PetDatabase.js           # 15 mascotas Synthari
+│   ├── PrestigeDatabase.js      # 12 mejoras de prestige
 │   ├── QuestDatabase.js         # Misiones diarias/semanales
+│   ├── RelicDatabase.js         # Reliquias y artefactos
 │   ├── ShopDatabase.js          # 22 artículos de tienda
 │   ├── SkillDatabase.js         # Árbol de habilidades
 │   ├── SpinWheelDatabase.js     # Ruleta de premios
 │   ├── SynergyDatabase.js       # Sinergias de equipo
-│   ├── TowerDatabase.js         # 12 pisos de torre
+│   ├── TowerDatabase.js         # 22 pisos de torre
+│   ├── RuneDatabase.js          # 15 runas
 │   └── UpgradeDatabase.js       # 20 mejoras de academia
 └── ui/
     └── UIManager.js       # Renderizado y UI completa
@@ -459,15 +514,16 @@ npm run build
 
 ---
 
-## 🗺️ Roadmap
+## 📈 Estado actual
 
 Consulta [ROADMAP.md](ROADMAP.md) para el plan completo de desarrollo con 5 fases y 10+ ideas bonus.
 
-**Estado actual — v0.9.2:**
-- ✅ Fase 1 parcial (Ascensión, Elementos, Élites)
-- ✅ Fase 2 parcial (Crafting, Misiones, Expediciones, Prefijos)
-- ✅ Boss Rush, Logros secretos
-- 🔮 Próximo: Runas, Dungeons, Prestige 2.0
+**Estado actual — v0.9.3:**
+- ✅ Fase 1 completada (Ascensión, Elementos, Élites)
+- ✅ Fase 2 completada (Crafting, Misiones, Expediciones, Prefijos)
+- ✅ Fase 3 avanzado: Boss Rush, Runas, Talentos, Maestrías, Dungeon semanal
+- ✅ Banners rotativos, sistema de pity y UI de invocación
+- 🔮 Próximo: PWA, i18n, modos sociales y Ascensión infinita
 
 ---
 
@@ -475,19 +531,22 @@ Consulta [ROADMAP.md](ROADMAP.md) para el plan completo de desarrollo con 5 fase
 
 | Tipo | Cantidad |
 |------|----------|
-| Héroes | 12 |
-| Enemigos | 20+ |
-| Ítems | 16 (+10 prefijos) |
-| Pisos de torre | 12 |
-| Logros | 78 (8 secretos) |
-| Mascotas | 6 |
+| Héroes | 34 |
+| Enemigos | 33 |
+| Ítems | 37 base + 10 prefijos |
+| Pisos de torre | 22 |
+| Logros | 121 |
+| Mascotas | 15 |
 | Mini-juegos | 3 |
 | Misiones | 3 diarias + 2 semanales |
 | Regiones de expedición | 6 |
-| Eventos | 7 (uno por día) |
-| Colecciones | 6 |
+| Eventos | 7 |
+| Colecciones | 10 |
 | Mejoras de academia | 20 |
-| Mejoras de prestige | 8 |
+| Mejoras de prestige | 12 |
+| Banners | 6 rotativos |
+| Runas | 15 |
+| Talentos globales | 24 |
 
 ---
 

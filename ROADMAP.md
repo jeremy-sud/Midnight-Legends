@@ -1,7 +1,7 @@
 # 🗺️ ROADMAP — Midnight Gardens
 
 > Documento vivo de planificación del desarrollo de Midnight Gardens.  
-> Última actualización: Julio 2025 | Versión actual: 0.9.3
+> Última actualización: Mayo 2026 | Versión actual: 0.9.3
 
 ---
 
@@ -47,11 +47,11 @@
 - [x] Mapa visual con regiones desbloqueables por stage.
 
 ### 2.4 Más contenido
-- [x] 8-12 héroes nuevos (completar 24 totales, 6 por rareza).
+- [x] 22 héroes nuevos añadidos, total 34 héroes en 4 rarezas.
 - [x] 10+ ítems nuevos con efectos especiales (lifesteal, DoT, splash).
 - [x] 10 nuevos pisos de torre (floor 13-22).
 - [x] 20+ logros adicionales.
-- [x] 4 mascotas nuevas con mecánicas únicas.
+- [x] 9 mascotas nuevas con mecánicas únicas (15 mascotas totales).
 
 ---
 
@@ -75,6 +75,7 @@
 - [x] Puntos de maestría: 1 por prestige a partir del prestige 3.
 
 ### 3.4 Boss Raids
+- [x] Boss Rush mode con 10 jefes secuenciales y sistema de recompensas.
 - [ ] Boss especial mensual con HP pool masivo.
 - [ ] Fases con mecánicas especiales (curación, enrage, etc.).
 - [ ] Recompensas por participación + bonus por daño total.
@@ -256,15 +257,15 @@
 | Tipo | Cantidad actual | Objetivo v1.0 | Objetivo v3.0 |
 |------|----------------|---------------|---------------|
 | Héroes | 34 | 12 | 50+ |
-| Enemigos | 25+ | 25+ | 50+ |
-| Ítems | 38 | 20 | 60+ |
+| Enemigos | 33 | 25+ | 50+ |
+| Ítems | 37 base + 10 prefijos | 20 | 60+ |
 | Upgrades (Academia) | 20 | 15 | 30 |
 | Prestige Lines | 12 | 8 | 20 |
 | Tower Floors | 22 | 12 | 40 |
 | Colecciones | 10 | 6 | 20 |
 | Eventos | 7 | 7 | 14 |
-| Logros | 120+ | 70+ | 200+ |
-| Mascotas | 10 | 4 | 15 |
+| Logros | 121 | 70+ | 200+ |
+| Mascotas | 15 | 4 | 15 |
 | Mini-Juegos | 3 | 3 | 6 |
 | Misiones diarias | 3+2 semanales | 3 | 5+3 |
 | Runas | 15 (5×3) | — | 25 (5×5) |
