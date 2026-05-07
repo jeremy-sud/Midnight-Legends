@@ -57,6 +57,8 @@ export class UIManager {
     this.killStreak = 0; // Current kill streak counter
     this.lastKillTime = 0; // Timestamp of last kill
     this.rosterSort = 'rarity'; // Current roster sort mode
+    this._longPressTimer = null;
+    this._longPressActive = false;
 
     // DOM Cache
     this.dom = {
@@ -1336,6 +1338,12 @@ export class UIManager {
         }
       };
 
+      // Mobile long-press hero tooltip
+      card.addEventListener('touchstart', (e) => this._beginLongPress(e, (point) => this.showHeroTooltip(point, hData)));
+      card.addEventListener('touchend', (e) => this._endLongPress(e));
+      card.addEventListener('touchcancel', () => this._cancelLongPress());
+      card.addEventListener('touchmove', () => this._cancelLongPress());
+
       // Slot clicking
       card.querySelectorAll(".equip-slot").forEach((slotEl) => {
         slotEl.onclick = () => {
@@ -1431,6 +1439,11 @@ export class UIManager {
         // Hover tooltip
         el.addEventListener('mouseenter', (e) => this.showItemTooltip(e, item));
         el.addEventListener('mouseleave', () => this.hideItemTooltip());
+        // Mobile long-press tooltip
+        el.addEventListener('touchstart', (e) => this._beginLongPress(e, (point) => this.showItemTooltip(point, item)));
+        el.addEventListener('touchend', (e) => this._endLongPress(e));
+        el.addEventListener('touchcancel', () => this._cancelLongPress());
+        el.addEventListener('touchmove', () => this._cancelLongPress());
       }
 
       if (stats.category === ItemCategories.WEAPON)
@@ -3994,6 +4007,68 @@ export class UIManager {
     document.body.appendChild(overlay);
     overlay.querySelector('.confirm-yes').onclick = () => { overlay.remove(); onConfirm(); };
     overlay.querySelector('.confirm-no').onclick = () => overlay.remove();
+  }
+
+  _normalizePointerEvent(e) {
+    if (e.touches && e.touches[0]) return e.touches[0];
+    if (e.changedTouches && e.changedTouches[0]) return e.changedTouches[0];
+    return e;
+  }
+
+  _beginLongPress(e, callback) {
+    this._cancelLongPress();
+    const point = this._normalizePointerEvent(e);
+    this._longPressTimer = window.setTimeout(() => {
+      this._longPressActive = true;
+      callback(point);
+    }, 500);
+  }
+
+  _cancelLongPress() {
+    if (this._longPressTimer) {
+      clearTimeout(this._longPressTimer);
+      this._longPressTimer = null;
+    }
+  }
+
+  _endLongPress(e) {
+    if (this._longPressActive) {
+      e.preventDefault();
+      this.hideItemTooltip();
+      this._longPressActive = false;
+    }
+    this._cancelLongPress();
+  }
+
+  showHeroTooltip(e, heroData) {
+    this.hideItemTooltip();
+    const template = HeroTemplate.find((t) => t.id === heroData.id);
+    if (!template) return;
+
+    const stats = getHeroStats(heroData);
+    const tooltip = document.createElement('div');
+    tooltip.className = 'item-tooltip';
+    tooltip.style.borderColor = template.rarity.color;
+
+    tooltip.innerHTML = `
+      <div class="item-tooltip-name" style="color:${template.rarity.color}">${template.name}</div>
+      <div class="item-tooltip-rarity" style="color:${template.rarity.color}">${template.rarity.name}</div>
+      <div class="item-tooltip-prefix">Level ${heroData.level} • ${template.element || 'Neutral'}</div>
+      <div class="item-tooltip-stats">
+        <div class="item-tooltip-stat"><span class="item-tooltip-stat-label">DPS</span><span class="item-tooltip-stat-value">${stats.dps.toFixed(1)}</span></div>
+        <div class="item-tooltip-stat"><span class="item-tooltip-stat-label">HP</span><span class="item-tooltip-stat-value">${stats.hp.toFixed(0)}</span></div>
+        <div class="item-tooltip-stat"><span class="item-tooltip-stat-label">Crit</span><span class="item-tooltip-stat-value">${Math.round(stats.critChance * 100)}%</span></div>
+      </div>
+      <div class="item-tooltip-category">Hero</div>
+    `;
+
+    document.body.appendChild(tooltip);
+    this._itemTooltip = tooltip;
+
+    const x = Math.min(e.clientX + 12, window.innerWidth - 260);
+    const y = Math.min(e.clientY + 12, window.innerHeight - 150);
+    tooltip.style.left = `${x}px`;
+    tooltip.style.top = `${y}px`;
   }
 
   toggleSellMode() {
